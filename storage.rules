@@ -1,0 +1,19 @@
+rules_version = '2';
+
+// MarketCatalystWebsite's blog media library. All reads/writes go through
+// the Next.js app's Admin SDK (Server Actions in
+// app/admin/(protected)/media/actions.ts), which authenticates via IAM/ADC
+// and bypasses these rules entirely — the client Storage SDK is never used
+// anywhere in this app. These rules are a defense-in-depth backstop only,
+// same philosophy as MarketCatalystUI/firestore.rules's additions for this
+// app's Firestore collections. Public *read* access to already-uploaded
+// blog images is granted at upload time via `file.makePublic()` (a
+// per-object ACL, not a client Storage SDK read against these rules) — that
+// public HTTP fetch also bypasses this ruleset.
+service firebase.storage {
+  match /b/{bucket}/o {
+    match /{allPaths=**} {
+      allow read, write: if false;
+    }
+  }
+}

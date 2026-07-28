@@ -1,0 +1,71 @@
+# Firebase App Hosting config for the MarketCatalystWebsite Next.js server.
+# This is the first App Hosting backend in project market-catalyst-502415 —
+# separate from MarketCatalystUI's static Hosting site ("marketcatalyst")
+# and from MarketCatalystBackEnd's App Hosting backends (which live entirely
+# in the market-catalyst-stage project). App Hosting does not read .env
+# files and does not honor `--set-secrets`; everything the app needs at
+# runtime must be declared here.
+#
+# True secrets must be provisioned in Secret Manager and granted to this
+# backend's service account before referencing them below:
+#   firebase apphosting:secrets:set <NAME> --project market-catalyst-502415
+#   firebase apphosting:secrets:grantaccess <NAME> --backend <BACKEND_ID> --project market-catalyst-502415
+
+runConfig:
+  minInstances: 0
+  maxInstances: 3
+  concurrency: 80
+  cpuMiB: 1000
+  memoryMiB: 512
+
+env:
+  - variable: NODE_ENV
+    value: "production"
+
+  # No FIREBASE_PRIVATE_KEY/service-account env vars — firebase-admin
+  # resolves credentials via Application Default Credentials against this
+  # backend's IAM-granted runtime service account (see lib/firebase/admin.ts).
+  - variable: FIREBASE_PROJECT_ID
+    value: "market-catalyst-502415"
+
+  # Public client-side Firebase config, used only by the admin/editor login
+  # screen (see lib/firebase/client.ts) — the public marketing site and blog
+  # never touch the client Firebase SDK. These values are inherently
+  # exposed client-side by Next.js convention, so they are plain values, not
+  # secrets. Currently mirrors MarketCatalystUI's Web App config
+  # (app/firebase.ts) — consider registering a distinct Firebase Web App
+  # entry for this site in the same project so Analytics doesn't conflate
+  # marketing-site traffic with the trading-app, then swap appId/
+  # measurementId below.
+  - variable: NEXT_PUBLIC_FIREBASE_API_KEY
+    value: "AIzaSyDVjZmJ11qzbPIvruwOHiTiMWvjTcUmhuk"
+  - variable: NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN
+    value: "market-catalyst-502415.firebaseapp.com"
+  - variable: NEXT_PUBLIC_FIREBASE_PROJECT_ID
+    value: "market-catalyst-502415"
+  - variable: NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET
+    value: "market-catalyst-502415.firebasestorage.app"
+  - variable: NEXT_PUBLIC_FIREBASE_MESSAGING_SENDER_ID
+    value: "741318166823"
+  - variable: NEXT_PUBLIC_FIREBASE_APP_ID
+    value: "1:741318166823:web:e7bdefb314ecd446494102"
+
+  # Used for canonical URLs, sitemap.xml, JSON-LD, CSP nonce origin checks,
+  # and Server Actions' allowedOrigins (next.config.ts) — set to this
+  # backend's real domain once provisioned.
+  - variable: NEXT_PUBLIC_SITE_URL
+    value: "https://marketcatalyst.ai"
+
+  # Sentry — leave empty until a project DSN is created; error reporting is
+  # a no-op with an empty DSN rather than failing.
+  - variable: NEXT_PUBLIC_SENTRY_DSN
+    value: ""
+  - variable: SENTRY_DSN
+    value: ""
+
+  # Salts the IP hash used by the Firestore-backed rate limiter (see
+  # lib/security/rate-limit.ts) so raw IPs are never derivable from stored
+  # bucket documents. Provision via Secret Manager once available:
+  #   firebase apphosting:secrets:set RATE_LIMIT_SALT --project market-catalyst-502415
+  # - variable: RATE_LIMIT_SALT
+  #   secret: RATE_LIMIT_SALT

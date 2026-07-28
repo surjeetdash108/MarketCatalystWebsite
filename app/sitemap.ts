@@ -1,0 +1,26 @@
+import type { MetadataRoute } from "next";
+import { getPublishedPosts } from "@/lib/blog/posts";
+
+function siteUrl(): string {
+  return process.env.NEXT_PUBLIC_SITE_URL ?? "https://marketcatalyst.ai";
+}
+
+export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
+  const base = siteUrl();
+  const posts = await getPublishedPosts();
+
+  const staticRoutes: MetadataRoute.Sitemap = [
+    { url: base, changeFrequency: "monthly", priority: 1 },
+    { url: `${base}/blog`, changeFrequency: "daily", priority: 0.8 },
+    { url: `${base}/contact`, changeFrequency: "yearly", priority: 0.3 },
+  ];
+
+  const postRoutes: MetadataRoute.Sitemap = posts.map((post) => ({
+    url: `${base}/blog/${post.slug}`,
+    lastModified: post.updatedAt,
+    changeFrequency: "weekly",
+    priority: 0.6,
+  }));
+
+  return [...staticRoutes, ...postRoutes];
+}
