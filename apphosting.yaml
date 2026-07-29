@@ -56,12 +56,16 @@ env:
   - variable: NEXT_PUBLIC_SITE_URL
     value: "https://marketcatalyst.ai"
 
-  # Sentry — leave empty until a project DSN is created; error reporting is
-  # a no-op with an empty DSN rather than failing.
-  - variable: NEXT_PUBLIC_SENTRY_DSN
-    value: ""
-  - variable: SENTRY_DSN
-    value: ""
+  # Sentry — omitted until a project DSN is created. Both sentry.*.config.ts
+  # and instrumentation-client.ts pass `dsn: process.env.*_SENTRY_DSN`
+  # straight to Sentry.init, which no-ops on an undefined dsn just like an
+  # empty one — and App Hosting's apphosting.yaml validator rejects an env
+  # entry with `value: ""`, treating the empty string as a missing value.
+  # Add these back with a real DSN once a Sentry project exists.
+  # - variable: NEXT_PUBLIC_SENTRY_DSN
+  #   value: ""
+  # - variable: SENTRY_DSN
+  #   value: ""
 
   # Salts the IP hash used by the Firestore-backed rate limiter (see
   # lib/security/rate-limit.ts) so raw IPs are never derivable from stored
