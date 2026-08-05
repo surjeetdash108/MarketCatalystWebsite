@@ -26,7 +26,7 @@ export default function PostsLayout({ children }: { children: React.ReactNode })
           <Link href="/faqs" style={{ color: "var(--text-dim-solid)", fontSize: ".88rem" }}>FAQs</Link>
         </nav>
       </header>
-      <main style={{ maxWidth: 960, margin: "0 auto", padding: "28px 22px 80px" }}>
+      <main style={{ width: "100%", padding: "28px clamp(18px, 5vw, 72px) 80px" }}>
         {children}
       </main>
     </div>
