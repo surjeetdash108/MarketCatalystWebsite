@@ -24,9 +24,9 @@ export default function PostsLayout({ children }: { children: React.ReactNode })
           <BrandLogo height={24} />
         </Link>
         <nav style={{ marginLeft: "auto", display: "flex", gap: 18, alignItems: "center" }}>
-          <Link href="/" style={{ color: "var(--text-dim-solid)", fontSize: ".88rem" }}>Home</Link>
-          <Link href="/posts" style={{ color: "var(--text-hi)", fontSize: ".88rem", fontWeight: 600 }}>Blogs</Link>
-          <Link href="/faqs" style={{ color: "var(--text-dim-solid)", fontSize: ".88rem" }}>FAQs</Link>
+          <Link href="/" className="hw-ghost">Home</Link>
+          <Link href="/posts" className="hw-ghost">Blogs</Link>
+          <Link href="/faqs" className="hw-ghost">FAQs</Link>
         </nav>
       </header>
       <main style={{ width: "100%", padding: "28px clamp(18px, 5vw, 72px) 80px" }}>
