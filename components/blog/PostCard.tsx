@@ -4,20 +4,24 @@ import type { Post } from "@/lib/blog/posts";
 
 export function PostCard({ post }: { post: Post }) {
   return (
-    <Link href={`/posts/view?slug=${post.slug}`} className="flex flex-col gap-2 overflow-hidden rounded border border-neutral-200 hover:border-neutral-400">
-      {post.coverImageUrl && (
-        <div className="relative aspect-video w-full bg-neutral-100">
-          <Image src={post.coverImageUrl} alt="" fill className="object-cover" />
-        </div>
-      )}
-      <div className="flex flex-col gap-2 p-5">
-        <h2 className="text-lg font-semibold">{post.title}</h2>
-        {post.excerpt && <p className="text-sm text-neutral-600">{post.excerpt}</p>}
-        {post.publishedAt && (
-          <time dateTime={post.publishedAt} className="text-xs text-neutral-400">
-            {new Date(post.publishedAt).toLocaleDateString()}
-          </time>
+    <Link href={`/posts/view?slug=${post.slug}`} className="pcard">
+      <div className="pcard-thumb">
+        {post.coverImageUrl ? (
+          <Image src={post.coverImageUrl} alt="" fill sizes="(max-width: 720px) 100vw, 33vw" className="object-cover" />
+        ) : (
+          <div className="pcard-ph">{(post.title || "?").charAt(0).toUpperCase()}</div>
         )}
+      </div>
+      <div className="pcard-body">
+        {post.publishedAt && (
+          <div className="pcard-meta">
+            <time dateTime={post.publishedAt}>
+              {new Date(post.publishedAt).toLocaleDateString(undefined, { month: "short", day: "numeric", year: "numeric" })}
+            </time>
+          </div>
+        )}
+        <div className="pcard-title">{post.title}</div>
+        {post.excerpt && <div className="pcard-excerpt">{post.excerpt}</div>}
       </div>
     </Link>
   );

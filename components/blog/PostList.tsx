@@ -3,11 +3,15 @@ import { PostCard } from "./PostCard";
 
 export function PostList({ posts }: { posts: Post[] }) {
   if (posts.length === 0) {
-    return <p className="text-neutral-500">No posts published yet.</p>;
+    return (
+      <div className="a-panel" style={{ padding: "32px", textAlign: "center", color: "var(--text-dim-solid)" }}>
+        No posts published yet.
+      </div>
+    );
   }
 
   return (
-    <div className="grid gap-4 sm:grid-cols-2">
+    <div className="pcard-grid">
       {posts.map((post) => (
         <PostCard key={post.id} post={post} />
       ))}

@@ -65,22 +65,26 @@ export default async function PostViewPage({
       />
 
       <div>
-        <Link href="/posts" className="btn sm">← All blogs</Link>
+        <Link href="/posts" className="btn sm">← Back to blogs</Link>
       </div>
 
-      <article className="a-panel" style={{ padding: 24 }}>
+      <article className="article">
         {post.coverImageUrl && (
-          <div className="relative mb-5 aspect-video w-full overflow-hidden rounded" style={{ background: "var(--surface-0)" }}>
-            <Image src={post.coverImageUrl} alt="" fill priority className="object-cover" />
+          <div className="article-hero">
+            <Image src={post.coverImageUrl} alt="" fill priority sizes="760px" className="object-cover" />
           </div>
         )}
-        <h1 className="a-h1" style={{ fontSize: "1.7rem", lineHeight: 1.25 }}>{post.title}</h1>
+        <h1 className="article-title">{post.title}</h1>
+        {post.excerpt && <p className="article-sub">{post.excerpt}</p>}
         {post.publishedAt && (
-          <time dateTime={post.publishedAt} className="a-muted" style={{ display: "block", marginTop: 6 }}>
-            {new Date(post.publishedAt).toLocaleDateString(undefined, { year: "numeric", month: "long", day: "numeric" })}
-          </time>
+          <div className="article-meta">
+            <time dateTime={post.publishedAt}>
+              {new Date(post.publishedAt).toLocaleDateString(undefined, { year: "numeric", month: "long", day: "numeric" })}
+            </time>
+          </div>
         )}
-        <div style={{ marginTop: 20 }}>
+        <hr className="article-rule" />
+        <div className="post-content">
           <PostBody markdown={post.content} />
         </div>
       </article>

@@ -131,3 +131,70 @@
 }
 .iq-root .post-content code { font-family: var(--f-mono, ui-monospace, monospace); font-size: 0.86em; }
 .iq-root .post-content hr { border: none; border-top: 1px solid var(--border); margin: 22px 0; }
+
+/* ── Post cards (blog list — admin + public) ─────────────────────────────── */
+.iq-root .pcard-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(288px, 1fr));
+  gap: 20px;
+}
+.iq-root .pcard {
+  display: flex; flex-direction: column;
+  background: var(--surface-1);
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  overflow: hidden;
+  text-decoration: none;
+  transition: transform .16s ease, border-color .16s ease, box-shadow .16s ease;
+}
+.iq-root .pcard:hover {
+  transform: translateY(-4px);
+  border-color: color-mix(in srgb, var(--brand) 55%, var(--border));
+  box-shadow: 0 16px 36px -20px rgba(124, 108, 245, .65);
+}
+.iq-root .pcard-thumb {
+  position: relative; aspect-ratio: 16 / 9; width: 100%;
+  overflow: hidden; background: var(--surface-2); display: block;
+}
+.iq-root .pcard-thumb img { object-fit: cover; transition: transform .3s ease; }
+.iq-root .pcard:hover .pcard-thumb img { transform: scale(1.05); }
+.iq-root .pcard-ph {
+  position: absolute; inset: 0; display: flex; align-items: center; justify-content: center;
+  background: linear-gradient(135deg, var(--brand), var(--ai));
+  color: #fff; font-size: 2.1rem; font-weight: 800; opacity: .92;
+}
+.iq-root .pcard-body { display: flex; flex-direction: column; gap: 8px; padding: 15px 16px 16px; flex: 1; }
+.iq-root .pcard-meta {
+  display: flex; align-items: center; gap: 8px;
+  font-size: .68rem; color: var(--text-dim-solid);
+  text-transform: uppercase; letter-spacing: .05em;
+}
+.iq-root .pcard-title {
+  font-size: 1.02rem; font-weight: 700; color: var(--text-hi);
+  line-height: 1.32; text-decoration: none; transition: color .14s ease;
+}
+.iq-root a.pcard-title:hover, .iq-root .pcard:hover .pcard-title { color: var(--brand-2); }
+.iq-root .pcard-excerpt {
+  font-size: .84rem; color: var(--text-dim-solid); line-height: 1.55;
+  display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical; overflow: hidden;
+}
+.iq-root .pcard-actions {
+  display: flex; gap: 8px; padding: 0 16px 16px; margin-top: auto;
+  border-top: 1px solid var(--border-soft, var(--border)); padding-top: 14px;
+}
+
+/* ── Article (post view) ─────────────────────────────────────────────────── */
+.iq-root .article { max-width: 760px; margin: 0 auto; }
+.iq-root .article-hero {
+  position: relative; aspect-ratio: 16 / 9; width: 100%;
+  border-radius: 16px; overflow: hidden; margin-bottom: 26px;
+  background: var(--surface-2); border: 1px solid var(--border);
+}
+.iq-root .article-hero img { object-fit: cover; }
+.iq-root .article-title { font-size: 2.05rem; line-height: 1.16; font-weight: 800; color: var(--text-hi); letter-spacing: -.02em; }
+.iq-root .article-sub { margin-top: 10px; font-size: 1.05rem; line-height: 1.5; color: var(--text-dim-solid); }
+.iq-root .article-meta {
+  margin-top: 14px; display: flex; align-items: center; gap: 10px;
+  font-size: .72rem; text-transform: uppercase; letter-spacing: .06em; color: var(--text-dim-solid);
+}
+.iq-root .article-rule { height: 1px; background: var(--border); border: 0; margin: 22px 0 26px; }
