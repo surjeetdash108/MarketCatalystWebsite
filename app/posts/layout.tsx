@@ -7,7 +7,10 @@ import "../admin/admin.css";
 
 export default function PostsLayout({ children }: { children: React.ReactNode }) {
   return (
-    <div className="iq-root" data-theme="dark" style={{ minHeight: "100vh", background: "var(--bg)", color: "var(--text)" }}>
+    {/* height:auto + overflow:visible override iq.css's `.iq-root { height:100vh;
+        overflow:hidden }` (a fixed dashboard shell) so this content page scrolls
+        on the body — the sticky header still sticks to the viewport top. */}
+    <div className="iq-root" data-theme="dark" style={{ minHeight: "100vh", height: "auto", overflow: "visible", background: "var(--bg)", color: "var(--text)" }}>
       <header
         style={{
           display: "flex", alignItems: "center", gap: 16,
