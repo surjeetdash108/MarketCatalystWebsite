@@ -16,10 +16,10 @@ export function Nav() {
         MarketCatalyst
       </Link>
       <div className="hw-nav-cta">
-        <Link className="hw-navlink" href="/posts">
+        <Link className="hw-ghost" href="/posts">
           Blogs
         </Link>
-        <Link className="hw-navlink" href="/faqs">
+        <Link className="hw-ghost" href="/faqs">
           FAQs
         </Link>
         <a className="hw-ghost" href={APP_LOGIN_URL}>

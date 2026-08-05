@@ -114,18 +114,6 @@
 }
 .hw-ghost:hover { color: var(--ai, #34E2F0); }
 
-/* Header text links (Blogs / FAQs), left of the Log in button. */
-.hw-navlink {
-  font-size: .84rem;
-  font-weight: 500;
-  color: var(--text-dim-solid, #9aa4b2);
-  text-decoration: none;
-  transition: color .15s;
-}
-.hw-navlink:hover { color: var(--text-hi, #EAEFF6); }
-/* Tuck the text links away on very small screens; the CTAs stay. */
-@media (max-width: 560px) { .hw-navlink { display: none; } }
-
 .hw-solid {
   font-size: .84rem;
   font-weight: 600;
