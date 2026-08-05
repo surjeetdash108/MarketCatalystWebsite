@@ -17,15 +17,21 @@ function hasSessionCookie(request: NextRequest): boolean {
 const isDev = process.env.NODE_ENV !== "production";
 const firebaseAuthDomain = process.env.NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN;
 
-function buildCsp(nonce: string): string {
+function buildCsp(nonce: string | null): string {
+  // Dynamic routes (/admin) get a per-request nonce Next injects into every
+  // script it emits. Static routes are prerendered at build time and can never
+  // carry a per-request nonce, so there they fall back to 'unsafe-inline' —
+  // which is what lets Next's own inline bootstrap + `__next_f` hydration
+  // scripts run. A nonce with no matching scripts silently blocks them all and
+  // breaks hydration site-wide (that was the carousel/WebGL "invisible" bug).
+  const scriptInline = nonce ? `'nonce-${nonce}'` : "'unsafe-inline'";
   return [
     "default-src 'self'",
     // React/Turbopack's dev-mode HMR needs eval() for debugging features
     // (callstack reconstruction, fast refresh) — never allow this in
-    // production, where the nonce alone is sufficient. apis.google.com and
-    // gstatic.com are Firebase Auth's helper scripts for signInWithPopup
-    // (Google provider) — needed in both dev and prod, admin login only.
-    `script-src 'self' 'nonce-${nonce}' https://apis.google.com https://www.gstatic.com${isDev ? " 'unsafe-eval'" : ""}`,
+    // production. apis.google.com and gstatic.com are Firebase Auth's helper
+    // scripts for signInWithPopup (Google provider) — admin login only.
+    `script-src 'self' ${scriptInline} https://apis.google.com https://www.gstatic.com${isDev ? " 'unsafe-eval'" : ""}`,
     "style-src 'self' 'unsafe-inline'",
     "img-src 'self' data: https:",
     // signInWithPopup's actual relay iframe is served from the Firebase
@@ -51,12 +57,26 @@ export function middleware(request: NextRequest) {
     return NextResponse.redirect(loginUrl);
   }
 
-  const nonce = crypto.randomUUID();
+  // Only the dynamically-rendered /admin area can receive a per-request nonce
+  // (Next reads it from the `Content-Security-Policy` REQUEST header and stamps
+  // it onto its <script> tags). Public marketing pages are statically
+  // prerendered, so they use the 'unsafe-inline' fallback instead — see
+  // buildCsp. Applying the nonce CSP to those static pages blocked their own
+  // inline hydration scripts and silently killed every client component.
+  const isAdmin = request.nextUrl.pathname.startsWith("/admin");
   const requestHeaders = new Headers(request.headers);
-  requestHeaders.set("x-csp-nonce", nonce);
+  let csp: string;
+  if (isAdmin) {
+    const nonce = crypto.randomUUID();
+    requestHeaders.set("x-csp-nonce", nonce);
+    csp = buildCsp(nonce);
+    requestHeaders.set("Content-Security-Policy", csp);
+  } else {
+    csp = buildCsp(null);
+  }
 
   const response = NextResponse.next({ request: { headers: requestHeaders } });
-  response.headers.set("Content-Security-Policy", buildCsp(nonce));
+  response.headers.set("Content-Security-Policy", csp);
   return response;
 }
 
