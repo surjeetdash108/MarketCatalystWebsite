@@ -1,0 +1,103 @@
+/* Admin-only helpers layered on top of iq.css tokens, so the CMS pages match
+   the MarketCatalystUI look. Everything is scoped under .iq-root — the admin
+   shell and login both render inside that scope. */
+
+.iq-root .a-h1 {
+  font-size: 1.15rem;
+  font-weight: 700;
+  color: var(--text-hi);
+  margin: 0;
+  letter-spacing: -0.01em;
+}
+
+.iq-root .a-label {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  font-size: 0.78rem;
+  font-weight: 600;
+  color: var(--text-dim-solid);
+}
+
+.iq-root .a-input,
+.iq-root .a-textarea {
+  background: var(--surface-2);
+  border: 1px solid var(--border);
+  border-radius: 9px;
+  padding: 9px 12px;
+  color: var(--text-hi);
+  font-size: 0.85rem;
+  font-family: inherit;
+  outline: none;
+  width: 100%;
+  transition: border-color 0.14s;
+}
+.iq-root .a-input:focus,
+.iq-root .a-textarea:focus {
+  border-color: var(--brand);
+}
+.iq-root .a-input.mono {
+  font-family: var(--f-mono, ui-monospace, monospace);
+}
+
+.iq-root .a-muted {
+  color: var(--text-dim-solid);
+  font-size: 0.82rem;
+}
+.iq-root .a-danger {
+  color: var(--down);
+  font-size: 0.82rem;
+  margin: 0;
+}
+
+/* A raised panel, matching .card but usable as a plain wrapper. */
+.iq-root .a-panel {
+  background: var(--surface-1);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 16px 18px;
+}
+
+/* Ghost/secondary button variants built on .btn. */
+.iq-root .btn.sm {
+  font-size: 0.72rem;
+  padding: 5px 10px;
+}
+.iq-root .btn.danger:hover {
+  border-color: var(--down);
+  color: var(--down);
+}
+
+/* Tiptap editor surface. */
+.iq-root .a-editor .ProseMirror {
+  min-height: 300px;
+  border: 1px solid var(--border);
+  border-radius: 9px;
+  padding: 12px 14px;
+  background: var(--surface-2);
+  color: var(--text);
+  outline: none;
+}
+.iq-root .a-toolbar {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
+  background: var(--surface-0);
+  border: 1px solid var(--border);
+  border-radius: 9px;
+  padding: 5px;
+}
+.iq-root .a-tbtn {
+  border-radius: 6px;
+  padding: 5px 9px;
+  font-size: 0.78rem;
+  color: var(--text-dim-solid);
+}
+.iq-root .a-tbtn:hover {
+  background: var(--surface-2);
+  color: var(--text-hi);
+}
+.iq-root .a-tbtn.on {
+  background: var(--brand);
+  color: #fff;
+}

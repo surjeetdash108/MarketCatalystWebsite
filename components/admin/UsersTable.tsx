@@ -17,35 +17,35 @@ export function UsersTable({ members, currentUid }: { members: WebsiteMember[]; 
   }
 
   return (
-    <table className="w-full text-sm">
-      <thead>
-        <tr className="border-b border-neutral-200 text-left text-neutral-500">
-          <th className="py-2 font-medium">Email</th>
-          <th className="py-2 font-medium">Role</th>
-          <th className="py-2 font-medium" />
-        </tr>
-      </thead>
-      <tbody>
-        {members.map((member) => (
-          <tr key={member.uid} className="border-b border-neutral-100">
-            <td className="py-2">{member.email}</td>
-            <td className="py-2 uppercase text-neutral-500">{member.role}</td>
-            <td className="py-2 text-right">
-              {/* An admin can never remove their own membership — see the
-                  comment on removeMemberAction for why. */}
-              {member.uid !== currentUid && (
-                <button
-                  onClick={() => remove(member)}
-                  disabled={pending}
-                  className="text-xs text-neutral-600 hover:underline disabled:opacity-50"
-                >
-                  Remove
-                </button>
-              )}
-            </td>
+    <div className="a-panel" style={{ padding: "6px 14px" }}>
+      <table className="tbl">
+        <thead>
+          <tr>
+            <th>Email</th>
+            <th>Role</th>
+            <th />
           </tr>
-        ))}
-      </tbody>
-    </table>
+        </thead>
+        <tbody>
+          {members.map((member) => (
+            <tr key={member.uid}>
+              <td style={{ color: "var(--text-hi)" }}>{member.email}</td>
+              <td>
+                <span className={`pill ${member.role === "ADMIN" ? "opt" : "flat"}`}>{member.role}</span>
+              </td>
+              <td style={{ textAlign: "right" }}>
+                {/* An admin can never remove their own membership — see the
+                    comment on removeMemberAction for why. */}
+                {member.uid !== currentUid && (
+                  <button onClick={() => remove(member)} disabled={pending} className="btn sm danger" style={{ opacity: pending ? 0.5 : 1 }}>
+                    Remove
+                  </button>
+                )}
+              </td>
+            </tr>
+          ))}
+        </tbody>
+      </table>
+    </div>
   );
 }

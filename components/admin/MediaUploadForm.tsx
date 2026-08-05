@@ -18,23 +18,20 @@ export function MediaUploadForm({ onUploaded }: { onUploaded?: (item: MediaItem)
   }, [state, onUploaded]);
 
   return (
-    <form ref={formRef} action={formAction} className="flex items-center gap-3">
+    <form ref={formRef} action={formAction} className="a-panel flex items-center gap-3" style={{ flexWrap: "wrap" }}>
       <input
         type="file"
         name="file"
         accept="image/jpeg,image/png,image/webp,image/gif"
         required
         disabled={pending}
-        className="text-sm"
+        className="a-muted"
+        style={{ flex: 1, minWidth: 200 }}
       />
-      <button
-        type="submit"
-        disabled={pending}
-        className="rounded bg-neutral-900 px-3 py-1.5 text-sm font-medium text-white disabled:opacity-50"
-      >
+      <button type="submit" disabled={pending} className="btn primary" style={{ opacity: pending ? 0.6 : 1 }}>
         {pending ? "Uploading…" : "Upload"}
       </button>
-      {state?.error && <p className="text-sm text-red-600">{state.error}</p>}
+      {state?.error && <p className="a-danger" style={{ width: "100%" }}>{state.error}</p>}
     </form>
   );
 }

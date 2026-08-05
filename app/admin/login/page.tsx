@@ -10,6 +10,8 @@ function describeAuthError(err: unknown): string {
   return err instanceof Error ? err.message : "Unknown error";
 }
 import { firebaseAuth, googleAuthProvider } from "@/lib/firebase/client";
+import { BrandLogo } from "@/components/admin/BrandLogo";
+import "../admin.css";
 
 export default function AdminLoginPage() {
   const router = useRouter();
@@ -20,6 +22,7 @@ export default function AdminLoginPage() {
 
   async function exchangeForSession(credential: UserCredential) {
     const idToken = await credential.user.getIdToken();
+    const signedInAs = credential.user.email ?? "this account";
 
     const response = await fetch("/api/auth/session", {
       method: "POST",
@@ -28,7 +31,22 @@ export default function AdminLoginPage() {
     });
 
     if (!response.ok) {
-      setError("You don't have access to the admin panel.");
+      const { error: code } = (await response.json().catch(() => ({}))) as { error?: string };
+      // Surface the actual reason instead of a blanket message, so a wrong-account
+      // sign-in or a rate-limit is self-evident rather than looking like a bug.
+      const reason =
+        code === "forbidden"
+          ? `${signedInAs} isn't an authorized admin or editor. Sign in with an account that has been granted access.`
+          : code === "rate_limited"
+            ? "Too many sign-in attempts. Wait a few minutes and try again."
+            : code === "stale_token"
+              ? "Your sign-in expired before it completed. Please try again."
+              : code === "invalid_token"
+                ? "Could not verify your sign-in. Try again, or sign out of Google and back in."
+                : code === "invalid_origin"
+                  ? "Sign-in was blocked (origin mismatch). Use the official admin URL."
+                  : `Sign-in failed (${code ?? response.status}).`;
+      setError(reason);
       await firebaseAuth.signOut();
       return;
     }
@@ -67,54 +85,52 @@ export default function AdminLoginPage() {
   }
 
   return (
-    <div className="mx-auto flex min-h-screen max-w-sm flex-col justify-center px-6">
-      <h1 className="mb-6 text-xl font-semibold">Admin sign in</h1>
+    <div
+      className="iq-root"
+      data-theme="dark"
+      style={{ height: "100vh", overflow: "hidden", display: "grid", placeItems: "center", padding: 24 }}
+    >
+      <div className="card" style={{ width: "100%", maxWidth: 380, position: "relative", zIndex: 1, padding: 28 }}>
+        <BrandLogo height={26} />
+        <h1 style={{ margin: "16px 0 4px", fontSize: 20, fontWeight: 700, color: "var(--text-hi)" }}>Admin sign in</h1>
+        <p className="a-muted" style={{ margin: "0 0 20px" }}>Restricted to authorized editors and admins.</p>
 
-      <button
-        type="button"
-        onClick={handleGoogleSignIn}
-        disabled={submitting}
-        className="mb-4 rounded border border-neutral-300 px-3 py-2 text-sm font-medium disabled:opacity-50"
-      >
-        Sign in with Google
-      </button>
-
-      <div className="mb-4 flex items-center gap-3 text-xs text-neutral-400">
-        <span className="h-px flex-1 bg-neutral-200" />
-        or
-        <span className="h-px flex-1 bg-neutral-200" />
-      </div>
-
-      <form onSubmit={handleSubmit} className="flex flex-col gap-4">
-        <label className="flex flex-col gap-1 text-sm">
-          Email
-          <input
-            type="email"
-            required
-            value={email}
-            onChange={(event) => setEmail(event.target.value)}
-            className="rounded border border-neutral-300 px-3 py-2"
-          />
-        </label>
-        <label className="flex flex-col gap-1 text-sm">
-          Password
-          <input
-            type="password"
-            required
-            value={password}
-            onChange={(event) => setPassword(event.target.value)}
-            className="rounded border border-neutral-300 px-3 py-2"
-          />
-        </label>
-        {error && <p className="text-sm text-red-600">{error}</p>}
         <button
-          type="submit"
+          type="button"
+          onClick={handleGoogleSignIn}
           disabled={submitting}
-          className="rounded bg-neutral-900 px-3 py-2 text-sm font-medium text-white disabled:opacity-50"
+          className="btn"
+          style={{ width: "100%", justifyContent: "center", opacity: submitting ? 0.5 : 1 }}
         >
-          {submitting ? "Signing in…" : "Sign in"}
+          Sign in with Google
         </button>
-      </form>
+
+        <div style={{ display: "flex", alignItems: "center", gap: 12, margin: "16px 0", fontSize: 11, color: "var(--text-dim-solid)" }}>
+          <span style={{ height: 1, flex: 1, background: "var(--border)" }} />
+          or
+          <span style={{ height: 1, flex: 1, background: "var(--border)" }} />
+        </div>
+
+        <form onSubmit={handleSubmit} style={{ display: "flex", flexDirection: "column", gap: 14 }}>
+          <label className="a-label">
+            Email
+            <input className="a-input" type="email" required value={email} onChange={(e) => setEmail(e.target.value)} />
+          </label>
+          <label className="a-label">
+            Password
+            <input className="a-input" type="password" required value={password} onChange={(e) => setPassword(e.target.value)} />
+          </label>
+          {error && <p className="a-danger">{error}</p>}
+          <button
+            type="submit"
+            disabled={submitting}
+            className="btn primary"
+            style={{ width: "100%", justifyContent: "center", opacity: submitting ? 0.6 : 1 }}
+          >
+            {submitting ? "Signing in…" : "Sign in"}
+          </button>
+        </form>
+      </div>
     </div>
   );
 }

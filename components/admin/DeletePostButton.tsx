@@ -20,7 +20,8 @@ export function DeletePostButton({ id }: { id: string }) {
     <button
       onClick={handleDelete}
       disabled={pending}
-      className="text-xs text-red-600 hover:underline disabled:opacity-50"
+      className="btn sm danger"
+      style={{ opacity: pending ? 0.5 : 1 }}
     >
       Delete
     </button>

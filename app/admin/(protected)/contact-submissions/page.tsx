@@ -6,7 +6,7 @@ export default async function ContactSubmissionsPage() {
 
   return (
     <div className="flex flex-col gap-4">
-      <h1 className="text-lg font-semibold">Contact submissions</h1>
+      <h1 className="a-h1">Contact submissions</h1>
       <ContactSubmissionsTable submissions={submissions} />
     </div>
   );

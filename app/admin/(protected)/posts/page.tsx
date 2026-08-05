@@ -8,56 +8,49 @@ export default async function AdminPostsPage() {
   return (
     <div className="flex flex-col gap-4">
       <div className="flex items-center justify-between">
-        <h1 className="text-lg font-semibold">Posts</h1>
-        <Link
-          href="/admin/posts/new"
-          className="rounded bg-neutral-900 px-3 py-1.5 text-sm font-medium text-white"
-        >
+        <h1 className="a-h1">Posts</h1>
+        <Link href="/admin/posts/new" className="btn primary">
           New post
         </Link>
       </div>
 
-      <table className="w-full text-sm">
-        <thead>
-          <tr className="border-b border-neutral-200 text-left text-neutral-500">
-            <th className="py-2 font-medium">Title</th>
-            <th className="py-2 font-medium">Status</th>
-            <th className="py-2 font-medium">Updated</th>
-            <th className="py-2 font-medium" />
-          </tr>
-        </thead>
-        <tbody>
-          {posts.map((post) => (
-            <tr key={post.id} className="border-b border-neutral-100">
-              <td className="py-2">
-                <Link href={`/admin/posts/${post.id}/edit`} className="hover:underline">
-                  {post.title}
-                </Link>
-              </td>
-              <td className="py-2">
-                <span
-                  className={`rounded px-2 py-0.5 text-xs uppercase tracking-wide ${
-                    post.status === "published" ? "bg-emerald-100 text-emerald-700" : "bg-neutral-100 text-neutral-600"
-                  }`}
-                >
-                  {post.status}
-                </span>
-              </td>
-              <td className="py-2 text-neutral-500">{new Date(post.updatedAt).toLocaleString()}</td>
-              <td className="py-2 text-right">
-                <DeletePostButton id={post.id} />
-              </td>
-            </tr>
-          ))}
-          {posts.length === 0 && (
+      <div className="a-panel" style={{ padding: "6px 14px" }}>
+        <table className="tbl">
+          <thead>
             <tr>
-              <td colSpan={4} className="py-6 text-center text-neutral-500">
-                No posts yet.
-              </td>
+              <th>Title</th>
+              <th>Status</th>
+              <th>Updated</th>
+              <th />
             </tr>
-          )}
-        </tbody>
-      </table>
+          </thead>
+          <tbody>
+            {posts.map((post) => (
+              <tr key={post.id}>
+                <td>
+                  <Link href={`/admin/posts/${post.id}/edit`} style={{ color: "var(--text-hi)", fontWeight: 600 }}>
+                    {post.title}
+                  </Link>
+                </td>
+                <td>
+                  <span className={`pill ${post.status === "published" ? "up" : "flat"}`}>{post.status}</span>
+                </td>
+                <td className="a-muted">{new Date(post.updatedAt).toLocaleString()}</td>
+                <td style={{ textAlign: "right" }}>
+                  <DeletePostButton id={post.id} />
+                </td>
+              </tr>
+            ))}
+            {posts.length === 0 && (
+              <tr>
+                <td colSpan={4} className="a-muted" style={{ textAlign: "center", padding: "24px 0" }}>
+                  No posts yet.
+                </td>
+              </tr>
+            )}
+          </tbody>
+        </table>
+      </div>
     </div>
   );
 }

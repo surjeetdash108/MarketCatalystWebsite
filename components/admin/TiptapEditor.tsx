@@ -21,11 +21,7 @@ function ToolbarButton({
   children: React.ReactNode;
 }) {
   return (
-    <button
-      type="button"
-      onClick={onClick}
-      className={`rounded px-2 py-1 text-sm ${active ? "bg-neutral-900 text-white" : "hover:bg-neutral-100"}`}
-    >
+    <button type="button" onClick={onClick} className={`a-tbtn${active ? " on" : ""}`}>
       {children}
     </button>
   );
@@ -55,7 +51,7 @@ export function TiptapEditor({
     onUpdate: ({ editor: e }) => onChangeMarkdown(getMarkdown(e)),
     editorProps: {
       attributes: {
-        class: "prose max-w-none min-h-[300px] rounded border border-neutral-300 p-3 focus:outline-none",
+        class: "max-w-none focus:outline-none",
       },
     },
   });
@@ -63,8 +59,8 @@ export function TiptapEditor({
   if (!editor) return null;
 
   return (
-    <div className="flex flex-col gap-2">
-      <div className="flex flex-wrap gap-1 rounded border border-neutral-200 bg-neutral-50 p-1">
+    <div className="a-editor flex flex-col gap-2">
+      <div className="a-toolbar">
         <ToolbarButton onClick={() => editor.chain().focus().toggleBold().run()} active={editor.isActive("bold")}>
           Bold
         </ToolbarButton>

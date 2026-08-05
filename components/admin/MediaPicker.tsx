@@ -36,30 +36,25 @@ export function MediaPicker({
   }
 
   return (
-    <div className="flex flex-col gap-2">
-      <span className="text-sm font-medium">{label}</span>
+    <div className="a-label">
+      {label}
       {value ? (
         // eslint-disable-next-line @next/next/no-img-element -- external Storage URL
-        <img src={value} alt="" className="h-32 w-auto rounded border border-neutral-200 object-cover" />
+        <img src={value} alt="" className="h-32 w-auto object-cover" style={{ borderRadius: 10, border: "1px solid var(--border)" }} />
       ) : (
-        <div className="flex h-32 w-48 items-center justify-center rounded border border-dashed border-neutral-300 text-xs text-neutral-400">
+        <div
+          className="flex h-32 w-48 items-center justify-center a-muted"
+          style={{ borderRadius: 10, border: "1px dashed var(--border-strong)" }}
+        >
           No image selected
         </div>
       )}
       <div className="flex gap-2">
-        <button
-          type="button"
-          onClick={open}
-          className="rounded border border-neutral-300 px-3 py-1.5 text-sm font-medium"
-        >
+        <button type="button" onClick={open} className="btn sm">
           {value ? "Change image" : "Choose image"}
         </button>
         {value && (
-          <button
-            type="button"
-            onClick={() => onChange("")}
-            className="rounded border border-neutral-300 px-3 py-1.5 text-sm text-neutral-600"
-          >
+          <button type="button" onClick={() => onChange("")} className="btn sm">
             Remove
           </button>
         )}
@@ -72,11 +67,18 @@ export function MediaPicker({
           // is rendered inside PostEditor's own <form>. Nested <form>
           // elements are invalid HTML and trigger a hydration error, so
           // this can't just render inline here.
-          <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-6">
-            <div className="flex max-h-[80vh] w-full max-w-3xl flex-col gap-4 overflow-y-auto rounded bg-white p-5">
+          <div
+            className="iq-root"
+            data-theme="dark"
+            style={{ position: "fixed", inset: 0, zIndex: 50, height: "auto", overflow: "visible", display: "flex", alignItems: "center", justifyContent: "center", background: "rgba(4,6,12,0.72)", padding: 24 }}
+          >
+            <div
+              className="flex max-h-[80vh] w-full max-w-3xl flex-col gap-4 overflow-y-auto"
+              style={{ background: "var(--surface-1)", border: "1px solid var(--border-strong)", borderRadius: 14, padding: 20, position: "relative", zIndex: 1 }}
+            >
               <div className="flex items-center justify-between">
-                <h2 className="text-base font-semibold">Select an image</h2>
-                <button type="button" onClick={() => setIsOpen(false)} className="text-sm text-neutral-500">
+                <h2 style={{ margin: 0, fontSize: "1rem", fontWeight: 700, color: "var(--text-hi)" }}>Select an image</h2>
+                <button type="button" onClick={() => setIsOpen(false)} className="btn sm">
                   Close
                 </button>
               </div>
@@ -87,7 +89,7 @@ export function MediaPicker({
                 }}
               />
               {loading ? (
-                <p className="text-sm text-neutral-500">Loading…</p>
+                <p className="a-muted">Loading…</p>
               ) : (
                 <MediaGrid
                   items={items ?? []}

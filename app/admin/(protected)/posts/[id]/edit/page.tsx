@@ -9,7 +9,7 @@ export default async function EditPostPage({ params }: { params: Promise<{ id: s
 
   return (
     <div className="flex flex-col gap-4">
-      <h1 className="text-lg font-semibold">Edit post</h1>
+      <h1 className="a-h1">Edit post</h1>
       <PostEditor post={post} />
     </div>
   );
