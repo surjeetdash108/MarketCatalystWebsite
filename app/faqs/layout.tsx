@@ -1,11 +1,11 @@
 import Link from "next/link";
 import { BrandLogo } from "@/components/admin/BrandLogo";
-// Reuse the app's dark surface + the admin table/panel classes so the public
-// blog matches the /admin/posts look. admin.css is scoped under .iq-root, so
+// Same dark surface + admin table/panel classes as /posts, so the public FAQ
+// pages match the /admin/faqs look. admin.css is scoped under .iq-root, so
 // importing it here only affects this subtree.
 import "../admin/admin.css";
 
-export default function PostsLayout({ children }: { children: React.ReactNode }) {
+export default function FaqsLayout({ children }: { children: React.ReactNode }) {
   return (
     <div className="iq-root" data-theme="dark" style={{ minHeight: "100vh", background: "var(--bg)", color: "var(--text)" }}>
       <header
@@ -22,8 +22,8 @@ export default function PostsLayout({ children }: { children: React.ReactNode })
         </Link>
         <nav style={{ marginLeft: "auto", display: "flex", gap: 18, alignItems: "center" }}>
           <Link href="/" style={{ color: "var(--text-dim-solid)", fontSize: ".88rem" }}>Home</Link>
-          <Link href="/posts" style={{ color: "var(--text-hi)", fontSize: ".88rem", fontWeight: 600 }}>Blogs</Link>
-          <Link href="/faqs" style={{ color: "var(--text-dim-solid)", fontSize: ".88rem" }}>FAQs</Link>
+          <Link href="/posts" style={{ color: "var(--text-dim-solid)", fontSize: ".88rem" }}>Blogs</Link>
+          <Link href="/faqs" style={{ color: "var(--text-hi)", fontSize: ".88rem", fontWeight: 600 }}>FAQs</Link>
         </nav>
       </header>
       <main style={{ maxWidth: 960, margin: "0 auto", padding: "28px 22px 80px" }}>
