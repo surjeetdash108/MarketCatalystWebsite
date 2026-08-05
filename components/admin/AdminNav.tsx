@@ -30,7 +30,7 @@ const ITEMS: NavItem[] = [
   { href: "/admin/posts", label: "Posts", icon: posts },
   { href: "/admin/media", label: "Media", icon: media },
   { href: "/admin/users", label: "Editors", icon: editors, adminOnly: true },
-  { href: "/admin/contact-submissions", label: "Contact submissions", icon: contact },
+  { href: "/admin/contact-submissions", label: "Inquiries", icon: contact },
 ];
 
 export function AdminNav({ role }: { role: string }) {
