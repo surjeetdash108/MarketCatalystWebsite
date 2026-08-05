@@ -198,3 +198,32 @@
   font-size: .72rem; text-transform: uppercase; letter-spacing: .06em; color: var(--text-dim-solid);
 }
 .iq-root .article-rule { height: 1px; background: var(--border); border: 0; margin: 22px 0 26px; }
+
+/* ── FAQ accordion (public /faqs) — native <details>, question = header ───── */
+.iq-root .faq-list { display: flex; flex-direction: column; gap: 10px; }
+.iq-root .faq-item {
+  background: var(--surface-1);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  overflow: hidden;
+  transition: border-color .16s ease;
+}
+.iq-root .faq-item[open] { border-color: color-mix(in srgb, var(--brand) 45%, var(--border)); }
+.iq-root .faq-q {
+  list-style: none;
+  cursor: pointer;
+  display: flex; align-items: center; justify-content: space-between; gap: 14px;
+  padding: 15px 18px;
+  font-size: 0.98rem; font-weight: 600; color: var(--text-hi);
+  user-select: none;
+}
+.iq-root .faq-q::-webkit-details-marker { display: none; }
+.iq-root .faq-q:hover { color: var(--brand-2); }
+.iq-root .faq-chevron { flex-shrink: 0; color: var(--text-dim-solid); transition: transform .2s ease; }
+.iq-root .faq-item[open] .faq-chevron { transform: rotate(180deg); color: var(--brand-2); }
+.iq-root .faq-a {
+  padding: 0 18px 17px;
+  color: var(--text-dim-solid);
+  font-size: 0.9rem; line-height: 1.65;
+  white-space: pre-wrap;
+}

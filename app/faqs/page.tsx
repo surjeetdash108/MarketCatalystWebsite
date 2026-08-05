@@ -1,5 +1,4 @@
 import type { Metadata } from "next";
-import Link from "next/link";
 import { getPublicFaqs } from "@/lib/faq/faqs";
 
 // Rendered per-request (App Hosting, not a static export) so the build never
@@ -17,35 +16,32 @@ export default async function FaqsIndexPage() {
 
   return (
     <div className="flex flex-col gap-4">
-      <h1 className="a-h1">FAQs</h1>
-
-      <div className="a-panel" style={{ padding: "6px 14px" }}>
-        <table className="tbl">
-          <thead>
-            <tr>
-              <th>Question</th>
-            </tr>
-          </thead>
-          <tbody>
-            {faqs.map((faq) => (
-              <tr key={faq.id}>
-                <td>
-                  <Link href={`/faqs/view?id=${faq.id}`} style={{ color: "var(--text-hi)", fontWeight: 600 }}>
-                    {faq.question}
-                  </Link>
-                </td>
-              </tr>
-            ))}
-            {faqs.length === 0 && (
-              <tr>
-                <td className="a-muted" style={{ textAlign: "center", padding: "24px 0" }}>
-                  No FAQs yet.
-                </td>
-              </tr>
-            )}
-          </tbody>
-        </table>
+      <div>
+        <h1 className="a-h1">Frequently asked questions</h1>
+        <p className="a-muted" style={{ marginTop: 6 }}>
+          Everything about the MarketCatalyst terminal, its data, and its tools. Tap a question to expand.
+        </p>
       </div>
+
+      {faqs.length === 0 ? (
+        <div className="a-panel a-muted" style={{ padding: 32, textAlign: "center" }}>
+          No FAQs yet.
+        </div>
+      ) : (
+        <div className="faq-list">
+          {faqs.map((faq) => (
+            <details key={faq.id} className="faq-item">
+              <summary className="faq-q">
+                <span>{faq.question}</span>
+                <svg className="faq-chevron" viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+                  <path d="M6 9l6 6 6-6" />
+                </svg>
+              </summary>
+              <div className="faq-a">{faq.answer}</div>
+            </details>
+          ))}
+        </div>
+      )}
     </div>
   );
 }
