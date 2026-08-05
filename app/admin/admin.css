@@ -101,3 +101,33 @@
   background: var(--brand);
   color: #fff;
 }
+
+/* Rendered post/markdown body. The `.iq-root *` reset zeroes every margin, so
+   re-establish readable block spacing for post content (used by the admin
+   post preview and the public /posts/view page). */
+.iq-root .post-content { color: var(--text); font-size: 0.95rem; line-height: 1.7; }
+.iq-root .post-content h1,
+.iq-root .post-content h2,
+.iq-root .post-content h3,
+.iq-root .post-content h4 { color: var(--text-hi); font-weight: 700; line-height: 1.3; }
+.iq-root .post-content h2 { font-size: 1.35rem; margin: 24px 0 8px; }
+.iq-root .post-content h3 { font-size: 1.12rem; margin: 20px 0 6px; }
+.iq-root .post-content h4 { font-size: 1rem; margin: 16px 0 6px; }
+.iq-root .post-content p { margin: 0 0 15px; }
+.iq-root .post-content ul,
+.iq-root .post-content ol { margin: 0 0 15px; padding-left: 24px; }
+.iq-root .post-content li { margin: 5px 0; }
+.iq-root .post-content li::marker { color: var(--text-dim-solid); }
+.iq-root .post-content a { color: var(--brand-2); text-decoration: underline; }
+.iq-root .post-content strong { color: var(--text-hi); font-weight: 700; }
+.iq-root .post-content img { max-width: 100%; height: auto; border-radius: 8px; margin: 12px 0; }
+.iq-root .post-content blockquote {
+  border-left: 3px solid var(--border-strong);
+  padding: 2px 0 2px 14px; margin: 0 0 15px; color: var(--text-dim-solid);
+}
+.iq-root .post-content pre {
+  background: var(--surface-0); border: 1px solid var(--border);
+  border-radius: 8px; padding: 12px 14px; overflow-x: auto; margin: 0 0 15px;
+}
+.iq-root .post-content code { font-family: var(--f-mono, ui-monospace, monospace); font-size: 0.86em; }
+.iq-root .post-content hr { border: none; border-top: 1px solid var(--border); margin: 22px 0; }

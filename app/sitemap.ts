@@ -7,7 +7,14 @@ function siteUrl(): string {
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const base = siteUrl();
-  const posts = await getPublishedPosts();
+  // A transient Firestore error (or a composite index that is still building)
+  // must not fail the whole build/deploy — fall back to the static routes.
+  let posts: Awaited<ReturnType<typeof getPublishedPosts>> = [];
+  try {
+    posts = await getPublishedPosts();
+  } catch (err) {
+    console.error("sitemap: failed to load posts, emitting static routes only", err);
+  }
 
   const staticRoutes: MetadataRoute.Sitemap = [
     { url: base, changeFrequency: "monthly", priority: 1 },

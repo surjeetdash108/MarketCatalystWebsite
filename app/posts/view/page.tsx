@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import Link from "next/link";
 import Image from "next/image";
 import { notFound, redirect } from "next/navigation";
 import { getPublishedPostBySlug } from "@/lib/blog/posts";
@@ -57,25 +58,32 @@ export default async function PostViewPage({
   const jsonLd = buildArticleJsonLd(post);
 
   return (
-    <main className="mx-auto max-w-3xl px-6 py-16">
+    <div className="flex flex-col gap-4">
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
       />
-      {post.coverImageUrl && (
-        <div className="relative mb-8 aspect-video w-full overflow-hidden rounded bg-neutral-100">
-          <Image src={post.coverImageUrl} alt="" fill priority className="object-cover" />
-        </div>
-      )}
-      <h1 className="mb-2 text-3xl font-semibold">{post.title}</h1>
-      {post.publishedAt && (
-        <time dateTime={post.publishedAt} className="text-sm text-neutral-400">
-          {new Date(post.publishedAt).toLocaleDateString()}
-        </time>
-      )}
-      <div className="mt-8">
-        <PostBody markdown={post.content} />
+
+      <div>
+        <Link href="/posts" className="btn sm">← All blogs</Link>
       </div>
-    </main>
+
+      <article className="a-panel" style={{ padding: 24 }}>
+        {post.coverImageUrl && (
+          <div className="relative mb-5 aspect-video w-full overflow-hidden rounded" style={{ background: "var(--surface-0)" }}>
+            <Image src={post.coverImageUrl} alt="" fill priority className="object-cover" />
+          </div>
+        )}
+        <h1 className="a-h1" style={{ fontSize: "1.7rem", lineHeight: 1.25 }}>{post.title}</h1>
+        {post.publishedAt && (
+          <time dateTime={post.publishedAt} className="a-muted" style={{ display: "block", marginTop: 6 }}>
+            {new Date(post.publishedAt).toLocaleDateString(undefined, { year: "numeric", month: "long", day: "numeric" })}
+          </time>
+        )}
+        <div style={{ marginTop: 20 }}>
+          <PostBody markdown={post.content} />
+        </div>
+      </article>
+    </div>
   );
 }
