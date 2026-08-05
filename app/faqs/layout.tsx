@@ -7,9 +7,6 @@ import "../admin/admin.css";
 
 export default function FaqsLayout({ children }: { children: React.ReactNode }) {
   return (
-    {/* height:auto + overflow:visible override iq.css's `.iq-root { height:100vh;
-        overflow:hidden }` (a fixed dashboard shell) so this content page scrolls
-        on the body — the sticky header still sticks to the viewport top. */}
     <div className="iq-root" data-theme="dark" style={{ minHeight: "100vh", height: "auto", overflow: "visible", background: "var(--bg)", color: "var(--text)" }}>
       <header
         style={{
