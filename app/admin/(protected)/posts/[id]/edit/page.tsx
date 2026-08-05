@@ -1,16 +1,12 @@
-import { notFound } from "next/navigation";
-import { getPostById } from "@/lib/blog/posts";
-import { PostEditor } from "@/components/admin/PostEditor";
+import { redirect } from "next/navigation";
 
-export default async function EditPostPage({ params }: { params: Promise<{ id: string }> }) {
+// The edit page moved to /admin/edit?id=<id>. Redirect the old nested route so
+// any bookmarked links keep working.
+export default async function LegacyEditRedirect({
+  params,
+}: {
+  params: Promise<{ id: string }>;
+}) {
   const { id } = await params;
-  const post = await getPostById(id);
-  if (!post) notFound();
-
-  return (
-    <div className="flex flex-col gap-4">
-      <h1 className="a-h1">Edit post</h1>
-      <PostEditor post={post} />
-    </div>
-  );
+  redirect(`/admin/edit?id=${id}`);
 }

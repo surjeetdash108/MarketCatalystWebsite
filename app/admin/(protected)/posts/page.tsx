@@ -28,7 +28,7 @@ export default async function AdminPostsPage() {
             {posts.map((post) => (
               <tr key={post.id}>
                 <td>
-                  <Link href={`/admin/posts/${post.id}/edit`} style={{ color: "var(--text-hi)", fontWeight: 600 }}>
+                  <Link href={`/admin/posts/view?id=${post.id}`} style={{ color: "var(--text-hi)", fontWeight: 600 }}>
                     {post.title}
                   </Link>
                 </td>
@@ -36,7 +36,9 @@ export default async function AdminPostsPage() {
                   <span className={`pill ${post.status === "published" ? "up" : "flat"}`}>{post.status}</span>
                 </td>
                 <td className="a-muted">{new Date(post.updatedAt).toLocaleString()}</td>
-                <td style={{ textAlign: "right" }}>
+                <td style={{ textAlign: "right", whiteSpace: "nowrap" }}>
+                  <Link href={`/admin/posts/view?id=${post.id}`} className="btn sm" style={{ marginRight: 6 }}>View</Link>
+                  <Link href={`/admin/edit?id=${post.id}`} className="btn sm" style={{ marginRight: 6 }}>Edit</Link>
                   <DeletePostButton id={post.id} />
                 </td>
               </tr>

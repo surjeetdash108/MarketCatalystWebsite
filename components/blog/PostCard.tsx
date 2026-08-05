@@ -4,7 +4,7 @@ import type { Post } from "@/lib/blog/posts";
 
 export function PostCard({ post }: { post: Post }) {
   return (
-    <Link href={`/blog/${post.slug}`} className="flex flex-col gap-2 overflow-hidden rounded border border-neutral-200 hover:border-neutral-400">
+    <Link href={`/posts/view?slug=${post.slug}`} className="flex flex-col gap-2 overflow-hidden rounded border border-neutral-200 hover:border-neutral-400">
       {post.coverImageUrl && (
         <div className="relative aspect-video w-full bg-neutral-100">
           <Image src={post.coverImageUrl} alt="" fill className="object-cover" />

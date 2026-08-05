@@ -11,12 +11,12 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
 
   const staticRoutes: MetadataRoute.Sitemap = [
     { url: base, changeFrequency: "monthly", priority: 1 },
-    { url: `${base}/blog`, changeFrequency: "daily", priority: 0.8 },
+    { url: `${base}/posts`, changeFrequency: "daily", priority: 0.8 },
     { url: `${base}/contact`, changeFrequency: "yearly", priority: 0.3 },
   ];
 
   const postRoutes: MetadataRoute.Sitemap = posts.map((post) => ({
-    url: `${base}/blog/${post.slug}`,
+    url: `${base}/posts/view?slug=${post.slug}`,
     lastModified: post.updatedAt,
     changeFrequency: "weekly",
     priority: 0.6,

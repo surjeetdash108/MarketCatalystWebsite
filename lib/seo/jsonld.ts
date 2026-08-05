@@ -5,7 +5,7 @@ function siteUrl(): string {
 }
 
 export function buildArticleJsonLd(post: Post) {
-  const url = post.seo.canonicalUrl || `${siteUrl()}/blog/${post.slug}`;
+  const url = post.seo.canonicalUrl || `${siteUrl()}/posts/view?slug=${post.slug}`;
   const image = post.seo.ogImageUrl || post.coverImageUrl || undefined;
 
   return {

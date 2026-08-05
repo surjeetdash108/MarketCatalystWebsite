@@ -104,7 +104,7 @@ export async function setPostStatusAction(id: string, status: "draft" | "publish
   await setPostStatus(parsed.data.id, parsed.data.status, user.uid);
   revalidatePath("/admin/posts");
   revalidatePath(`/admin/posts/${id}/edit`);
-  revalidatePath("/blog");
+  revalidatePath("/posts");
 }
 
 export async function deletePostAction(id: string): Promise<void> {
@@ -114,5 +114,5 @@ export async function deletePostAction(id: string): Promise<void> {
 
   await deletePost(parsed.data.id);
   revalidatePath("/admin/posts");
-  revalidatePath("/blog");
+  revalidatePath("/posts");
 }
