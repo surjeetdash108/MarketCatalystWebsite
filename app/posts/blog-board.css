@@ -1,0 +1,97 @@
+/* Public blog board for /posts — the approved "MarketCatalyst blog" layout.
+ * Every rule is scoped under .mcb so these generic class names (.board, .item,
+ * .panel, .lead …) never leak into the rest of the site. Colors + type match
+ * the reference preview 1:1; the only swap is Figtree loaded via next/font
+ * (self-hosted) instead of a Google Fonts <link>, which the site CSP blocks. */
+
+.mcb{
+  /* Warm ground, not blue-black. Dark is the default; the toggle adds light. */
+  --ink:#14110e; --surface:#1d1815; --surface2:#181310; --line:#2c2520; --line2:#3e332b;
+  --text:#ede5da; --paper:#fdf8f1; --dim:#a3958a; --dim2:#6f645b;
+  --lead:#e0764f; --stock:#6fb58c; --edu:#e3b255; --news:#c58bae;
+  --wash:15%; --edge:rgba(255,244,230,.05); --lift:0 20px 44px -34px rgba(0,0,0,.9);
+  --disp:var(--font-figtree),system-ui,sans-serif;
+  --body:var(--font-figtree),system-ui,sans-serif;
+  --mono:var(--font-jetbrains-mono),ui-monospace,monospace;
+
+  background:var(--ink);
+  background-image:radial-gradient(120% 70% at 50% -10%,color-mix(in srgb,var(--edu) 6%,transparent),transparent 62%);
+  color:var(--text);
+  font-family:var(--body);
+  -webkit-font-smoothing:antialiased;text-rendering:optimizeLegibility;
+  padding:26px clamp(16px,3vw,40px) 50px;
+  transition:background .25s ease,color .25s ease;
+}
+.mcb[data-theme="light"]{
+  --ink:#f4f0e8; --surface:#fffdf9; --surface2:#ece7dd; --line:#ded6c8; --line2:#c3b9a7;
+  --text:#1e1813; --paper:#0d0a07; --dim:#6a5f55; --dim2:#948877;
+  --lead:#b24a28; --stock:#2f7355; --edu:#96700f; --news:#7e4c69;
+  --wash:11%; --edge:rgba(255,255,255,.9); --lift:0 16px 34px -30px rgba(60,45,30,.45);
+}
+.mcb *{box-sizing:border-box}
+
+.mcb .mast{max-width:1680px;margin:0 auto 30px}
+.mcb .mastTop{display:flex;align-items:flex-start;gap:16px}
+.mcb .eyebrow{font-family:var(--disp);font-weight:600;font-size:12px;letter-spacing:.14em;text-transform:uppercase;color:var(--dim2);margin-bottom:16px}
+.mcb h1.blogh1{font-family:var(--disp);font-weight:700;font-size:clamp(28px,3.6vw,44px);line-height:1;letter-spacing:-.02em;color:var(--paper);margin:0}
+.mcb h1.blogh1 .mk{color:var(--dim2)}
+.mcb .themeBtn{margin-left:auto;flex:none;display:inline-flex;align-items:center;gap:8px;cursor:pointer;
+  font-family:var(--disp);font-weight:600;font-size:12.5px;letter-spacing:0;color:var(--dim);
+  background:var(--surface);border:1px solid var(--line);border-radius:30px;padding:9px 15px;transition:.16s}
+.mcb .themeBtn:hover{color:var(--text);border-color:var(--line2);background:var(--surface2)}
+.mcb .themeBtn .bulb{width:7px;height:7px;border-radius:50%;background:var(--edu);box-shadow:0 0 0 3px color-mix(in srgb,var(--edu) 18%,transparent)}
+.mcb .sub{color:var(--dim);font-size:16.5px;line-height:1.55;letter-spacing:-.005em;max-width:64ch;margin:14px 0 0}
+.mcb .sub b{color:var(--text);font-weight:600}
+
+.mcb .board{display:grid;grid-template-columns:1fr 1.5fr 1fr;grid-template-areas:"l c r" "b b b";gap:18px;align-items:start;max-width:1680px;margin:0 auto}
+.mcb .l{grid-area:l}.mcb .c{grid-area:c}.mcb .r{grid-area:r}.mcb .b{grid-area:b}
+@media(max-width:700px){
+  .mcb .board{grid-template-columns:1fr;grid-template-areas:"c" "l" "r" "b"}
+}
+
+.mcb .panel{border:1px solid var(--line);border-radius:14px;overflow:hidden;position:relative;
+  background:var(--surface);box-shadow:inset 0 1px 0 var(--edge),var(--lift)}
+.mcb .panel::before{content:"";position:absolute;top:0;left:17px;width:34px;height:2px;background:var(--a);border-radius:0 0 2px 2px}
+.mcb .ph{display:flex;align-items:center;gap:10px;padding:16px 17px 13px;border-bottom:1px solid var(--line)}
+.mcb .ph i{width:9px;height:9px;border-radius:3px;background:var(--a);flex:none}
+.mcb .ph h2{margin:0;font-family:var(--disp);font-weight:700;font-size:16.5px;letter-spacing:-.018em;color:var(--text)}
+.mcb .ph .n{margin-left:auto;font-family:var(--disp);font-weight:600;font-size:12px;letter-spacing:-.005em;color:var(--dim2);border:1px solid var(--line);background:var(--surface2);border-radius:7px;padding:3px 9px}
+.mcb .tray{padding:18px 20px;max-height:470px;overflow-y:auto;overflow-x:hidden}
+
+.mcb .item{display:block;text-decoration:none;border-bottom:1px solid var(--line);padding-bottom:17px;margin-bottom:17px;cursor:pointer;
+  margin-left:-12px;margin-right:-12px;padding-left:12px;padding-right:12px;border-radius:9px;
+  transition:background .18s ease,box-shadow .18s ease}
+.mcb .item:hover{background:color-mix(in srgb,var(--a) var(--wash),transparent);
+  box-shadow:inset 2px 0 0 var(--a)}
+.mcb .item:hover h3{color:var(--a)}
+.mcb .item:hover .by{color:var(--dim)}
+.mcb .item:last-child{border-bottom:0;margin-bottom:0;padding-bottom:6px}
+.mcb .item h3{font-family:var(--disp);font-weight:600;font-size:17px;line-height:1.24;letter-spacing:-.02em;color:var(--paper);margin:0 0 6px}
+.mcb .item p{margin:0 0 9px;color:var(--dim);font-size:14.5px;line-height:1.5}
+.mcb .by{font-family:var(--disp);font-weight:500;font-size:12.5px;color:var(--dim2);letter-spacing:.002em}
+
+.mcb .lead{display:block;text-decoration:none;padding:24px;cursor:pointer;transition:background .18s ease}
+.mcb .lead:hover{background:color-mix(in srgb,var(--lead) var(--wash),transparent)}
+.mcb .lead:hover h3{color:var(--lead)}
+.mcb .lead .rule{height:2px;width:44px;background:var(--lead);border-radius:2px;margin-bottom:14px}
+.mcb .lead h3{font-family:var(--disp);font-weight:700;font-size:clamp(24px,2.4vw,34px);line-height:1.02;letter-spacing:-.028em;color:var(--paper);margin:0 0 12px}
+.mcb .lead p{font-size:16.5px;color:var(--text);opacity:.75;margin:0 0 14px;line-height:1.5;letter-spacing:-.005em}
+.mcb .rest{padding:0 22px 14px}
+.mcb .rest .item:first-child{border-top:1px solid var(--line);padding-top:15px}
+
+.mcb .marquee{position:relative;overflow:hidden;padding:22px 18px}
+.mcb .track{display:flex;gap:17px;width:max-content;animation:mcb-run 46s linear infinite}
+.mcb .marquee:hover .track,.mcb .marquee:focus-within .track{animation-play-state:paused}
+@keyframes mcb-run{from{transform:translateX(0)}to{transform:translateX(calc(-50% - 7px))}}
+.mcb .ncard{flex:none;width:400px;min-height:190px;display:flex;flex-direction:column;text-decoration:none;background:var(--surface2);border:1px solid var(--line);border-radius:13px;padding:22px;cursor:pointer;transition:transform .2s cubic-bezier(.2,.7,.2,1),border-color .16s,background .16s}
+.mcb .ncard:hover{border-color:color-mix(in srgb,var(--news) 45%,var(--line));
+  background:color-mix(in srgb,var(--news) var(--wash),var(--surface2));transform:translateY(-2px)}
+.mcb .ncard:hover h3{color:var(--news)}
+@media(prefers-reduced-motion:reduce){
+  .mcb .track{animation:none;width:auto;overflow-x:auto;padding-bottom:6px}
+}
+.mcb .ncard h3{font-family:var(--disp);font-weight:600;font-size:16px;line-height:1.24;letter-spacing:-.02em;color:var(--paper);margin:0 0 7px}
+.mcb .ncard p{margin:0 0 11px;color:var(--dim);font-size:15px;line-height:1.5;flex:1}
+.mcb .ncard .by{margin-top:auto}
+
+.mcb .zempty{color:var(--dim2);font-size:14px;padding:6px 2px 2px;font-family:var(--disp)}

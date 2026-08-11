@@ -29,7 +29,9 @@ export default function PostsLayout({ children }: { children: React.ReactNode })
           <Link href="/faqs" className="hw-ghost">FAQs</Link>
         </nav>
       </header>
-      <main style={{ width: "100%", padding: "28px clamp(18px, 5vw, 72px) 80px" }}>
+      {/* No padding here: the /posts board is full-bleed (owns its own padding);
+          content pages like /posts/view add their own via .posts-page-pad. */}
+      <main style={{ width: "100%" }}>
         {children}
       </main>
     </div>

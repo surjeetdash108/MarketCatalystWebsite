@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { getPublishedPosts } from "@/lib/blog/posts";
-import { PostList } from "@/components/blog/PostList";
+import { BlogBoard } from "@/components/blog/BlogBoard";
+import "./blog-board.css";
 
 // Rendered per-request (this runs on App Hosting, not a static export) so the
 // build never depends on Firestore / a composite index being ready. The list
@@ -15,11 +16,5 @@ export const metadata: Metadata = {
 
 export default async function PostsIndexPage() {
   const posts = await getPublishedPosts();
-
-  return (
-    <div className="flex flex-col gap-5">
-      <h1 className="a-h1">Blogs</h1>
-      <PostList posts={posts} />
-    </div>
-  );
+  return <BlogBoard posts={posts} />;
 }
