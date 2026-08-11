@@ -64,12 +64,19 @@ function mapPost(id: string, data: FirebaseFirestore.DocumentData): Post {
 
 /** Public site only ever calls this — never fetches unfiltered posts. */
 export async function getPublishedPosts(): Promise<Post[]> {
+  // NOTE: do NOT add `.orderBy("publishedAt")` here. Firestore's orderBy
+  // silently EXCLUDES any document missing that field, so a published post
+  // whose publishedAt was never set would vanish from the public list. We
+  // fetch every published post and sort in memory (the list is small), so a
+  // post is visible the moment its status is "published", with or without a
+  // publishedAt timestamp. Sort key falls back to createdAt.
   const snap = await adminFirestore
     .collection(POSTS)
     .where("status", "==", "published")
-    .orderBy("publishedAt", "desc")
     .get();
-  return snap.docs.map((doc) => mapPost(doc.id, doc.data()));
+  const posts = snap.docs.map((doc) => mapPost(doc.id, doc.data()));
+  posts.sort((a, b) => (b.publishedAt ?? b.createdAt).localeCompare(a.publishedAt ?? a.createdAt));
+  return posts;
 }
 
 export async function getPublishedPostBySlug(slug: string): Promise<Post | null> {
