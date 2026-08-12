@@ -10,7 +10,28 @@ export default function PostsLayout({ children }: { children: React.ReactNode })
   // (height:100vh; overflow:hidden) so this content page scrolls on the body;
   // the sticky header still sticks to the viewport top.
   return (
-    <div className="iq-root" data-theme="dark" style={{ minHeight: "100vh", height: "auto", overflow: "visible", background: "var(--bg)", color: "var(--text)" }}>
+    <div
+      className="iq-root"
+      data-theme="light"
+      style={{
+        minHeight: "100vh", height: "auto", overflow: "visible",
+        background: "var(--bg)", color: "var(--text)", colorScheme: "light",
+        // Warm off-white palette from the blog board (blog-board.css light
+        // theme) — overrides iq.css's cool/pure-white light tokens so the whole
+        // blog experience (board + article view) uses the blog's off-white,
+        // never pure white. Inline vars win over the stylesheet.
+        ["--bg" as string]: "#f4f0e8",
+        ["--surface-0" as string]: "#ece7dd",
+        ["--surface-1" as string]: "#fffdf9",
+        ["--surface-2" as string]: "#f3eee6",
+        ["--border" as string]: "#ded6c8",
+        ["--border-soft" as string]: "#e6e0d5",
+        ["--border-strong" as string]: "#c9bfae",
+        ["--text-hi" as string]: "#1e1813",
+        ["--text" as string]: "#3a3129",
+        ["--text-dim-solid" as string]: "#6a5f55",
+      } as React.CSSProperties}
+    >
       <header
         style={{
           display: "flex", alignItems: "center", gap: 16,

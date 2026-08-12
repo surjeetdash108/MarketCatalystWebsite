@@ -126,7 +126,7 @@ function MarqueePanel({ posts }: { posts: Post[] }) {
 }
 
 export function BlogBoard({ posts }: { posts: Post[] }) {
-  const [theme, setTheme] = useState<"dark" | "light">("dark");
+  const [theme, setTheme] = useState<"dark" | "light">("light");
 
   const zones: Record<ZoneKey, Post[]> = { lead: [], stock: [], edu: [], news: [] };
   for (const p of posts) zones[zoneOf(p)].push(p);
