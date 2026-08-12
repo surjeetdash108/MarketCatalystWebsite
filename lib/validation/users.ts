@@ -9,8 +9,6 @@ export const inviteEditorSchema = z.object({
   displayName: z.string().trim().max(200).optional().or(z.literal("")),
 });
 
-export type InviteEditorInput = z.infer<typeof inviteEditorSchema>;
-
 export const userIdSchema = z.object({
   uid: z.string().trim().min(1),
 });
