@@ -8,7 +8,8 @@
     "start": "next start",
     "lint": "eslint",
     "seed:admin": "tsx scripts/seed-admin.ts",
-    "seed:faqs": "tsx scripts/seed-faqs.ts"
+    "seed:faqs": "tsx scripts/seed-faqs.ts",
+    "seed:blogs": "tsx scripts/seed-blogs.ts"
   },
   "dependencies": {
     "@sentry/nextjs": "^10.68.0",
