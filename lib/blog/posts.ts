@@ -6,6 +6,13 @@ import type { CreatePostInput, UpdatePostInput } from "@/lib/validation/blog";
 
 export type PostStatus = "draft" | "published";
 
+/**
+ * The blog "type" is now the source of truth for which public zone a post
+ * lands in (see components/blog/BlogBoard.tsx). `categories` is still stored
+ * for backward-compat and for legacy docs that predate this field.
+ */
+export type BlogType = "stock" | "featured" | "educational" | "market";
+
 export type PostSeo = {
   metaTitle: string | null;
   metaDescription: string | null;
@@ -20,6 +27,7 @@ export type Post = {
   excerpt: string;
   content: string;
   status: PostStatus;
+  type: BlogType;
   authorId: string;
   editorId: string | null;
   categories: string[];
@@ -31,10 +39,24 @@ export type Post = {
   updatedAt: string;
 };
 
-const POSTS = "posts";
+const POSTS = "blogs";
 
 function toIso(value: Timestamp | undefined | null): string | null {
   return value ? value.toDate().toISOString() : null;
+}
+
+/**
+ * Legacy fallback: posts written before the explicit `type` field only have
+ * free-text `categories`. Derive a type from them so old docs still land in a
+ * sensible zone. Anything unrecognized defaults to "featured".
+ */
+function deriveTypeFromCategories(categories: unknown): BlogType {
+  const cats = Array.isArray(categories) ? categories.map((c) => String(c).toLowerCase()) : [];
+  const has = (kw: string) => cats.some((c) => c.includes(kw));
+  if (has("stock")) return "stock";
+  if (has("educ")) return "educational";
+  if (has("market") || has("news")) return "market";
+  return "featured";
 }
 
 function mapPost(id: string, data: FirebaseFirestore.DocumentData): Post {
@@ -45,6 +67,7 @@ function mapPost(id: string, data: FirebaseFirestore.DocumentData): Post {
     excerpt: data.excerpt ?? "",
     content: data.content ?? "",
     status: data.status,
+    type: (data.type as BlogType) ?? deriveTypeFromCategories(data.categories),
     authorId: data.authorId,
     editorId: data.editorId ?? null,
     categories: data.categories ?? [],
@@ -113,6 +136,7 @@ export async function createPost(input: CreatePostInput, authorId: string): Prom
     excerpt: input.excerpt ?? "",
     content: input.content,
     status: "draft",
+    type: input.type,
     authorId,
     editorId: authorId,
     categories: input.categories ?? [],
@@ -148,6 +172,7 @@ export async function updatePost(input: UpdatePostInput, editorId: string): Prom
     ...(input.slug !== undefined ? { slug: input.slug } : {}),
     ...(input.excerpt !== undefined ? { excerpt: input.excerpt } : {}),
     ...(input.content !== undefined ? { content: input.content } : {}),
+    ...(input.type !== undefined ? { type: input.type } : {}),
     ...(input.categories !== undefined ? { categories: input.categories } : {}),
     ...(input.tags !== undefined ? { tags: input.tags } : {}),
     ...(input.coverImageUrl !== undefined ? { coverImageUrl: input.coverImageUrl || null } : {}),

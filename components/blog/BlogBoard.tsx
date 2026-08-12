@@ -19,15 +19,19 @@ const ZONE_META: Record<ZoneKey, { title: string; accent: string }> = {
   news: { title: "Market 101", accent: "var(--news)" },
 };
 
-/** Map a post to a zone by its categories. Untagged posts default to Featured. */
+/** Map a post to a zone by its explicit `type` field (the source of truth). */
 function zoneOf(post: Post): ZoneKey {
-  const cats = (post.categories ?? []).map((c) => c.toLowerCase());
-  const has = (kw: string) => cats.some((c) => c.includes(kw));
-  if (has("stock")) return "stock";
-  if (has("educ")) return "edu";
-  if (has("market") || has("news")) return "news";
-  if (has("feature")) return "lead";
-  return "lead";
+  switch (post.type) {
+    case "stock":
+      return "stock";
+    case "educational":
+      return "edu";
+    case "market":
+      return "news";
+    case "featured":
+    default:
+      return "lead";
+  }
 }
 
 function readMinutes(content: string): number {

@@ -19,6 +19,7 @@ export const createPostSchema = z.object({
     .regex(slugPattern, "Slug must be lowercase, alphanumeric, hyphen-separated"),
   excerpt: z.string().trim().max(400).optional().or(z.literal("")),
   content: z.string().max(200_000),
+  type: z.enum(["stock", "featured", "educational", "market"]).default("featured"),
   categories: z.array(z.string().trim().max(60)).max(20).default([]),
   tags: z.array(z.string().trim().max(60)).max(30).default([]),
   coverImageUrl: z.string().trim().url().optional().or(z.literal("")),

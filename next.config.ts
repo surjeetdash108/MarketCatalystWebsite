@@ -11,7 +11,11 @@ const nextConfig: NextConfig = {
   // bundled for the server by Turbopack/webpack (`ERR_REQUIRE_ESM`). Keeping
   // it as a real external `require()` at runtime — rather than bundled —
   // avoids that; this only affects server-side bundling, never the client.
-  serverExternalPackages: ["firebase-admin"],
+  // mammoth (.docx) and pdf-parse (.pdf, via pdfjs-dist) are heavy Node-only
+  // parsers used by the blog document-import server action. Keep them as real
+  // runtime `require()`s rather than bundling them for the server — pdfjs-dist
+  // in particular pulls in worker/canvas code that breaks when bundled.
+  serverExternalPackages: ["firebase-admin", "mammoth", "pdf-parse"],
 
   // Blog hero/cover images and media-library uploads are served from Cloud
   // Storage (made public per-object via file.makePublic() at upload time —

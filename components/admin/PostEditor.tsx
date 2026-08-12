@@ -1,11 +1,24 @@
 "use client";
 
-import { useActionState, useState, useTransition } from "react";
+import { useActionState, useRef, useState, useTransition } from "react";
 import { TiptapEditor } from "./TiptapEditor";
 import { MediaPicker } from "./MediaPicker";
-import { createPostAction, updatePostAction, setPostStatusAction, type ActionState } from "@/app/admin/(protected)/posts/actions";
+import {
+  createPostAction,
+  updatePostAction,
+  setPostStatusAction,
+  parseDocumentAction,
+  type ActionState,
+} from "@/app/admin/(protected)/posts/actions";
 import { slugify } from "@/lib/blog/slug-client";
-import type { Post } from "@/lib/blog/posts";
+import type { BlogType, Post } from "@/lib/blog/posts";
+
+const BLOG_TYPES: { value: BlogType; label: string }[] = [
+  { value: "stock", label: "Stock" },
+  { value: "featured", label: "Featured" },
+  { value: "educational", label: "Educational" },
+  { value: "market", label: "Market" },
+];
 
 export function PostEditor({ post }: { post?: Post }) {
   const isEdit = Boolean(post);
@@ -16,13 +29,46 @@ export function PostEditor({ post }: { post?: Post }) {
   const [slug, setSlug] = useState(post?.slug ?? "");
   const [slugTouched, setSlugTouched] = useState(isEdit);
   const [content, setContent] = useState(post?.content ?? "");
+  // Bumping this key remounts TiptapEditor so it re-reads `content` — needed
+  // when a document import replaces the content wholesale (the editor only
+  // consumes `initialContent` on mount).
+  const [editorKey, setEditorKey] = useState(0);
+  const [type, setType] = useState<BlogType>(post?.type ?? "featured");
   const [coverImageUrl, setCoverImageUrl] = useState(post?.coverImageUrl ?? "");
   const [status, setStatus] = useState(post?.status ?? "draft");
   const [isPending, startTransition] = useTransition();
+  const [docPending, setDocPending] = useState(false);
+  const [docError, setDocError] = useState<string | null>(null);
+  const docInputRef = useRef<HTMLInputElement>(null);
 
   function handleTitleChange(value: string) {
     setTitle(value);
     if (!slugTouched) setSlug(slugify(value));
+  }
+
+  async function handleDocumentUpload(file: File) {
+    setDocError(null);
+    setDocPending(true);
+    try {
+      const formData = new FormData();
+      formData.append("file", file);
+      const result = await parseDocumentAction(formData);
+      if ("error" in result) {
+        setDocError(result.error);
+        return;
+      }
+      setContent(result.content);
+      setEditorKey((k) => k + 1);
+      if (result.title && !title.trim()) {
+        setTitle(result.title);
+        if (!slugTouched) setSlug(slugify(result.title));
+      }
+    } catch {
+      setDocError("Could not upload the document. Please try again.");
+    } finally {
+      setDocPending(false);
+      if (docInputRef.current) docInputRef.current.value = "";
+    }
   }
 
   function handlePublishToggle() {
@@ -67,9 +113,47 @@ export function PostEditor({ post }: { post?: Post }) {
         <textarea name="excerpt" defaultValue={post?.excerpt} rows={2} className="a-textarea" />
       </label>
 
+      <div className="grid grid-cols-2 gap-4">
+        <label className="a-label">
+          Type
+          <select
+            name="type"
+            required
+            value={type}
+            onChange={(event) => setType(event.target.value as BlogType)}
+            className="a-input"
+          >
+            {BLOG_TYPES.map((option) => (
+              <option key={option.value} value={option.value}>
+                {option.label}
+              </option>
+            ))}
+          </select>
+        </label>
+        <label className="a-label">
+          Import document (.docx, .pdf)
+          <input
+            ref={docInputRef}
+            type="file"
+            accept=".docx,.pdf"
+            disabled={docPending}
+            onChange={(event) => {
+              const file = event.target.files?.[0];
+              if (file) void handleDocumentUpload(file);
+            }}
+            className="a-input"
+          />
+          <span style={{ fontSize: "0.75rem", color: "var(--text-lo)" }}>
+            {docPending ? "Parsing document…" : "Replaces the editor content below."}
+          </span>
+        </label>
+      </div>
+
+      {docError && <p className="a-danger">{docError}</p>}
+
       <div className="a-label">
         Content
-        <TiptapEditor initialContent={content} onChangeMarkdown={setContent} />
+        <TiptapEditor key={editorKey} initialContent={content} onChangeMarkdown={setContent} />
         <input type="hidden" name="content" value={content} />
       </div>
 
