@@ -10,7 +10,7 @@ export default async function AdminUsersPage() {
   // action re-checks requireAdmin(), but a curious editor navigating here
   // directly should still see a redirect, not a leaked table of accounts.
   if (!user || user.role !== "ADMIN") {
-    redirect("/admin/posts");
+    redirect("/admin/faqs");
   }
 
   const members = await listMembers();
