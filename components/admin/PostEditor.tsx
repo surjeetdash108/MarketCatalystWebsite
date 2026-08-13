@@ -113,6 +113,19 @@ export function PostEditor({ post }: { post?: Post }) {
         <textarea name="excerpt" defaultValue={post?.excerpt} rows={2} className="a-textarea" />
       </label>
 
+      <label className="a-label">
+        Rank <span style={{ color: "var(--text-dim-solid)", fontWeight: 400 }}>— order within its section (lower shows first; blank = last)</span>
+        <input
+          name="rank"
+          type="number"
+          min={1}
+          step={1}
+          defaultValue={post && post.rank !== 999 ? post.rank : ""}
+          placeholder="e.g. 1"
+          className="a-input"
+        />
+      </label>
+
       <div className="grid grid-cols-2 gap-4">
         <label className="a-label">
           Type

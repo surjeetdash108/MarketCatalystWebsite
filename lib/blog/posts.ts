@@ -28,6 +28,9 @@ export type Post = {
   content: string;
   status: PostStatus;
   type: BlogType;
+  /** Display order within its type/zone on the public board — lower shows first.
+   *  Unranked docs default to 999 so they sort after ranked ones. */
+  rank: number;
   authorId: string;
   editorId: string | null;
   categories: string[];
@@ -68,6 +71,7 @@ function mapPost(id: string, data: FirebaseFirestore.DocumentData): Post {
     content: data.content ?? "",
     status: data.status,
     type: (data.type as BlogType) ?? deriveTypeFromCategories(data.categories),
+    rank: typeof data.rank === "number" ? data.rank : 999,
     authorId: data.authorId,
     editorId: data.editorId ?? null,
     categories: data.categories ?? [],
@@ -137,6 +141,7 @@ export async function createPost(input: CreatePostInput, authorId: string): Prom
     content: input.content,
     status: "draft",
     type: input.type,
+    rank: input.rank ?? 999,
     authorId,
     editorId: authorId,
     categories: input.categories ?? [],
@@ -173,6 +178,7 @@ export async function updatePost(input: UpdatePostInput, editorId: string): Prom
     ...(input.excerpt !== undefined ? { excerpt: input.excerpt } : {}),
     ...(input.content !== undefined ? { content: input.content } : {}),
     ...(input.type !== undefined ? { type: input.type } : {}),
+    ...(input.rank !== undefined ? { rank: input.rank } : {}),
     ...(input.categories !== undefined ? { categories: input.categories } : {}),
     ...(input.tags !== undefined ? { tags: input.tags } : {}),
     ...(input.coverImageUrl !== undefined ? { coverImageUrl: input.coverImageUrl || null } : {}),

@@ -130,6 +130,10 @@ export function BlogBoard({ posts }: { posts: Post[] }) {
 
   const zones: Record<ZoneKey, Post[]> = { lead: [], stock: [], edu: [], news: [] };
   for (const p of posts) zones[zoneOf(p)].push(p);
+  // Order within each zone by rank (lower first), then newest.
+  (Object.keys(zones) as ZoneKey[]).forEach((z) =>
+    zones[z].sort((a, b) => (a.rank - b.rank) || (b.publishedAt ?? "").localeCompare(a.publishedAt ?? "")),
+  );
 
   return (
     <div className="mcb" data-theme={theme}>
