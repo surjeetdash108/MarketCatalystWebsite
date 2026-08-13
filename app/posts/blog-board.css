@@ -56,7 +56,7 @@
 .mcb .ph i{width:9px;height:9px;border-radius:3px;background:var(--a);flex:none}
 .mcb .ph h2{margin:0;font-family:var(--disp);font-weight:700;font-size:16.5px;letter-spacing:-.018em;color:var(--text)}
 .mcb .ph .n{margin-left:auto;font-family:var(--disp);font-weight:600;font-size:12px;letter-spacing:-.005em;color:var(--dim2);border:1px solid var(--line);background:var(--surface2);border-radius:7px;padding:3px 9px}
-.mcb .tray{padding:18px 20px;max-height:470px;overflow-y:auto;overflow-x:hidden}
+.mcb .tray{padding:18px 20px;max-height:430px;overflow-y:auto;overflow-x:hidden}
 
 .mcb .item{display:block;text-decoration:none;border-bottom:1px solid var(--line);padding-bottom:17px;margin-bottom:17px;cursor:pointer;
   margin-left:-12px;margin-right:-12px;padding-left:12px;padding-right:12px;border-radius:9px;
@@ -76,7 +76,7 @@
 .mcb .lead .rule{height:2px;width:44px;background:var(--lead);border-radius:2px;margin-bottom:14px}
 .mcb .lead h3{font-family:var(--disp);font-weight:700;font-size:clamp(24px,2.4vw,34px);line-height:1.02;letter-spacing:-.028em;color:var(--paper);margin:0 0 12px}
 .mcb .lead p{font-size:16.5px;color:var(--text);opacity:.75;margin:0 0 14px;line-height:1.5;letter-spacing:-.005em}
-.mcb .rest{padding:0 22px 14px}
+.mcb .rest{padding:0 22px 14px;max-height:300px;overflow-y:auto;overflow-x:hidden}
 .mcb .rest .item:first-child{border-top:1px solid var(--line);padding-top:15px}
 
 .mcb .marquee{position:relative;overflow:hidden;padding:22px 18px}
