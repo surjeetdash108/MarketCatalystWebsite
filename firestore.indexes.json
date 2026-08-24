@@ -4,8 +4,112 @@
       "collectionGroup": "posts",
       "queryScope": "COLLECTION",
       "fields": [
-        { "fieldPath": "status", "order": "ASCENDING" },
-        { "fieldPath": "publishedAt", "order": "DESCENDING" }
+        {
+          "fieldPath": "status",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "publishedAt",
+          "order": "DESCENDING"
+        }
+      ]
+    },
+    {
+      "collectionGroup": "ticker_weekly_ai_analysis",
+      "queryScope": "COLLECTION",
+      "fields": [
+        {
+          "fieldPath": "ticker",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "periodStart",
+          "order": "ASCENDING"
+        }
+      ]
+    },
+    {
+      "collectionGroup": "ticker_monthly_ai_analysis",
+      "queryScope": "COLLECTION",
+      "fields": [
+        {
+          "fieldPath": "ticker",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "periodStart",
+          "order": "ASCENDING"
+        }
+      ]
+    },
+    {
+      "collectionGroup": "news",
+      "queryScope": "COLLECTION",
+      "fields": [
+        {
+          "fieldPath": "ticker",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "publishedAt",
+          "order": "DESCENDING"
+        }
+      ]
+    },
+    {
+      "collectionGroup": "news",
+      "queryScope": "COLLECTION",
+      "fields": [
+        {
+          "fieldPath": "tag",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "publishedAt",
+          "order": "DESCENDING"
+        }
+      ]
+    },
+    {
+      "collectionGroup": "news",
+      "queryScope": "COLLECTION",
+      "fields": [
+        {
+          "fieldPath": "filler",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "publishedAt",
+          "order": "DESCENDING"
+        }
+      ]
+    },
+    {
+      "collectionGroup": "news",
+      "queryScope": "COLLECTION",
+      "fields": [
+        {
+          "fieldPath": "vendor",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "publishedAt",
+          "order": "DESCENDING"
+        }
+      ]
+    },
+    {
+      "collectionGroup": "ticker_ai_analysis",
+      "queryScope": "COLLECTION",
+      "fields": [
+        {
+          "fieldPath": "ticker",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "analysisGeneratedAt",
+          "order": "DESCENDING"
+        }
       ]
     }
   ],
