@@ -2,6 +2,7 @@
 
 import { useMemo, useState } from "react";
 import type { Post } from "@/lib/blog/posts";
+import { useBlogTheme } from "@/app/posts/theme-context";
 
 /**
  * Public blog for /posts — the "MarketCatalyst blog" knowledge base. A left
@@ -62,7 +63,9 @@ function Item({ post, accent }: { post: Post; accent: string }) {
 }
 
 export function BlogBoard({ posts }: { posts: Post[] }) {
-  const [theme, setTheme] = useState<"dark" | "light">("light");
+  // Theme is shared with the /posts layout (BlogThemeProvider) so this toggle
+  // themes the WHOLE page — header + background — not just the board.
+  const { theme, toggle } = useBlogTheme();
   const [active, setActive] = useState<ZoneKey>("edu");
   const [query, setQuery] = useState("");
 
@@ -94,7 +97,7 @@ export function BlogBoard({ posts }: { posts: Post[] }) {
             className="themeBtn"
             type="button"
             aria-pressed={theme === "light"}
-            onClick={() => setTheme((t) => (t === "light" ? "dark" : "light"))}
+            onClick={toggle}
           >
             <span className="bulb" style={{ background: theme === "light" ? "var(--recap)" : "var(--edu)" }} />
             <span>{theme === "light" ? "Dark" : "Light"}</span>

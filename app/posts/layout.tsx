@@ -1,35 +1,58 @@
+"use client";
+
 import Link from "next/link";
 import { BrandLogo } from "@/components/admin/BrandLogo";
+import { BlogThemeProvider, useBlogTheme } from "./theme-context";
 // Reuse the app's dark surface + the admin table/panel classes so the public
 // blog matches the /admin/posts look. admin.css is scoped under .iq-root, so
 // importing it here only affects this subtree.
 import "../admin/admin.css";
 
-export default function PostsLayout({ children }: { children: React.ReactNode }) {
-  // height:auto + overflow:visible override iq.css's fixed `.iq-root` shell
-  // (height:100vh; overflow:hidden) so this content page scrolls on the body;
-  // the sticky header still sticks to the viewport top.
+// Warm off-white LIGHT palette (blog-board.css light theme) — overrides
+// admin.css's cool/pure-white light tokens so the header + background match the
+// blog board's off-white.
+const LIGHT_VARS: React.CSSProperties = {
+  colorScheme: "light",
+  ["--bg" as string]: "#f4f0e8",
+  ["--surface-0" as string]: "#ece7dd",
+  ["--surface-1" as string]: "#fffdf9",
+  ["--surface-2" as string]: "#f3eee6",
+  ["--border" as string]: "#ded6c8",
+  ["--border-soft" as string]: "#e6e0d5",
+  ["--border-strong" as string]: "#c9bfae",
+  ["--text-hi" as string]: "#1e1813",
+  ["--text" as string]: "#3a3129",
+  ["--text-dim-solid" as string]: "#6a5f55",
+};
+
+// Warm DARK palette mirroring the blog board's dark theme (blog-board.css
+// `.mcb` defaults), mapped onto admin.css var names — so the whole page
+// (header + background below the board) matches the board when dark.
+const DARK_VARS: React.CSSProperties = {
+  colorScheme: "dark",
+  ["--bg" as string]: "#14110e",
+  ["--surface-0" as string]: "#181310",
+  ["--surface-1" as string]: "#1d1815",
+  ["--surface-2" as string]: "#181310",
+  ["--border" as string]: "#2c2520",
+  ["--border-soft" as string]: "#2c2520",
+  ["--border-strong" as string]: "#3e332b",
+  ["--text-hi" as string]: "#fdf8f1",
+  ["--text" as string]: "#ede5da",
+  ["--text-dim-solid" as string]: "#a3958a",
+};
+
+function PostsShell({ children }: { children: React.ReactNode }) {
+  const { theme } = useBlogTheme();
+  const light = theme === "light";
   return (
     <div
       className="iq-root"
-      data-theme="light"
+      data-theme={theme}
       style={{
         minHeight: "100vh", height: "auto", overflow: "visible",
-        background: "var(--bg)", color: "var(--text)", colorScheme: "light",
-        // Warm off-white palette from the blog board (blog-board.css light
-        // theme) — overrides iq.css's cool/pure-white light tokens so the whole
-        // blog experience (board + article view) uses the blog's off-white,
-        // never pure white. Inline vars win over the stylesheet.
-        ["--bg" as string]: "#f4f0e8",
-        ["--surface-0" as string]: "#ece7dd",
-        ["--surface-1" as string]: "#fffdf9",
-        ["--surface-2" as string]: "#f3eee6",
-        ["--border" as string]: "#ded6c8",
-        ["--border-soft" as string]: "#e6e0d5",
-        ["--border-strong" as string]: "#c9bfae",
-        ["--text-hi" as string]: "#1e1813",
-        ["--text" as string]: "#3a3129",
-        ["--text-dim-solid" as string]: "#6a5f55",
+        background: "var(--bg)", color: "var(--text)",
+        ...(light ? LIGHT_VARS : DARK_VARS),
       } as React.CSSProperties}
     >
       <header
@@ -44,7 +67,8 @@ export default function PostsLayout({ children }: { children: React.ReactNode })
         <Link href="/" style={{ display: "inline-flex" }} aria-label="MarketCatalyst home">
           <BrandLogo height={24} />
         </Link>
-        {/* "Blogs" omitted — we're already on the blog page. */}
+        {/* "Blogs" omitted — we're already on the blog page. Theme toggle lives
+            in the blog board's masthead (shared via BlogThemeProvider). */}
         <nav style={{ marginLeft: "auto", display: "flex", gap: 18, alignItems: "center" }}>
           <Link href="/" className="hw-ghost">Home</Link>
           <Link href="/faqs" className="hw-ghost">FAQs</Link>
@@ -56,5 +80,13 @@ export default function PostsLayout({ children }: { children: React.ReactNode })
         {children}
       </main>
     </div>
+  );
+}
+
+export default function PostsLayout({ children }: { children: React.ReactNode }) {
+  return (
+    <BlogThemeProvider>
+      <PostsShell>{children}</PostsShell>
+    </BlogThemeProvider>
   );
 }
