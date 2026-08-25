@@ -44,9 +44,9 @@ export default function PostsLayout({ children }: { children: React.ReactNode })
         <Link href="/" style={{ display: "inline-flex" }} aria-label="MarketCatalyst home">
           <BrandLogo height={24} />
         </Link>
+        {/* "Blogs" omitted — we're already on the blog page. */}
         <nav style={{ marginLeft: "auto", display: "flex", gap: 18, alignItems: "center" }}>
           <Link href="/" className="hw-ghost">Home</Link>
-          <Link href="/posts" className="hw-ghost">Blogs</Link>
           <Link href="/faqs" className="hw-ghost">FAQs</Link>
         </nav>
       </header>
