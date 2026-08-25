@@ -28,6 +28,13 @@ env:
   - variable: FIREBASE_PROJECT_ID
     value: "market-catalyst-502415"
 
+  # Firestore database. Prod migrated from the nam5 `(default)` DB to the
+  # regional `mc-regional` DB (see MarketCatalystBackEnd). The blog admin API
+  # writes posts to mc-regional, so this site MUST read the same DB or published
+  # posts never appear on /posts. Must match the backend's FIRESTORE_DATABASE_ID.
+  - variable: FIRESTORE_DATABASE_ID
+    value: "mc-regional"
+
   # Public client-side Firebase config, used only by the admin/editor login
   # screen (see lib/firebase/client.ts) — the public marketing site and blog
   # never touch the client Firebase SDK. These values are inherently

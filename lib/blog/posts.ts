@@ -11,7 +11,7 @@ export type PostStatus = "draft" | "published";
  * lands in (see components/blog/BlogBoard.tsx). `categories` is still stored
  * for backward-compat and for legacy docs that predate this field.
  */
-export type BlogType = "stock" | "featured" | "educational" | "market";
+export type BlogType = "educational" | "recap" | "research";
 
 export type PostSeo = {
   metaTitle: string | null;
@@ -51,15 +51,14 @@ function toIso(value: Timestamp | undefined | null): string | null {
 /**
  * Legacy fallback: posts written before the explicit `type` field only have
  * free-text `categories`. Derive a type from them so old docs still land in a
- * sensible zone. Anything unrecognized defaults to "featured".
+ * sensible section. Anything unrecognized defaults to "educational".
  */
 function deriveTypeFromCategories(categories: unknown): BlogType {
   const cats = Array.isArray(categories) ? categories.map((c) => String(c).toLowerCase()) : [];
   const has = (kw: string) => cats.some((c) => c.includes(kw));
-  if (has("stock")) return "stock";
-  if (has("educ")) return "educational";
-  if (has("market") || has("news")) return "market";
-  return "featured";
+  if (has("recap")) return "recap";
+  if (has("research")) return "research";
+  return "educational";
 }
 
 function mapPost(id: string, data: FirebaseFirestore.DocumentData): Post {

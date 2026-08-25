@@ -8,7 +8,8 @@
   /* Warm ground, not blue-black. Dark is the default; the toggle adds light. */
   --ink:#14110e; --surface:#1d1815; --surface2:#181310; --line:#2c2520; --line2:#3e332b;
   --text:#ede5da; --paper:#fdf8f1; --dim:#a3958a; --dim2:#6f645b;
-  --lead:#e0764f; --stock:#6fb58c; --edu:#e3b255; --news:#c58bae;
+  /* Section accents: educational (gold), recap (green), research (mauve). */
+  --edu:#e3b255; --recap:#6fb58c; --research:#c58bae;
   --wash:15%; --edge:rgba(255,244,230,.05); --lift:0 20px 44px -34px rgba(0,0,0,.9);
   --disp:var(--font-figtree),system-ui,sans-serif;
   --body:var(--font-figtree),system-ui,sans-serif;
@@ -25,7 +26,7 @@
 .mcb[data-theme="light"]{
   --ink:#f4f0e8; --surface:#fffdf9; --surface2:#ece7dd; --line:#ded6c8; --line2:#c3b9a7;
   --text:#1e1813; --paper:#0d0a07; --dim:#6a5f55; --dim2:#948877;
-  --lead:#b24a28; --stock:#2f7355; --edu:#96700f; --news:#7e4c69;
+  --edu:#96700f; --recap:#2f7355; --research:#7e4c69;
   --wash:11%; --edge:rgba(255,255,255,.9); --lift:0 16px 34px -30px rgba(60,45,30,.45);
 }
 .mcb *{box-sizing:border-box}
@@ -43,10 +44,10 @@
 .mcb .sub{color:var(--dim);font-size:16.5px;line-height:1.55;letter-spacing:-.005em;max-width:64ch;margin:14px 0 0}
 .mcb .sub b{color:var(--text);font-weight:600}
 
-.mcb .board{display:grid;grid-template-columns:1fr 1.5fr 1fr;grid-template-areas:"l c r" "b b b";gap:18px;align-items:start;max-width:1680px;margin:0 auto}
-.mcb .l{grid-area:l}.mcb .c{grid-area:c}.mcb .r{grid-area:r}.mcb .b{grid-area:b}
-@media(max-width:700px){
-  .mcb .board{grid-template-columns:1fr;grid-template-areas:"c" "l" "r" "b"}
+.mcb .board{display:grid;grid-template-columns:1fr 1fr 1fr;grid-template-areas:"edu recap research";gap:18px;align-items:start;max-width:1680px;margin:0 auto}
+.mcb .edu{grid-area:edu}.mcb .recap{grid-area:recap}.mcb .research{grid-area:research}
+@media(max-width:900px){
+  .mcb .board{grid-template-columns:1fr;grid-template-areas:"edu" "recap" "research"}
 }
 
 .mcb .panel{border:1px solid var(--line);border-radius:14px;overflow:hidden;position:relative;

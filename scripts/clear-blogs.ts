@@ -6,7 +6,7 @@
  * Usage:
  *   npm run clear:blogs -- --project=market-catalyst-502415
  */
-import { getApps, initializeApp, cert, applicationDefault } from "firebase-admin/app";
+import { getApps, getApp, initializeApp, cert, applicationDefault } from "firebase-admin/app";
 import { getFirestore } from "firebase-admin/firestore";
 
 function parseArg(name: string): string | undefined {
@@ -28,7 +28,11 @@ async function main() {
     });
   }
 
-  const db = getFirestore();
+  // Target the same Firestore database the app uses. Prod is `mc-regional`
+  // (pass --database=mc-regional or set FIRESTORE_DATABASE_ID); unset = (default).
+  const databaseId = parseArg("database") || process.env.FIRESTORE_DATABASE_ID;
+  const db = databaseId ? getFirestore(getApp(), databaseId) : getFirestore();
+  console.log(`Target database: ${databaseId || "(default)"}`);
   const snap = await db.collection("blogs").get();
   if (snap.empty) {
     console.log("blogs collection already empty — nothing to delete.");
