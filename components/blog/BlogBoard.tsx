@@ -114,7 +114,6 @@ export function BlogBoard({ posts }: { posts: Post[] }) {
       <header className="mast">
         <div className="mastTop">
           <div>
-            <div className="eyebrow">MarketCatalyst · Knowledge base</div>
             <h1 className="blogh1">MarketCatalyst <span className="mk">blog</span></h1>
           </div>
           <button
@@ -127,7 +126,7 @@ export function BlogBoard({ posts }: { posts: Post[] }) {
             <span>{theme === "light" ? "Dark" : "Light"}</span>
           </button>
         </div>
-        <p className="sub">Articles from the MarketCatalyst desk — market fundamentals, period recaps, and research written in house.</p>
+        <p className="sub">Articles from the MarketCatalyst desk — market fundamentals, period recaps, and research.</p>
       </header>
 
       <div className="layout">

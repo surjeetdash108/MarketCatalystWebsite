@@ -29,8 +29,10 @@ export default async function FaqsIndexPage() {
         </div>
       ) : (
         <div className="faq-list">
+          {/* Shared `name` on every <details> makes them an exclusive accordion:
+              opening one collapses any other open item (native HTML, no JS). */}
           {faqs.map((faq) => (
-            <details key={faq.id} className="faq-item">
+            <details key={faq.id} name="faq-accordion" className="faq-item">
               <summary className="faq-q">
                 <span>{faq.question}</span>
                 <svg className="faq-chevron" viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
