@@ -58,7 +58,7 @@ export default async function PostViewPage({
   const jsonLd = buildArticleJsonLd(post);
 
   return (
-    <div className="flex flex-col gap-4" style={{ padding: "28px clamp(18px, 5vw, 72px) 80px" }}>
+    <div className="flex flex-col gap-4" style={{ maxWidth: 840, margin: "0 auto", padding: "28px 24px 80px" }}>
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
