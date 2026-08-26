@@ -1,0 +1,62 @@
+/*
+ * Styles for the blog post loading state only.
+ *
+ * Kept in its own file rather than appended to admin.css, which /admin also
+ * imports — a shared stylesheet is the wrong place for one route's skeleton.
+ * Colours come from CSS vars with literal fallbacks so this renders correctly
+ * whether or not the surrounding theme tokens have resolved yet.
+ */
+
+.postSkeleton {
+  display: flex;
+  align-items: center;
+  gap: 11px;
+  padding: 6px 0 18px;
+}
+
+.postSpinner {
+  width: 18px;
+  height: 18px;
+  flex: none;
+  border-radius: 50%;
+  border: 2px solid var(--line, #e2ded6);
+  border-top-color: var(--edu, #b08a2e);
+  animation: postSpin .7s linear infinite;
+}
+@keyframes postSpin { to { transform: rotate(360deg); } }
+
+.postLoadingText {
+  font-size: 14px;
+  color: var(--dim, #7c766c);
+  letter-spacing: -.005em;
+}
+
+.postSkeletonBody { display: flex; flex-direction: column; gap: 13px; }
+
+/* Shimmer rather than a static block, so a slow Firestore read still looks
+   like progress instead of a stalled page. */
+.skLine {
+  height: 15px;
+  border-radius: 6px;
+  background: linear-gradient(
+    90deg,
+    var(--surface2, #eeeae2) 25%,
+    var(--surface, #f6f3ee) 50%,
+    var(--surface2, #eeeae2) 75%
+  );
+  background-size: 200% 100%;
+  animation: postShimmer 1.4s ease-in-out infinite;
+}
+@keyframes postShimmer { 0% { background-position: 200% 0 } 100% { background-position: -200% 0 } }
+
+.skLine.skTitle { height: 34px; width: 72%; margin-bottom: 4px; }
+.skLine.skSub   { height: 19px; width: 88%; margin-bottom: 12px; }
+.skLine.short   { width: 62%; }
+
+/* Respect a user's reduced-motion preference: keep the shapes, drop the
+   animation, since spinning and shimmering are exactly what that setting is
+   asking us not to do. */
+@media (prefers-reduced-motion: reduce) {
+  .postSpinner { animation: none; border-top-color: var(--line, #e2ded6); }
+  .skLine { animation: none; }
+}
