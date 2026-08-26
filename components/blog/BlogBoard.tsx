@@ -80,9 +80,33 @@ export function BlogBoard({ posts }: { posts: Post[] }) {
   }, [posts]);
 
   const q = query.trim().toLowerCase();
-  const shown = byZone[active].filter(
-    (p) => !q || p.title.toLowerCase().includes(q) || (p.excerpt ?? "").toLowerCase().includes(q),
-  );
+
+  /**
+   * The search applies to EVERY section, not just the open one.
+   *
+   * The counts beside each section name previously showed the unfiltered
+   * total, so a search could leave "Recap 2" beside a section holding no
+   * matches — the number contradicted what clicking it would show. Filtering
+   * once per zone here means the counts, the list, and the empty state all
+   * describe the same result set.
+   */
+  const matches = (p: Post) =>
+    !q ||
+    p.title.toLowerCase().includes(q) ||
+    (p.excerpt ?? "").toLowerCase().includes(q);
+
+  const filteredByZone = useMemo(() => {
+    const m: Record<ZoneKey, Post[]> = { edu: [], recap: [], research: [] };
+    (Object.keys(byZone) as ZoneKey[]).forEach((z) => {
+      m[z] = byZone[z].filter(matches);
+    });
+    return m;
+    // `matches` closes over q, so q is the real dependency.
+  }, [byZone, q]);
+
+  const shown = filteredByZone[active];
+  /** Sections that DO hold matches — used to rescue a dead-end search. */
+  const withHits = SECTIONS.filter((s) => filteredByZone[s.key].length > 0);
   const accent = SECTIONS.find((s) => s.key === active)!.accent;
 
   return (
@@ -135,7 +159,9 @@ export function BlogBoard({ posts }: { posts: Post[] }) {
               >
                 <span className="dot" />
                 <span className="secName">{s.title}</span>
-                <span className="secN">{byZone[s.key].length}</span>
+                {/* Count follows the search, so it always matches what
+                    clicking the section will actually show. */}
+                <span className="secN">{filteredByZone[s.key].length}</span>
               </button>
             ))}
           </nav>
@@ -144,7 +170,31 @@ export function BlogBoard({ posts }: { posts: Post[] }) {
         <main className="content" style={{ ["--a" as string]: accent }}>
           {shown.length === 0 ? (
             <div className="empty">
-              {q ? "No articles match your search." : "Nothing published here yet."}
+              {!q ? (
+                "Nothing published here yet."
+              ) : withHits.length ? (
+                /* The search runs across every section, so a miss in the open
+                   one is a dead end only if we do not say where the hits are.
+                   The counts already show it; this makes it clickable. */
+                <>
+                  No matches in this section. Found in{" "}
+                  {withHits.map((s, i) => (
+                    <span key={s.key}>
+                      {i > 0 && (i === withHits.length - 1 ? " and " : ", ")}
+                      <button
+                        type="button"
+                        className="emptyLink"
+                        onClick={() => setActive(s.key)}
+                      >
+                        {s.title} ({filteredByZone[s.key].length})
+                      </button>
+                    </span>
+                  ))}
+                  .
+                </>
+              ) : (
+                "No articles match your search."
+              )}
             </div>
           ) : (
             shown.map((p) => <Item key={p.id} post={p} accent={accent} />)
