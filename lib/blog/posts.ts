@@ -41,6 +41,8 @@ export type Post = {
    *  so the original is shown alongside the extracted text. */
   pdfUrl: string | null;
   pdfName: string | null;
+  pdfPages: number | null;
+  pdfAspect: number | null;
   seo: PostSeo;
   publishedAt: string | null;
   createdAt: string;
@@ -83,6 +85,8 @@ function mapPost(id: string, data: FirebaseFirestore.DocumentData): Post {
     coverImageUrl: data.coverImageUrl ?? null,
     pdfUrl: typeof data.pdfUrl === "string" ? data.pdfUrl : null,
     pdfName: typeof data.pdfName === "string" ? data.pdfName : null,
+    pdfPages: typeof data.pdfPages === "number" ? data.pdfPages : null,
+    pdfAspect: typeof data.pdfAspect === "number" ? data.pdfAspect : null,
     seo: {
       metaTitle: data.seo?.metaTitle ?? null,
       metaDescription: data.seo?.metaDescription ?? null,

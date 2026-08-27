@@ -239,31 +239,21 @@
    paragraph per visual line). The original is embedded above the text version,
    which stays on the page for search engines and screen readers. */
 .iq-root .post-pdf { margin: 0 0 26px; }
-.iq-root .post-pdf-bar {
-  display: flex; align-items: center; justify-content: space-between; gap: 12px;
-  padding: 9px 13px; border: 1px solid var(--border-soft); border-bottom: 0;
-  border-radius: 10px 10px 0 0; background: var(--surface-2);
-}
-.iq-root .post-pdf-label {
-  font-size: .72rem; font-weight: 600; letter-spacing: .05em;
-  text-transform: uppercase; color: var(--text-dim-solid);
-  overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
-}
-.iq-root a.post-pdf-dl {
-  flex: none; font-size: .78rem; font-weight: 600; text-decoration: none;
-  color: var(--brand-2); white-space: nowrap;
-}
-.iq-root a.post-pdf-dl:hover { text-decoration: underline; }
+/* No border, no radius, no background chrome — the document is the article, not
+   a widget embedded in one. Height is set inline from the file's real page
+   count so the whole PDF is laid out and the PAGE scrolls, not a box inside it;
+   the min-height only applies when no page count was recorded. */
 .iq-root .post-pdf-frame {
-  display: block; width: 100%; height: 78vh; min-height: 560px;
-  border: 1px solid var(--border-soft); border-radius: 0 0 10px 10px;
-  background: #fff;   /* a PDF page is white in every theme; own it deliberately */
+  display: block; width: 100%; min-height: 78vh;
+  border: 0; background: transparent;
 }
+.iq-root .post-pdf-foot { margin: 10px 0 0; font-size: .78rem; }
+.iq-root .post-pdf-foot a { color: var(--brand-2); text-decoration: none; font-weight: 600; }
+.iq-root .post-pdf-foot a:hover { text-decoration: underline; }
 .iq-root .post-pdf-fallback {
-  margin: 0; padding: 16px 14px; font-size: .85rem; color: var(--text-dim-solid);
-  border: 1px solid var(--border-soft); border-radius: 0 0 10px 10px;
-  background: var(--surface-1);
+  margin: 0; padding: 16px 0; font-size: .85rem; color: var(--text-dim-solid);
 }
+.iq-root .post-pdf-fallback a { color: var(--brand-2); }
 .iq-root .post-textversion {
   font-size: .72rem !important; font-weight: 700; letter-spacing: .09em;
   text-transform: uppercase; color: var(--text-dim-solid) !important;
