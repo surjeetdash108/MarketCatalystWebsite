@@ -264,9 +264,22 @@
 .iq-root .post-doc-host { background: #fff; }
 .iq-root .post-doc .docx-wrapper { background: transparent; padding: 0; display: block; }
 .iq-root .post-doc .docx-wrapper > section.docx {
-  margin: 0 !important; padding: 0 !important;
+  margin: 0 !important;
   width: 100% !important; min-height: 0 !important;
   box-shadow: none !important; border: 0 !important;
+}
+/* The inline padding docx-preview writes on that section IS the document's
+   page margins, read from its own page setup — zeroing it along with the rest
+   of the page-card styling is what made the text run to the edge and stop
+   looking like the document. It is left alone.
+   Those margins are absolute, though (~62px a side here), which is a third of
+   a phone screen — so only on narrow viewports are they tightened, and that
+   needs !important to reach past the inline value. */
+@media (max-width: 560px) {
+  .iq-root .post-doc .docx-wrapper > section.docx {
+    padding-left: 18px !important;
+    padding-right: 18px !important;
+  }
 }
 /* Word sizes images to the paper it was written for, which overflows a
    narrower column. */
