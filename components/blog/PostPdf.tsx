@@ -157,6 +157,13 @@ export function PostPdf({
 
   return (
     <section className="post-pdf" ref={wrapRef}>
+      {/* Above the document, not below it: the pages run for several screens,
+          so a link after them is only found by scrolling past everything. */}
+      <p className="post-pdf-foot">
+        <a href={url} target="_blank" rel="noopener noreferrer">
+          Download {name ?? "the PDF"} ↓
+        </a>
+      </p>
       {loaded && renderWidth > 0 ? (
         <div className="post-pdf-pages">
           {Array.from({ length: loaded.doc.numPages }, (_, i) => (
@@ -183,11 +190,6 @@ export function PostPdf({
           style={pages ? { aspectRatio: `1 / ${placeholderAspect * pages}` } : undefined}
         />
       )}
-      <p className="post-pdf-foot">
-        <a href={url} target="_blank" rel="noopener noreferrer">
-          Open {name ?? "the PDF"} ↗
-        </a>
-      </p>
     </section>
   );
 }

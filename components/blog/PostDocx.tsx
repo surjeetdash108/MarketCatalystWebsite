@@ -120,6 +120,14 @@ export function PostDocx({
 
   return (
     <section className="post-doc">
+      {/* Above the document, for the same reason as the PDF path: the pages run
+          for several screens and a link below them is only found by scrolling
+          past everything. */}
+      <p className="post-pdf-foot">
+        <a href={url} target="_blank" rel="noopener noreferrer">
+          Download {name ?? "the document"} ↓
+        </a>
+      </p>
       {state === "failed" ? (
         <p className="post-pdf-fallback">
           The document could not be displayed here.{" "}
@@ -134,11 +142,6 @@ export function PostDocx({
           style={state === "loading" ? { minHeight: "70vh" } : undefined}
         />
       )}
-      <p className="post-pdf-foot">
-        <a href={url} target="_blank" rel="noopener noreferrer">
-          Open {name ?? "the document"} ↗
-        </a>
-      </p>
     </section>
   );
 }

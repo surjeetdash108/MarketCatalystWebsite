@@ -95,6 +95,14 @@ export default async function PostViewPage({
             <hr className="article-rule" />
           </>
         )}
+        {/* The summary DOES show above a source document — it is written for
+            this spot (four standalone lines), unlike the heading block that was
+            removed, which repeated the document's own title. Posts whose
+            summary is empty, or is the importer's extracted-text noise, simply
+            have nothing here. */}
+        {post.pdfUrl && post.excerpt && (
+          <p className="post-doc-summary">{post.excerpt}</p>
+        )}
         {post.pdfUrl && (
           post.sourceKind === "docx" ? (
             <PostDocx url={post.pdfUrl} name={post.pdfName} slug={post.slug} />
