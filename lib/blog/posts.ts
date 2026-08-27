@@ -36,6 +36,11 @@ export type Post = {
   categories: string[];
   tags: string[];
   coverImageUrl: string | null;
+  /** Storage URL of the source PDF when the post was published from one. The
+   *  research desk designs in PDF; its tables and KPI cards exist only there,
+   *  so the original is shown alongside the extracted text. */
+  pdfUrl: string | null;
+  pdfName: string | null;
   seo: PostSeo;
   publishedAt: string | null;
   createdAt: string;
@@ -76,6 +81,8 @@ function mapPost(id: string, data: FirebaseFirestore.DocumentData): Post {
     categories: data.categories ?? [],
     tags: data.tags ?? [],
     coverImageUrl: data.coverImageUrl ?? null,
+    pdfUrl: typeof data.pdfUrl === "string" ? data.pdfUrl : null,
+    pdfName: typeof data.pdfName === "string" ? data.pdfName : null,
     seo: {
       metaTitle: data.seo?.metaTitle ?? null,
       metaDescription: data.seo?.metaDescription ?? null,

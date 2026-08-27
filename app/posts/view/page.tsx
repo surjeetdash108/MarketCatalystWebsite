@@ -4,6 +4,7 @@ import Image from "next/image";
 import { notFound, redirect } from "next/navigation";
 import { getPublishedPostBySlug } from "@/lib/blog/posts";
 import { PostBody } from "@/components/blog/PostBody";
+import { PostPdf } from "@/components/blog/PostPdf";
 import { buildArticleJsonLd } from "@/lib/seo/jsonld";
 
 // Reading searchParams makes this dynamic (per-slug), so there is no ISR
@@ -84,7 +85,11 @@ export default async function PostViewPage({
           </div>
         )}
         <hr className="article-rule" />
+        {post.pdfUrl && <PostPdf url={post.pdfUrl} name={post.pdfName} />}
         <div className="post-content">
+          {/* Kept even when the PDF is embedded: this is what search engines,
+              link previews and screen readers actually read. */}
+          {post.pdfUrl && <h2 className="post-textversion">Text version</h2>}
           <PostBody markdown={post.content} />
         </div>
       </article>

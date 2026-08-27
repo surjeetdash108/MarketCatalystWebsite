@@ -39,7 +39,14 @@ function buildCsp(nonce: string | null): string {
     // directly — that's just where the top-level OAuth consent popup
     // navigates, which isn't subject to our frame-src at all (popups are
     // separate top-level browsing contexts, not iframes).
-    `frame-src${firebaseAuthDomain ? ` https://${firebaseAuthDomain}` : ""}`,
+    `frame-src${firebaseAuthDomain ? ` https://${firebaseAuthDomain}` : ""} https://firebasestorage.googleapis.com`,
+    // Research posts embed their source PDF from Storage. Without an explicit
+    // object-src this falls back to default-src 'self', which blocks the embed
+    // outright — and the failure is silent: the <object> renders its fallback
+    // and the page looks merely "unstyled" rather than blocked. Chrome serves
+    // PDFs through a plugin that some versions treat as a frame, so the Storage
+    // origin is named in both directives.
+    "object-src 'self' https://firebasestorage.googleapis.com",
     // Dev-mode HMR also needs a WebSocket connection back to the local dev
     // server, which production never opens.
     `connect-src 'self' https://identitytoolkit.googleapis.com https://securetoken.googleapis.com https://firestore.googleapis.com https://apis.google.com https://*.ingest.sentry.io https://*.ingest.us.sentry.io${isDev ? " ws://localhost:* http://localhost:*" : ""}`,
