@@ -253,6 +253,27 @@
 .iq-root .post-pdf-page img { display: block; width: 100%; height: auto; }
 /* Space reserved from the stored page count while pdf.js parses the file. */
 .iq-root .post-pdf-loading { width: 100%; background: #fff; }
+
+/* ---- Word source documents (components/blog/PostDocx) ----
+   docx-preview emits each page as a <section> styled like a sheet of paper on a
+   desk: fixed width, drop shadow, gaps between. That is the same page-cards
+   look the PDF path removes, so it is flattened to one continuous document.
+   The rules are !important because docx-preview writes its geometry inline
+   from the file's own page setup. */
+.iq-root .post-doc { margin: 0 0 26px; }
+.iq-root .post-doc-host { background: #fff; }
+.iq-root .post-doc .docx-wrapper { background: transparent; padding: 0; display: block; }
+.iq-root .post-doc .docx-wrapper > section.docx {
+  margin: 0 !important; padding: 0 !important;
+  width: 100% !important; min-height: 0 !important;
+  box-shadow: none !important; border: 0 !important;
+}
+/* Word sizes images to the paper it was written for, which overflows a
+   narrower column. */
+.iq-root .post-doc img { max-width: 100%; height: auto; }
+/* A table wider than the column scrolls on its own rather than pushing the
+   page sideways. */
+.iq-root .post-doc table { max-width: 100%; }
 .iq-root .post-pdf-foot { margin: 10px 0 0; font-size: .78rem; }
 .iq-root .post-pdf-foot a { color: var(--brand-2); text-decoration: none; font-weight: 600; }
 .iq-root .post-pdf-foot a:hover { text-decoration: underline; }

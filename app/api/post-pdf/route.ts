@@ -15,9 +15,14 @@ import { getPublishedPostBySlug } from "@/lib/blog/posts";
  * proxy that fetches anything the server can reach.
  */
 
-// Storage is the only place a post's PDF can live. Anything else on the doc is
-// treated as tampered-with rather than followed.
+// Storage is the only place a post's document can live. Anything else on the
+// doc is treated as tampered-with rather than followed.
 const ALLOWED_HOST = "firebasestorage.googleapis.com";
+
+const CONTENT_TYPE = {
+  pdf: "application/pdf",
+  docx: "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
+} as const;
 
 export async function GET(request: NextRequest) {
   const slug = request.nextUrl.searchParams.get("slug");
@@ -50,7 +55,7 @@ export async function GET(request: NextRequest) {
   return new NextResponse(upstream.body, {
     status: 200,
     headers: {
-      "Content-Type": "application/pdf",
+      "Content-Type": CONTENT_TYPE[post.sourceKind ?? "pdf"],
       // The bytes are immutable — a re-upload writes a new object under a new
       // UUID and the doc points elsewhere — so this can be cached hard. It is
       // public content; the CDN may hold it.

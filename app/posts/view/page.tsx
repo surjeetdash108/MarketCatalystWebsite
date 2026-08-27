@@ -5,6 +5,7 @@ import { notFound, redirect } from "next/navigation";
 import { getPublishedPostBySlug } from "@/lib/blog/posts";
 import { PostBody } from "@/components/blog/PostBody";
 import { PostPdf } from "@/components/blog/PostPdf";
+import { PostDocx } from "@/components/blog/PostDocx";
 import { buildArticleJsonLd } from "@/lib/seo/jsonld";
 
 // Reading searchParams makes this dynamic (per-slug), so there is no ISR
@@ -75,24 +76,37 @@ export default async function PostViewPage({
             <Image src={post.coverImageUrl} alt="" fill priority sizes="760px" className="object-cover" />
           </div>
         )}
-        <h1 className="article-title">{post.title}</h1>
-        {post.excerpt && <p className="article-sub">{post.excerpt}</p>}
-        {post.publishedAt && (
-          <div className="article-meta">
-            <time dateTime={post.publishedAt}>
-              {new Date(post.publishedAt).toLocaleDateString(undefined, { year: "numeric", month: "long", day: "numeric" })}
-            </time>
-          </div>
+        {/* A source document opens with its own masthead, headline and date —
+            so printing ours above it stated the same thing twice, in the
+            importer's mangled words. The title still names the post everywhere
+            it is referenced: the browser tab, the board, link previews and this
+            page's JSON-LD. */}
+        {!post.pdfUrl && (
+          <>
+            <h1 className="article-title">{post.title}</h1>
+            {post.excerpt && <p className="article-sub">{post.excerpt}</p>}
+            {post.publishedAt && (
+              <div className="article-meta">
+                <time dateTime={post.publishedAt}>
+                  {new Date(post.publishedAt).toLocaleDateString(undefined, { year: "numeric", month: "long", day: "numeric" })}
+                </time>
+              </div>
+            )}
+            <hr className="article-rule" />
+          </>
         )}
-        <hr className="article-rule" />
         {post.pdfUrl && (
-          <PostPdf
-            url={post.pdfUrl}
-            name={post.pdfName}
-            slug={post.slug}
-            pages={post.pdfPages}
-            aspect={post.pdfAspect}
-          />
+          post.sourceKind === "docx" ? (
+            <PostDocx url={post.pdfUrl} name={post.pdfName} slug={post.slug} />
+          ) : (
+            <PostPdf
+              url={post.pdfUrl}
+              name={post.pdfName}
+              slug={post.slug}
+              pages={post.pdfPages}
+              aspect={post.pdfAspect}
+            />
+          )
         )}
         {/* On a PDF post the document IS the article, so the extracted text is
             not shown: it repeated the same report a second time, in a form the

@@ -6,6 +6,9 @@ import type { CreatePostInput, UpdatePostInput } from "@/lib/validation/blog";
 
 export type PostStatus = "draft" | "published";
 
+/** Source-document kinds the post page can draw. */
+export type SourceKind = "pdf" | "docx";
+
 /**
  * The blog "type" is now the source of truth for which public zone a post
  * lands in (see components/blog/BlogBoard.tsx). `categories` is still stored
@@ -36,13 +39,16 @@ export type Post = {
   categories: string[];
   tags: string[];
   coverImageUrl: string | null;
-  /** Storage URL of the source PDF when the post was published from one. The
-   *  research desk designs in PDF; its tables and KPI cards exist only there,
-   *  so the original is shown alongside the extracted text. */
+  /** Storage URL of the source document when the post was published from one.
+   *  The research desk designs in PDF or Word; its tables, KPI cards and
+   *  images exist only there, so the original IS the article. The `pdf*` names
+   *  predate Word support — `sourceKind` says which kind this actually is. */
   pdfUrl: string | null;
   pdfName: string | null;
+  /** PDF only — Word has no page count until a renderer paginates it. */
   pdfPages: number | null;
   pdfAspect: number | null;
+  sourceKind: SourceKind | null;
   seo: PostSeo;
   publishedAt: string | null;
   createdAt: string;
@@ -87,6 +93,13 @@ function mapPost(id: string, data: FirebaseFirestore.DocumentData): Post {
     pdfName: typeof data.pdfName === "string" ? data.pdfName : null,
     pdfPages: typeof data.pdfPages === "number" ? data.pdfPages : null,
     pdfAspect: typeof data.pdfAspect === "number" ? data.pdfAspect : null,
+    // Posts written before Word support carry no kind and were all PDFs.
+    sourceKind:
+      data.sourceKind === "docx" || data.sourceKind === "pdf"
+        ? data.sourceKind
+        : typeof data.pdfUrl === "string"
+          ? "pdf"
+          : null,
     seo: {
       metaTitle: data.seo?.metaTitle ?? null,
       metaDescription: data.seo?.metaDescription ?? null,
