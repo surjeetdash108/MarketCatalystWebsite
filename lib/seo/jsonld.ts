@@ -13,6 +13,11 @@ export function buildArticleJsonLd(post: Post) {
     "@type": "BlogPosting",
     headline: post.seo.metaTitle || post.title,
     description: post.seo.metaDescription || post.excerpt || undefined,
+    // A PDF post renders its pages as images, so the page carries no readable
+    // body text. The extracted text is published here instead — it is the same
+    // article the images show, which is what articleBody is for, and without it
+    // the post would offer a crawler nothing beyond its title.
+    articleBody: post.pdfUrl ? post.content || undefined : undefined,
     image,
     datePublished: post.publishedAt ?? undefined,
     dateModified: post.updatedAt,

@@ -94,12 +94,17 @@ export default async function PostViewPage({
             aspect={post.pdfAspect}
           />
         )}
-        <div className="post-content">
-          {/* Kept even when the PDF is embedded: this is what search engines,
-              link previews and screen readers actually read. */}
-          {post.pdfUrl && <h2 className="post-textversion">Text version</h2>}
-          <PostBody markdown={post.content} />
-        </div>
+        {/* On a PDF post the document IS the article, so the extracted text is
+            not shown: it repeated the same report a second time, in a form the
+            importer had already flattened — table rows broken into paragraphs,
+            wrapped cells split across lines. It stays in the record and is
+            still published as the article body in this page's JSON-LD, so
+            search engines keep something to read. */}
+        {!post.pdfUrl && (
+          <div className="post-content">
+            <PostBody markdown={post.content} />
+          </div>
+        )}
       </article>
     </div>
   );

@@ -260,11 +260,6 @@
   margin: 0; padding: 16px 0; font-size: .85rem; color: var(--text-dim-solid);
 }
 .iq-root .post-pdf-fallback a { color: var(--brand-2); }
-.iq-root .post-textversion {
-  font-size: .72rem !important; font-weight: 700; letter-spacing: .09em;
-  text-transform: uppercase; color: var(--text-dim-solid) !important;
-  margin: 0 0 14px !important;
-}
 
 /* Data tables. These were impossible to publish until the sanitizer allowlist
    gained the table family — marked emitted a correct <table> and the sanitize
