@@ -86,7 +86,13 @@ export default async function PostViewPage({
         )}
         <hr className="article-rule" />
         {post.pdfUrl && (
-          <PostPdf url={post.pdfUrl} name={post.pdfName} pages={post.pdfPages} aspect={post.pdfAspect} />
+          <PostPdf
+            url={post.pdfUrl}
+            name={post.pdfName}
+            slug={post.slug}
+            pages={post.pdfPages}
+            aspect={post.pdfAspect}
+          />
         )}
         <div className="post-content">
           {/* Kept even when the PDF is embedded: this is what search engines,

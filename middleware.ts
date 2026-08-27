@@ -33,20 +33,24 @@ function buildCsp(nonce: string | null): string {
     // scripts for signInWithPopup (Google provider) — admin login only.
     `script-src 'self' ${scriptInline} https://apis.google.com https://www.gstatic.com${isDev ? " 'unsafe-eval'" : ""}`,
     "style-src 'self' 'unsafe-inline'",
-    "img-src 'self' data: https:",
+    // blob: carries the rasterised PDF pages on research posts — pdf.js draws
+    // each page to a canvas and hands it to an <img> as an encoded blob. Without
+    // it those images are blocked and the article renders as blank paper.
+    "img-src 'self' data: blob: https:",
     // signInWithPopup's actual relay iframe is served from the Firebase
     // project's own authDomain (__/auth/iframe), not accounts.google.com
     // directly — that's just where the top-level OAuth consent popup
     // navigates, which isn't subject to our frame-src at all (popups are
     // separate top-level browsing contexts, not iframes).
-    `frame-src${firebaseAuthDomain ? ` https://${firebaseAuthDomain}` : ""} https://firebasestorage.googleapis.com`,
-    // Research posts embed their source PDF from Storage. Without an explicit
-    // object-src this falls back to default-src 'self', which blocks the embed
-    // outright — and the failure is silent: the <object> renders its fallback
-    // and the page looks merely "unstyled" rather than blocked. Chrome serves
-    // PDFs through a plugin that some versions treat as a frame, so the Storage
-    // origin is named in both directives.
-    "object-src 'self' https://firebasestorage.googleapis.com",
+    `frame-src${firebaseAuthDomain ? ` https://${firebaseAuthDomain}` : ""}`,
+    // Research posts used to hand their PDF to the browser's plugin, which
+    // needed Storage allowed as an object/frame source. They now rasterise the
+    // pages themselves, so no plugin is involved and this can stay shut.
+    "object-src 'none'",
+    // pdf.js does its parsing and rasterising in a worker loaded from /public.
+    // Named explicitly because worker-src otherwise falls back to default-src,
+    // and pdf.js also constructs a blob worker on some fallback paths.
+    "worker-src 'self' blob:",
     // Dev-mode HMR also needs a WebSocket connection back to the local dev
     // server, which production never opens.
     `connect-src 'self' https://identitytoolkit.googleapis.com https://securetoken.googleapis.com https://firestore.googleapis.com https://apis.google.com https://*.ingest.sentry.io https://*.ingest.us.sentry.io${isDev ? " ws://localhost:* http://localhost:*" : ""}`,

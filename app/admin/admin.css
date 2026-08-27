@@ -239,14 +239,20 @@
    paragraph per visual line). The original is embedded above the text version,
    which stays on the page for search engines and screen readers. */
 .iq-root .post-pdf { margin: 0 0 26px; }
-/* No border, no radius, no background chrome — the document is the article, not
-   a widget embedded in one. Height is set inline from the file's real page
-   count so the whole PDF is laid out and the PAGE scrolls, not a box inside it;
-   the min-height only applies when no page count was recorded. */
-.iq-root .post-pdf-frame {
-  display: block; width: 100%; min-height: 78vh;
-  border: 0; background: transparent;
+/* The pages are rasterised into this stack (see components/blog/PostPdf). They
+   butt together with no gap, no border and no radius: the point is one
+   continuous document, not a run of page cards. `font-size: 0` kills the
+   whitespace line-box between block images, which would otherwise show as a
+   thin seam at every page join. */
+.iq-root .post-pdf-pages { font-size: 0; }
+.iq-root .post-pdf-page {
+  display: block; width: 100%;
+  /* Paper, so a page that has not drawn yet is not a dark hole in the article. */
+  background: #fff;
 }
+.iq-root .post-pdf-page img { display: block; width: 100%; height: auto; }
+/* Space reserved from the stored page count while pdf.js parses the file. */
+.iq-root .post-pdf-loading { width: 100%; background: #fff; }
 .iq-root .post-pdf-foot { margin: 10px 0 0; font-size: .78rem; }
 .iq-root .post-pdf-foot a { color: var(--brand-2); text-decoration: none; font-weight: 600; }
 .iq-root .post-pdf-foot a:hover { text-decoration: underline; }
