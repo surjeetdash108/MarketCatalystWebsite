@@ -6,6 +6,7 @@ import { getPublishedPostBySlug } from "@/lib/blog/posts";
 import { PostBody } from "@/components/blog/PostBody";
 import { PostPdf } from "@/components/blog/PostPdf";
 import { PostDocx } from "@/components/blog/PostDocx";
+import { PostHtml } from "@/components/blog/PostHtml";
 import { buildArticleJsonLd } from "@/lib/seo/jsonld";
 
 // Reading searchParams makes this dynamic (per-slug), so there is no ISR
@@ -59,6 +60,12 @@ export default async function PostViewPage({
 
   const jsonLd = buildArticleJsonLd(post);
 
+  // A source-document post draws the file and suppresses the heading block; the
+  // authored formats (text, html) print their own. Guarded on the URL as well
+  // as the format so a doc post whose file is missing degrades to its body
+  // rather than to a blank article.
+  const isDoc = (post.format === "pdf" || post.format === "doc") && !!post.pdfUrl;
+
   return (
     <div className="flex flex-col gap-4" style={{ maxWidth: 840, margin: "0 auto", padding: "28px 24px 80px" }}>
       <script
@@ -81,7 +88,7 @@ export default async function PostViewPage({
             importer's mangled words. The title still names the post everywhere
             it is referenced: the browser tab, the board, link previews and this
             page's JSON-LD. */}
-        {!post.pdfUrl && (
+        {!isDoc && (
           <>
             <h1 className="article-title">{post.title}</h1>
             {post.excerpt && <p className="article-sub">{post.excerpt}</p>}
@@ -100,15 +107,15 @@ export default async function PostViewPage({
             removed, which repeated the document's own title. Posts whose
             summary is empty, or is the importer's extracted-text noise, simply
             have nothing here. */}
-        {post.pdfUrl && post.excerpt && (
+        {isDoc && post.excerpt && (
           <p className="post-doc-summary">{post.excerpt}</p>
         )}
-        {post.pdfUrl && (
+        {isDoc && (
           post.sourceKind === "docx" ? (
-            <PostDocx url={post.pdfUrl} name={post.pdfName} slug={post.slug} />
+            <PostDocx url={post.pdfUrl!} name={post.pdfName} slug={post.slug} />
           ) : (
             <PostPdf
-              url={post.pdfUrl}
+              url={post.pdfUrl!}
               name={post.pdfName}
               slug={post.slug}
               pages={post.pdfPages}
@@ -122,10 +129,16 @@ export default async function PostViewPage({
             wrapped cells split across lines. It stays in the record and is
             still published as the article body in this page's JSON-LD, so
             search engines keep something to read. */}
-        {!post.pdfUrl && (
-          <div className="post-content">
-            <PostBody markdown={post.content} />
-          </div>
+        {!isDoc && (
+          post.format === "html" ? (
+            // Authored markup keeps its own design — see PostHtml. The site's
+            // post typography is deliberately NOT applied over it.
+            <PostHtml html={post.content} css={post.css} />
+          ) : (
+            <div className="post-content">
+              <PostBody markdown={post.content} />
+            </div>
+          )
         )}
       </article>
     </div>

@@ -1,4 +1,5 @@
 import sanitizeHtml from "sanitize-html";
+import { stripRemoteRefs } from "@/lib/blog/scope-css";
 
 // Applied at write time (before a post's rendered HTML is stored/derived)
 // AND again at render time immediately before any dangerouslySetInnerHTML
@@ -47,6 +48,62 @@ export function sanitizePostHtml(html: string): string {
     allowedSchemes: ["http", "https", "mailto"],
     transformTags: {
       a: sanitizeHtml.simpleTransform("a", { rel: "noopener noreferrer nofollow" }),
+    },
+  });
+}
+
+/**
+ * The allowlist for an `html`-format post, where the markup IS the design.
+ *
+ * Markdown posts are prose the site styles; an html post arrives with its own
+ * stylesheet and a structure written to match it, so the pass above would take
+ * it apart — dropping the sectioning elements it lays out with, and the `id`
+ * and `class` hooks its own CSS selects on. Widening those is what makes the
+ * format work at all.
+ *
+ * What stays blocked is what can execute or fetch: `script`, `iframe`,
+ * `object`, `embed`, `form`, every `on*` handler, and any scheme other than
+ * http/https/mailto/data-image. `style` is permitted as an attribute (a
+ * designed document sets one-off values inline), but is passed through
+ * `stripRemoteRefs` first, so an inline rule cannot call out to a third party
+ * any more than the stylesheet can.
+ */
+const RICH_TAGS = [
+  ...ALLOWED_TAGS,
+  "h6", "b", "i", "u", "s", "mark", "abbr", "time", "cite", "q", "del", "ins",
+  "article", "header", "footer", "main", "aside", "nav",
+  "dl", "dt", "dd", "col", "colgroup", "details", "summary",
+];
+
+/** `class`/`id`/`style` on everything — the post's CSS selects on them. */
+const RICH_GLOBAL = ["class", "id", "style", "title"];
+
+export function sanitizeRichPostHtml(html: string): string {
+  return sanitizeHtml(html, {
+    allowedTags: RICH_TAGS,
+    allowedAttributes: {
+      "*": RICH_GLOBAL,
+      a: [...RICH_GLOBAL, "href", "rel", "target"],
+      img: [...RICH_GLOBAL, "src", "alt", "width", "height", "loading"],
+      th: [...RICH_GLOBAL, "colspan", "rowspan", "scope"],
+      td: [...RICH_GLOBAL, "colspan", "rowspan"],
+      time: [...RICH_GLOBAL, "datetime"],
+      col: [...RICH_GLOBAL, "span"],
+      colgroup: [...RICH_GLOBAL, "span"],
+    },
+    allowedSchemes: ["http", "https", "mailto"],
+    // Inline images the post embedded itself, which carry no request.
+    allowedSchemesByTag: { img: ["http", "https", "data"] },
+    // One transform for every tag: sanitize-html runs the tag-specific entry OR
+    // the "*" fallback, never both, so an `a` entry of its own would exempt
+    // links from the inline-style pass.
+    transformTags: {
+      "*": (tagName, attribs) => {
+        const next = { ...attribs };
+        if (next.style) next.style = stripRemoteRefs(next.style);
+        if (tagName === "a") next.rel = "noopener noreferrer nofollow";
+        return { tagName, attribs: next };
+      },
     },
   });
 }

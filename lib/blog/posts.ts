@@ -9,6 +9,10 @@ export type PostStatus = "draft" | "published";
 /** Source-document kinds the post page can draw. */
 export type SourceKind = "pdf" | "docx";
 
+/** How a post's body is authored — see BlogFormat in the backend admin service.
+ *  Distinct from `type`, which is the board zone. */
+export type BlogFormat = "html" | "text" | "pdf" | "doc";
+
 /**
  * The blog "type" is now the source of truth for which public zone a post
  * lands in (see components/blog/BlogBoard.tsx). `categories` is still stored
@@ -49,6 +53,12 @@ export type Post = {
   pdfPages: number | null;
   pdfAspect: number | null;
   sourceKind: SourceKind | null;
+  /** Decides how the body renders: a drawn document, authored markup with its
+   *  own CSS, or prose. */
+  format: BlogFormat;
+  /** Stylesheets for an html post, already split out of the body by the admin
+   *  service. Scoped to the article before they are applied. */
+  css: string[];
   seo: PostSeo;
   publishedAt: string | null;
   createdAt: string;
@@ -93,6 +103,18 @@ function mapPost(id: string, data: FirebaseFirestore.DocumentData): Post {
     pdfName: typeof data.pdfName === "string" ? data.pdfName : null,
     pdfPages: typeof data.pdfPages === "number" ? data.pdfPages : null,
     pdfAspect: typeof data.pdfAspect === "number" ? data.pdfAspect : null,
+    // Posts written before formats existed carry none: a stored source document
+    // says what they are, anything else is the prose `content` has always held.
+    format:
+      data.format === "html" || data.format === "text" ||
+      data.format === "pdf" || data.format === "doc"
+        ? data.format
+        : typeof data.pdfUrl === "string"
+          ? data.sourceKind === "docx" ? "doc" : "pdf"
+          : "text",
+    css: Array.isArray(data.css)
+      ? (data.css as unknown[]).filter((c): c is string => typeof c === "string")
+      : [],
     // Posts written before Word support carry no kind and were all PDFs.
     sourceKind:
       data.sourceKind === "docx" || data.sourceKind === "pdf"
