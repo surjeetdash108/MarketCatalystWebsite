@@ -1,7 +1,6 @@
 "use client";
 
 import Link from "next/link";
-import { usePathname } from "next/navigation";
 import { BrandLogo } from "@/components/admin/BrandLogo";
 import { BlogThemeProvider, useBlogTheme } from "./theme-context";
 // Reuse the app's dark surface + the admin table/panel classes so the public
@@ -45,26 +44,7 @@ const DARK_VARS: React.CSSProperties = {
 
 function PostsShell({ children }: { children: React.ReactNode }) {
   const { theme } = useBlogTheme();
-  const pathname = usePathname();
   const light = theme === "light";
-  /**
-   * An article reads on white; the board does not.
-   *
-   * The off-white is what makes /posts look like a front page — it is the
-   * newsprint behind the cards. Behind a column of body copy it is just a tint,
-   * and it fights any document the article carries: a PDF page and an html
-   * post's own background are both white or near it, so the page showed a
-   * lighter rectangle sitting on a darker one.
-   *
-   * Set here rather than on the article itself because the header is rendered
-   * by this layout, above the page in the tree — a variable set further down
-   * could not reach it, and the sticky header would keep the old tint while
-   * the page under it went white.
-   */
-  const article = pathname?.startsWith("/posts/view") ?? false;
-  const lightVars: React.CSSProperties = article
-    ? { ...LIGHT_VARS, ["--bg" as string]: "#ffffff" }
-    : LIGHT_VARS;
   return (
     <div
       className="iq-root"
@@ -72,7 +52,7 @@ function PostsShell({ children }: { children: React.ReactNode }) {
       style={{
         minHeight: "100vh", height: "auto", overflow: "visible",
         background: "var(--bg)", color: "var(--text)",
-        ...(light ? lightVars : DARK_VARS),
+        ...(light ? LIGHT_VARS : DARK_VARS),
       } as React.CSSProperties}
     >
       <header

@@ -217,7 +217,21 @@
 /* ── Article (post view) — a CENTERED reading column (the view page constrains
       the width + auto margins). The header (title/sub/meta) is centered; body
       prose stays left-aligned for legibility. ──────────────────────────────── */
-.iq-root .article { max-width: none; margin: 0 auto; width: 100%; }
+/* The article is its own white sheet on the board's newsprint.
+   The page keeps the off-white — that tint is what makes /posts read as a
+   front page — but the thing you actually READ sits on white, which is also
+   what the article carries inside it: the document viewer paints its pages
+   #fff and an html post brings its own near-white ground, so both now meet
+   the sheet instead of sitting as a lighter rectangle on a darker one.
+   Dark theme keeps its own surface; only the light palette goes pure white. */
+.iq-root .article {
+  max-width: none; margin: 0 auto; width: 100%;
+  background: var(--surface-1);
+  border: 1px solid var(--border-soft);
+  border-radius: 14px;
+  padding: 30px 32px 40px;
+}
+.iq-root[data-theme="light"] .article { background: #fff; }
 .iq-root .article-hero {
   position: relative; aspect-ratio: 16 / 9; width: 100%; max-height: 460px;
   border-radius: 16px; overflow: hidden; margin-bottom: 26px;
