@@ -67,7 +67,12 @@ export default async function PostViewPage({
   const isDoc = (post.format === "pdf" || post.format === "doc") && !!post.pdfUrl;
 
   return (
-    <div className="flex flex-col gap-4" style={{ maxWidth: 840, margin: "0 auto", padding: "28px 24px 80px" }}>
+    // 1080, not the old 840: the width is set by what the article CARRIES, not
+    // by its prose. A PDF or Word page and a designed html post both want the
+    // room — they were being drawn into a column narrower than the page they
+    // were made on. Prose keeps its own measure (.post-content below), so a
+    // text post does not inherit line lengths nobody can read.
+    <div className="flex flex-col gap-4" style={{ maxWidth: 1080, margin: "0 auto", padding: "28px 24px 80px" }}>
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
