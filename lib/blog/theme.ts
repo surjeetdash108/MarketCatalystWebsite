@@ -1,5 +1,6 @@
 import "server-only";
 import { adminFirestore } from "@/lib/firebase/admin";
+import { DEFAULT_BLOG_CSS } from "./default-theme";
 
 /**
  * The blog's shared design, written by the admin service when a document is
@@ -19,7 +20,8 @@ export interface BlogTheme {
   inlineScripts: string[];
 }
 
-const EMPTY: BlogTheme = { css: [], links: [], scripts: [], inlineScripts: [] };
+/** Nothing uploaded yet — the blog still has a design. */
+const FALLBACK: BlogTheme = { css: [DEFAULT_BLOG_CSS], links: [], scripts: [], inlineScripts: [] };
 
 const strings = (v: unknown): string[] =>
   Array.isArray(v) ? v.filter((x): x is string => typeof x === "string" && !!x.trim()) : [];
@@ -27,18 +29,20 @@ const strings = (v: unknown): string[] =>
 export async function getBlogTheme(): Promise<BlogTheme> {
   try {
     const doc = await adminFirestore.collection("blog_theme").doc("current").get();
-    if (!doc.exists) return EMPTY;
+    if (!doc.exists) return FALLBACK;
     const d = doc.data() ?? {};
+    const css = strings(d.css);
     return {
-      css: strings(d.css),
+      // An empty stored theme is the same situation as no theme at all.
+      css: css.length ? css : FALLBACK.css,
       links: strings(d.links),
       scripts: strings(d.scripts),
       inlineScripts: strings(d.inlineScripts),
     };
   } catch {
-    // A missing or unreachable theme must not take the article down; the post
-    // still renders, unstyled, which is recoverable. Throwing is not.
-    return EMPTY;
+    // A missing or unreachable theme must not take the article down, and it
+    // must not leave it unstyled either — the default is right here.
+    return FALLBACK;
   }
 }
 

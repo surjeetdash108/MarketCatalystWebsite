@@ -1,5 +1,6 @@
 import Script from "next/script";
 import { sanitizeRichPostHtml } from "@/lib/security/sanitize";
+import { scopeCss } from "@/lib/blog/scope-css";
 import type { BlogTheme } from "@/lib/blog/theme";
 
 /**
@@ -38,17 +39,23 @@ export function PostHtmlDoc({
   theme: BlogTheme;
 }) {
   const body = sanitizeRichPostHtml(html);
+  /**
+   * The stored design is written as a whole page would be — `body { … }`,
+   * `h2 { … }`, `a { … }` — because that is what an uploaded document
+   * contains. Applied as-is it would restyle the site around the article, so
+   * every selector is prefixed with the article's own container first, and
+   * `body`/`:root` map onto that container. See scopeCss.
+   */
+  const themeCss = scopeCss(theme.css.join("\n"), ".mc-doc");
 
   return (
     <div className="mc-doc">
       {/* The shared stylesheet. Rendered inside the article rather than hoisted
           to <head> because it belongs to this page only, and `</style` is
           stripped so a stylesheet cannot close its own tag and open markup. */}
-      {theme.css.length > 0 && (
+      {themeCss && (
         <style
-          dangerouslySetInnerHTML={{
-            __html: theme.css.join("\n").replace(/<\/?(style|script)/gi, ""),
-          }}
+          dangerouslySetInnerHTML={{ __html: themeCss.replace(/<\/?(style|script)/gi, "") }}
         />
       )}
 
