@@ -113,7 +113,7 @@
 .mcb2 .mini-thumb{aspect-ratio:16/9;margin-bottom:13px}
 .mcb2 .p-thumb{width:150px;aspect-ratio:16/9;align-self:flex-start}
 @media(max-width:760px){.mcb2 .p-thumb{display:none}}
-.mcb2 .cols{display:grid;grid-template-columns:1fr 296px;gap:46px;align-items:start}
+.mcb2 .cols{display:grid;grid-template-columns:minmax(0,2fr) minmax(0,1fr);gap:46px;align-items:start}
 @media(max-width:960px){.mcb2 .cols{grid-template-columns:1fr;gap:34px}}
 .mcb2 .post{display:grid;grid-template-columns:96px 1fr 150px;gap:20px;padding:24px 0;border-bottom:1px solid var(--line);
   border-radius:10px}
