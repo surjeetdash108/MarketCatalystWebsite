@@ -39,6 +39,9 @@ export type Post = {
    *  Unranked docs default to 999 so they sort after ranked ones. */
   rank: number;
   authorId: string;
+  /** Display name written by the console ("Desk", a person's name). Distinct
+   *  from authorId, which is the account that wrote the post. */
+  author: string;
   editorId: string | null;
   categories: string[];
   tags: string[];
@@ -95,6 +98,7 @@ function mapPost(id: string, data: FirebaseFirestore.DocumentData): Post {
     type: (data.type as BlogType) ?? deriveTypeFromCategories(data.categories),
     rank: typeof data.rank === "number" ? data.rank : 999,
     authorId: data.authorId,
+    author: typeof data.author === "string" ? data.author : "",
     editorId: data.editorId ?? null,
     categories: data.categories ?? [],
     tags: data.tags ?? [],

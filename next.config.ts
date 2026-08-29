@@ -22,7 +22,14 @@ const nextConfig: NextConfig = {
   // see lib/media/library.ts), not next/image's default same-origin
   // assumption.
   images: {
-    remotePatterns: [{ protocol: "https", hostname: "storage.googleapis.com" }],
+    remotePatterns: [
+      { protocol: "https", hostname: "storage.googleapis.com" },
+      // The blogs admin uploads through the Firebase Storage download API and
+      // stores THAT url (see storeSourceDoc / externalizeImages in the backend).
+      // Without this host an uploaded hero image renders as a broken image, and
+      // next/image throws rather than falling back.
+      { protocol: "https", hostname: "firebasestorage.googleapis.com" },
+    ],
   },
 
   experimental: {

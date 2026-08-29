@@ -90,6 +90,76 @@
 .mcb .ph .n{margin-left:auto;font-family:var(--disp);font-weight:600;font-size:12px;letter-spacing:-.005em;color:var(--dim2);border:1px solid var(--line);background:var(--surface2);border-radius:7px;padding:3px 9px}
 .mcb .tray{padding:18px 20px;max-height:430px;overflow-y:auto;overflow-x:hidden}
 
+/* ── Post cards ────────────────────────────────────────────────────────────
+   ONE card, two layouts. List puts the image beside the text (more posts on
+   screen, the excerpt gets room to breathe); grid puts it above (browsing by
+   cover art). Everything else — type, spacing, hover — is shared, so the two
+   views cannot drift apart.
+
+   No comment or reaction counts anywhere: the blog has neither, and a row of
+   zeros advertises the absence. */
+.mcb .content.list{display:flex;flex-direction:column;gap:16px}
+.mcb .content.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(296px,1fr));gap:18px;align-items:start}
+
+.mcb .card{display:flex;text-decoration:none;cursor:pointer;overflow:hidden;
+  border:1px solid var(--line);border-radius:16px;background:var(--surface);
+  box-shadow:inset 0 1px 0 var(--edge);
+  transition:border-color .16s,background .16s,transform .16s,box-shadow .16s}
+.mcb .card:hover{border-color:color-mix(in srgb,var(--a) 45%,var(--line));
+  background:color-mix(in srgb,var(--a) var(--wash),var(--surface));
+  transform:translateY(-2px);box-shadow:var(--lift)}
+.mcb .card:hover h3{color:var(--a)}
+
+/* The image box holds its own shape so every card lines up whatever the
+   source image's dimensions are. */
+.mcb .card .thumb{position:relative;flex:none;overflow:hidden;background:var(--surface2);
+  display:flex;align-items:center;justify-content:center}
+.mcb .card .thumb .ph{font-family:var(--disp);font-weight:700;font-size:34px;color:var(--dim2)}
+.mcb .card .cbody{display:flex;flex-direction:column;min-width:0;padding:18px 20px 16px}
+
+.mcb .card .cmeta{display:flex;align-items:center;gap:10px;margin-bottom:9px;
+  font-family:var(--disp);font-weight:500;font-size:12.5px;color:var(--dim2)}
+.mcb .card .cread{margin-left:auto}
+.mcb .card h3{font-family:var(--disp);font-weight:700;font-size:20px;line-height:1.22;
+  letter-spacing:-.022em;color:var(--paper);margin:0 0 10px;transition:color .16s}
+.mcb .card .cauth{display:flex;align-items:center;gap:8px;margin-bottom:10px;
+  font-family:var(--disp);font-weight:500;font-size:13px;color:var(--dim)}
+.mcb .card .cavatar{width:22px;height:22px;border-radius:50%;flex:none;display:grid;place-items:center;
+  background:color-mix(in srgb,var(--a) 22%,var(--surface2));color:var(--a);
+  font-size:11px;font-weight:700}
+.mcb .card p{margin:0 0 14px;color:var(--dim);font-size:14.5px;line-height:1.55;
+  display:-webkit-box;-webkit-box-orient:vertical;overflow:hidden}
+.mcb .card .cfoot{margin-top:auto;padding-top:12px;border-top:1px solid var(--line);
+  font-family:var(--disp);font-weight:500;font-size:13px;color:var(--dim)}
+
+/* List: image on the left at a fixed width, text takes the rest. */
+.mcb .content.list .card{flex-direction:row;align-items:stretch}
+.mcb .content.list .card .thumb{width:300px;align-self:stretch;margin:14px 0 14px 14px;border-radius:12px}
+.mcb .content.list .card p{-webkit-line-clamp:3}
+
+/* Grid: image on top at a fixed ratio, text below. */
+.mcb .content.grid .card{flex-direction:column}
+.mcb .content.grid .card .thumb{width:auto;aspect-ratio:16/10;margin:14px 14px 0;border-radius:12px}
+.mcb .content.grid .card p{-webkit-line-clamp:3}
+
+/* One column below this: a 300px image beside text leaves the headline nowhere
+   to go, so the list card takes the grid's stacked shape. */
+@media(max-width:760px){
+  .mcb .content.list .card{flex-direction:column}
+  .mcb .content.list .card .thumb{width:auto;aspect-ratio:16/10;margin:14px 14px 0}
+}
+
+/* View switch in the masthead. */
+.mcb .viewSw{margin-left:auto;flex:none;display:inline-flex;gap:2px;padding:3px;
+  border:1px solid var(--line);border-radius:10px;background:var(--surface2)}
+.mcb .viewSw + .themeBtn{margin-left:10px}
+.mcb .viewSw button{display:inline-flex;align-items:center;gap:6px;cursor:pointer;
+  border:0;background:none;border-radius:7px;padding:6px 11px;
+  font-family:var(--disp);font-weight:600;font-size:12.5px;color:var(--dim2);
+  transition:background .15s,color .15s}
+.mcb .viewSw button:hover{color:var(--text)}
+.mcb .viewSw button.on{background:var(--surface);color:var(--paper);box-shadow:inset 0 1px 0 var(--edge)}
+
 .mcb .content .item{display:block;text-decoration:none;border:1px solid var(--line);border-radius:13px;background:var(--surface);
   padding:18px 20px;cursor:pointer;box-shadow:inset 0 1px 0 var(--edge);transition:border-color .16s,background .16s,transform .16s}
 .mcb .content .item:hover{border-color:color-mix(in srgb,var(--a) 45%,var(--line));
