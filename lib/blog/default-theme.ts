@@ -164,6 +164,11 @@ pre code { background: none; padding: 0; color: inherit; font-size: .88rem; }
 hr { border: 0; border-top: 1px solid #e5e7eb; margin: 40px 0; }
 
 /* ── figures and images ─────────────────────────────────────────────────── */
+/* The template frames everything in .image-container with a 1px edge on white,
+   which is right for its SVG charts — they are drawn on white and need
+   something to sit on. A photograph does not: the frame renders as a white
+   border around the picture. Charts keep the edge; images lose it. */
+.image-container img { border: 0; background: none; }
 img { max-width: 100%; height: auto; display: block; border-radius: 8px; }
 figure { margin: 32px 0; }
 figcaption { font-style: italic; color: #666; font-size: .9rem; text-align: center; margin-top: 10px; }
