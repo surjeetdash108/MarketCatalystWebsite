@@ -122,6 +122,8 @@
 .mcb2[data-theme="dark"] .mc-post:hover .mc-p-title{color:#fff}
 .mcb2 .mc-p-when{font:500 12px/1.5 ui-monospace,monospace;color:var(--dim);padding-top:3px}
 .mcb2 .mc-p-when b{display:block;color:var(--mute);font-size:15px;font-weight:600;letter-spacing:-.01em}
+/* ADDED — publish time, under the year in the date column. */
+.mcb2 .mc-p-time{display:block;margin-top:2px;font-size:11px;color:var(--dim);letter-spacing:.01em}
 .mcb2 .mc-p-title{font-size:19.5px;line-height:1.32;margin:9px 0 8px;letter-spacing:-.012em;font-weight:650}
 .mcb2 .mc-p-dek{color:var(--mute);font-size:14.5px;margin:0 0 12px;max-width:66ch}
 .mcb2 .mc-byline{display:flex;align-items:center;gap:10px;font-size:12.5px;color:var(--dim);flex-wrap:wrap}

@@ -99,8 +99,21 @@ export default async function PostViewPage({
             {post.excerpt && <p className="article-sub">{post.excerpt}</p>}
             {post.publishedAt && (
               <div className="article-meta">
+                {/* Fixed to New York rather than the reader's zone: this page is
+                    server-rendered and hydrated, and a zone-dependent string
+                    differs between the two. The posts are about the US session,
+                    so the closing bell is the useful reference either way. */}
                 <time dateTime={post.publishedAt}>
-                  {new Date(post.publishedAt).toLocaleDateString(undefined, { year: "numeric", month: "long", day: "numeric" })}
+                  {new Date(post.publishedAt).toLocaleDateString("en-US", {
+                    year: "numeric", month: "long", day: "numeric",
+                    timeZone: "America/New_York",
+                  })}
+                  {" · "}
+                  {new Date(post.publishedAt).toLocaleTimeString("en-GB", {
+                    hour: "2-digit", minute: "2-digit", hour12: false,
+                    timeZone: "America/New_York",
+                  })}
+                  {" ET"}
                 </time>
               </div>
             )}

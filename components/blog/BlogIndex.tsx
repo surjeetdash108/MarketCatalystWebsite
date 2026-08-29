@@ -42,8 +42,27 @@ function initials(name: string): string {
     .toUpperCase();
 }
 
+/**
+ * Dates and times render in New York, always — not in the reader's zone.
+ *
+ * Two reasons. This component renders on the server and again in the browser,
+ * and a zone-dependent format produces different text in each, which React
+ * reports as a hydration mismatch; a fixed zone gives both sides the same
+ * string. And the posts are about the US session, so "16:05" means something
+ * to a reader in London precisely because it is the closing bell and not their
+ * own clock.
+ */
+const ET = "America/New_York";
+
 const fmtLong = (iso: string) =>
-  new Date(iso).toLocaleDateString("en-GB", { day: "numeric", month: "short", year: "numeric" });
+  new Date(iso).toLocaleDateString("en-GB", {
+    day: "numeric", month: "short", year: "numeric", timeZone: ET,
+  });
+
+const fmtTime = (iso: string) =>
+  new Date(iso).toLocaleTimeString("en-GB", {
+    hour: "2-digit", minute: "2-digit", hour12: false, timeZone: ET,
+  }) + " ET";
 
 /** Sort key: published where it exists, created otherwise — a published post
  *  with no publishedAt must not fall to the bottom of the list. */
@@ -283,7 +302,7 @@ export function BlogIndex({ posts }: { posts: Post[] }) {
                       <span className="mc-avatar">{initials(highlights[0].author || "Desk")}</span>
                       {highlights[0].author || "Desk"}
                       <span className="mc-sep" />
-                      {fmtLong(when(highlights[0]))}
+                      {fmtLong(when(highlights[0]))} · {fmtTime(when(highlights[0]))}
                       <span className="mc-sep" />
                       {readMins(highlights[0].content)} min read
                     </div>
@@ -297,7 +316,7 @@ export function BlogIndex({ posts }: { posts: Post[] }) {
                       <h3>{p.title}</h3>
                       <p>{p.excerpt}</p>
                       <div className="mc-byline" style={{ marginTop: 12 }}>
-                        {fmtLong(when(p))}
+                        {fmtLong(when(p))} · {fmtTime(when(p))}
                         <span className="mc-sep" />
                         {readMins(p.content)} min read
                       </div>
@@ -380,8 +399,9 @@ export function BlogIndex({ posts }: { posts: Post[] }) {
                     return (
                       <a className="mc-post" key={p.id} href={href(p)}>
                         <div className="mc-p-when">
-                          <b>{d.toLocaleDateString("en-GB", { day: "2-digit", month: "short" })}</b>
-                          {d.getFullYear()}
+                          <b>{d.toLocaleDateString("en-GB", { day: "2-digit", month: "short", timeZone: ET })}</b>
+                          {d.toLocaleDateString("en-GB", { year: "numeric", timeZone: ET })}
+                          <span className="mc-p-time">{fmtTime(when(p))}</span>
                         </div>
                         <div>
                           <span className={`mc-tag ${SEC_CLASS[sectionOf(p)]}`}>{sectionOf(p)}</span>
