@@ -6,7 +6,8 @@ import { getPublishedPostBySlug } from "@/lib/blog/posts";
 import { PostBody } from "@/components/blog/PostBody";
 import { PostPdf } from "@/components/blog/PostPdf";
 import { PostDocx } from "@/components/blog/PostDocx";
-import { PostHtml } from "@/components/blog/PostHtml";
+import { PostHtmlDoc } from "@/components/blog/PostHtmlDoc";
+import { getBlogTheme } from "@/lib/blog/theme";
 import { buildArticleJsonLd } from "@/lib/seo/jsonld";
 
 // Reading searchParams makes this dynamic (per-slug), so there is no ISR
@@ -59,6 +60,9 @@ export default async function PostViewPage({
   if (!post) notFound();
 
   const jsonLd = buildArticleJsonLd(post);
+  // Only an authored-HTML post uses the shared design; everything else is
+  // drawn by the site's own article styling.
+  const theme = post.format === "html" ? await getBlogTheme() : null;
 
   // A source-document post draws the file and suppresses the heading block; the
   // authored formats (text, html) print their own. Guarded on the URL as well
@@ -83,7 +87,7 @@ export default async function PostViewPage({
       </div>
 
       <article className="article">
-        {post.coverImageUrl && (
+        {post.coverImageUrl && post.format !== "html" && (
           <div className="article-hero">
             <Image src={post.coverImageUrl} alt="" fill priority sizes="760px" className="object-cover" />
           </div>
@@ -93,7 +97,7 @@ export default async function PostViewPage({
             importer's mangled words. The title still names the post everywhere
             it is referenced: the browser tab, the board, link previews and this
             page's JSON-LD. */}
-        {!isDoc && (
+        {!isDoc && post.format !== "html" && (
           <>
             <h1 className="article-title">{post.title}</h1>
             {post.excerpt && <p className="article-sub">{post.excerpt}</p>}
@@ -148,10 +152,19 @@ export default async function PostViewPage({
             still published as the article body in this page's JSON-LD, so
             search engines keep something to read. */}
         {!isDoc && (
-          post.format === "html" ? (
-            // Authored markup keeps its own design — see PostHtml. The site's
-            // post typography is deliberately NOT applied over it.
-            <PostHtml html={post.content} css={post.css} />
+          post.format === "html" && theme ? (
+            // The whole article — masthead, hero and body — is drawn as the
+            // approved template. Title, summary and hero come from the form,
+            // not from the markup, so they cannot disagree with the post's
+            // own metadata. See PostHtmlDoc.
+            <PostHtmlDoc
+              title={post.title}
+              summary={post.excerpt}
+              heroUrl={post.coverImageUrl}
+              publishedAt={post.publishedAt ?? post.createdAt}
+              html={post.content}
+              theme={theme}
+            />
           ) : (
             <div className="post-content">
               <PostBody markdown={post.content} />

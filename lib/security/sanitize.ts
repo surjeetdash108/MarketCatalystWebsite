@@ -68,11 +68,55 @@ export function sanitizePostHtml(html: string): string {
  * `stripRemoteRefs` first, so an inline rule cannot call out to a third party
  * any more than the stylesheet can.
  */
+/**
+ * Inline SVG, as a deliberately small subset.
+ *
+ * The recap template draws its charts as inline SVG — strip it and the article
+ * loses its figures, which is most of what a market recap is for. But SVG is
+ * markup with its own script surface, so only shape, text and gradient
+ * elements are allowed. Left out on purpose:
+ *
+ *   script          — executes.
+ *   foreignObject   — reopens the whole HTML surface inside the drawing.
+ *   use / image     — can reference and pull in something else.
+ *   animate / set   — can rewrite another element's attributes after load.
+ *   style           — a stylesheet that would escape the article.
+ */
+const SVG_TAGS = [
+  "svg", "g", "defs", "title", "desc",
+  "rect", "circle", "ellipse", "line", "polyline", "polygon", "path",
+  "text", "tspan", "linearGradient", "radialGradient", "stop", "clipPath", "mask",
+];
+
+/** Geometry and presentation only — nothing that fetches or executes. */
+const SVG_ATTRS = [
+  "viewBox", "xmlns", "width", "height", "x", "y", "dx", "dy",
+  "x1", "y1", "x2", "y2", "cx", "cy", "r", "rx", "ry", "d", "points",
+  "fill", "fill-opacity", "fill-rule", "stroke", "stroke-width", "stroke-linecap",
+  "stroke-linejoin", "stroke-dasharray", "stroke-opacity", "opacity", "transform",
+  "text-anchor", "dominant-baseline", "font-family", "font-size", "font-weight",
+  "offset", "stop-color", "stop-opacity", "gradientUnits", "gradientTransform",
+  "clip-path", "mask", "preserveAspectRatio", "role", "aria-label",
+];
+
+/**
+ * The same list, lowercased.
+ *
+ * sanitize-html lowercases attribute names before matching, so a camelCase
+ * entry never matches: `viewBox` arrived as `viewbox` and was dropped, which
+ * takes an SVG's coordinate system with it — the charts rendered at a default
+ * 300x150 instead of scaling to their container. Allowing both spellings keeps
+ * it. The browser's own SVG attribute adjustment restores the camelCase when
+ * the markup is parsed back out of HTML.
+ */
+const SVG_ATTRS_ALL = [...new Set([...SVG_ATTRS, ...SVG_ATTRS.map((a) => a.toLowerCase())])];
+
 const RICH_TAGS = [
   ...ALLOWED_TAGS,
   "h6", "b", "i", "u", "s", "mark", "abbr", "time", "cite", "q", "del", "ins",
   "article", "header", "footer", "main", "aside", "nav",
   "dl", "dt", "dd", "col", "colgroup", "details", "summary",
+  ...SVG_TAGS,
 ];
 
 /** `class`/`id`/`style` on everything — the post's CSS selects on them. */
@@ -81,8 +125,11 @@ const RICH_GLOBAL = ["class", "id", "style", "title"];
 export function sanitizeRichPostHtml(html: string): string {
   return sanitizeHtml(html, {
     allowedTags: RICH_TAGS,
+    // SVG tags are matched case-insensitively by the sanitizer, so the parser's
+    // own SVG adjustment is what restores camelCase (viewBox, linearGradient)
+    // when the markup is inserted.
     allowedAttributes: {
-      "*": RICH_GLOBAL,
+      "*": [...RICH_GLOBAL, ...SVG_ATTRS_ALL],
       a: [...RICH_GLOBAL, "href", "rel", "target"],
       img: [...RICH_GLOBAL, "src", "alt", "width", "height", "loading"],
       th: [...RICH_GLOBAL, "colspan", "rowspan", "scope"],
