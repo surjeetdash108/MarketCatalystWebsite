@@ -214,15 +214,6 @@
   font:500 10.5px/1.35 ui-monospace,monospace;color:var(--dim);letter-spacing:.02em}
 .mcb2 .mc-thumb .mc-noimg{font-size:13px}
 
-/* Attachment box — UI only for now; nothing is wired up behind it. */
-.mcb2 .mc-attach{display:flex;align-items:center;gap:10px;padding:10px 12px;margin-bottom:10px;
-  border:1px dashed var(--line-2);border-radius:9px;color:var(--dim);font-size:13px}
-.mcb2 .mc-attach svg{flex:none;opacity:.7}
-.mcb2 .mc-attach .mc-fname{flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
-.mcb2 .mc-attach button{flex:none;border:1px solid var(--line-2);background:transparent;color:var(--mute);
-  border-radius:7px;padding:5px 10px;font:600 12px inherit;cursor:pointer}
-.mcb2 .mc-attach button:hover{color:var(--ink);border-color:var(--blue)}
-
 /* "Your sections" — read back from the reader's own browsing record. */
 .mcb2 .mc-mine{display:flex;flex-wrap:wrap;gap:7px}
 .mcb2 .mc-mine button{padding:6px 11px;border-radius:999px;cursor:pointer;

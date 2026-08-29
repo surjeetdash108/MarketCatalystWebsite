@@ -457,14 +457,6 @@ export function BlogIndex({ posts }: { posts: Post[] }) {
                 <h4>The daily recap</h4>
                 <p>One email after the US close. Indices, movers, and the reason behind each.</p>
                 <input type="email" placeholder="you@work.com" aria-label="Email address" />
-                {/* Attachment control — appearance only for now. Nothing is
-                    uploaded and nothing is sent; the send button is disabled so
-                    the UI cannot imply otherwise. */}
-                <div className="mc-attach">
-                  <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round"><path d="M21.4 11.05 12.25 20.2a5.5 5.5 0 0 1-7.78-7.78l9.2-9.2a3.67 3.67 0 1 1 5.18 5.18l-9.2 9.2a1.83 1.83 0 1 1-2.6-2.6l8.5-8.48" /></svg>
-                  <span className="mc-fname">No file attached</span>
-                  <button type="button">Attach</button>
-                </div>
                 <button type="button" disabled title="Not wired up yet">
                   Get the recap
                 </button>
