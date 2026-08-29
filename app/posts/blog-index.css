@@ -146,6 +146,10 @@
 .mcb2 .mc-rail-list li:first-child{border-top:0;padding-top:0}
 .mcb2 .mc-rail-list .mc-n{font:700 12px/1 ui-monospace,monospace;color:var(--dim);margin-right:9px}
 .mcb2 .mc-rail-list a:hover{color:var(--blue)}
+/* ADDED — live post count per section, right-aligned in the row. */
+.mcb2 .mc-count{float:right;margin-left:10px;font:700 11px ui-monospace,monospace;
+  color:var(--dim);background:var(--surface-2);border:1px solid var(--line);
+  border-radius:20px;padding:1px 8px}
 .mcb2 .mc-sub p{color:var(--mute);font-size:13.5px;margin:0 0 14px}
 .mcb2 .mc-sub input{width:100%;padding:10px 12px;border-radius:9px;border:1px solid var(--line-2);
   background:var(--input);color:var(--ink);font:400 14px inherit;margin-bottom:10px}

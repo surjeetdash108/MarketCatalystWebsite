@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { getPublishedPosts } from "@/lib/blog/posts";
 import { BlogIndex } from "@/components/blog/BlogIndex";
+import { getWeeklyReads } from "@/lib/blog/stats";
 import "./blog-index.css";
 
 // Rendered per-request (this runs on App Hosting, not a static export) so the
@@ -15,6 +16,7 @@ export const metadata: Metadata = {
 };
 
 export default async function PostsIndexPage() {
-  const posts = await getPublishedPosts();
-  return <BlogIndex posts={posts} />;
+  // Both reads are independent, so they go together rather than in sequence.
+  const [posts, reads] = await Promise.all([getPublishedPosts(), getWeeklyReads()]);
+  return <BlogIndex posts={posts} reads={reads} />;
 }

@@ -91,7 +91,14 @@ function Cover({ src, className, eager }: { src: string | null; className: strin
   );
 }
 
-export function BlogIndex({ posts }: { posts: Post[] }) {
+export function BlogIndex({
+  posts,
+  reads = {},
+}: {
+  posts: Post[];
+  /** slug → times opened this week, from blog_stats. */
+  reads?: Record<string, number>;
+}) {
   const [theme, setTheme] = useState<"light" | "dark">("light");
   const [activeSec, setActiveSec] = useState<Section | "all">("all");
   const [query, setQuery] = useState("");
@@ -189,6 +196,13 @@ export function BlogIndex({ posts }: { posts: Post[] }) {
   /* ── section + search, applied together ─────────────────────────────────
      The search runs inside the section on screen, which is what the pills
      mean: "Recap" plus a query reads as "recaps about that". */
+  /** Live count per section, for the rail. */
+  const sectionCounts = useMemo(() => {
+    const m: Record<string, number> = { Recap: 0, "Research desk": 0, Educational: 0 };
+    for (const p of sorted) m[sectionOf(p)] = (m[sectionOf(p)] ?? 0) + 1;
+    return m;
+  }, [sorted]);
+
   const q = query.trim().toLowerCase();
   const filtered = useMemo(
     () =>
@@ -205,9 +219,48 @@ export function BlogIndex({ posts }: { posts: Post[] }) {
   const current = Math.min(page, pages);
   const shown = filtered.slice((current - 1) * PER_PAGE, current * PER_PAGE);
 
-  const mostRead = useMemo(() => sorted.slice(0, 4), [sorted]);
+  /**
+   * Most read this week, when anything has been read.
+   *
+   * This was `sorted.slice(0, 4)` — the four NEWEST posts under a heading that
+   * said "most read", which is a claim the page could not support. It now ranks
+   * by real opens and falls back to newest only while the week has no data, so
+   * the box is never empty on a Monday morning.
+   */
+  const hasReads = Object.keys(reads).length > 0;
+  const mostRead = useMemo(() => {
+    if (!hasReads) return sorted.slice(0, 4);
+    return [...sorted]
+      .filter((p) => reads[p.slug])
+      .sort((a, b) => (reads[b.slug] ?? 0) - (reads[a.slug] ?? 0))
+      .slice(0, 4);
+  }, [sorted, reads, hasReads]);
 
   const href = (p: Post) => `/posts/view?slug=${encodeURIComponent(p.slug)}`;
+
+  /**
+   * Count the open. sendBeacon because the click is navigating away — a fetch
+   * started here would usually be cancelled before it left the browser.
+   */
+  const countOpen = useCallback((p: Post) => {
+    const id = readerId();
+    if (!id) return;
+    const payload = JSON.stringify({ readerId: id, section: sectionOf(p), slug: p.slug });
+    try {
+      if (navigator.sendBeacon) {
+        navigator.sendBeacon("/api/blog/track", new Blob([payload], { type: "application/json" }));
+        return;
+      }
+    } catch {
+      /* fall through to fetch */
+    }
+    void fetch("/api/blog/track", {
+      method: "POST",
+      headers: { "content-type": "application/json" },
+      body: payload,
+      keepalive: true,
+    }).catch(() => {});
+  }, []);
 
   return (
     <div className="mcb2" data-theme={theme}>
@@ -290,7 +343,7 @@ export function BlogIndex({ posts }: { posts: Post[] }) {
               <p className="mc-empty">Nothing published yet.</p>
             ) : (
               <>
-                <a className="mc-hero-card" href={href(highlights[0])}>
+                <a className="mc-hero-card" href={href(highlights[0])} onClick={() => countOpen(highlights[0])}>
                   <Cover src={highlights[0].coverImageUrl} className="mc-thumb" eager />
                   <div className="mc-body">
                     <span className={`mc-tag ${SEC_CLASS[sectionOf(highlights[0])]}`}>
@@ -310,7 +363,7 @@ export function BlogIndex({ posts }: { posts: Post[] }) {
                 </a>
                 <div className="mc-side-stack">
                   {highlights.slice(1).map((p) => (
-                    <a className="mc-mini" key={p.id} href={href(p)}>
+                    <a className="mc-mini" key={p.id} href={href(p)} onClick={() => countOpen(p)}>
                       <Cover src={p.coverImageUrl} className="mc-mini-thumb" />
                       <span className={`mc-tag ${SEC_CLASS[sectionOf(p)]}`}>{sectionOf(p)}</span>
                       <h3>{p.title}</h3>
@@ -397,7 +450,7 @@ export function BlogIndex({ posts }: { posts: Post[] }) {
                   shown.map((p) => {
                     const d = new Date(when(p));
                     return (
-                      <a className="mc-post" key={p.id} href={href(p)}>
+                      <a className="mc-post" key={p.id} href={href(p)} onClick={() => countOpen(p)}>
                         <div className="mc-p-when">
                           <b>{d.toLocaleDateString("en-GB", { day: "2-digit", month: "short", timeZone: ET })}</b>
                           {d.toLocaleDateString("en-GB", { year: "numeric", timeZone: ET })}
@@ -438,6 +491,7 @@ export function BlogIndex({ posts }: { posts: Post[] }) {
                       >
                         <span className="mc-n">{String(i + 1).padStart(2, "0")}</span>
                         {sec} — {SECTION_BLURB[sec]}
+                        <span className="mc-count">{sectionCounts[sec] ?? 0}</span>
                       </a>
                     </li>
                   ))}
@@ -464,7 +518,7 @@ export function BlogIndex({ posts }: { posts: Post[] }) {
                 <ul className="mc-rail-list">
                   {mostRead.map((p, i) => (
                     <li key={p.id}>
-                      <a href={href(p)}>
+                      <a href={href(p)} onClick={() => countOpen(p)}>
                         <span className="mc-n">{String(i + 1).padStart(2, "0")}</span>
                         {p.title}
                       </a>
