@@ -69,6 +69,36 @@ const fmtTime = (iso: string) =>
 const when = (p: Post) => p.publishedAt ?? p.createdAt;
 
 /**
+ * The card's blurb: the summary, extended from the article when the summary
+ * alone leaves the card half empty.
+ *
+ * The highlight minis stretch to match the hero's height, so a one-line
+ * summary produced a card that was mostly white space. Rather than shrink the
+ * cards — the row reads better even — they show a little of the piece, which
+ * is also what a reader deciding whether to open it actually wants.
+ *
+ * Markdown and HTML both arrive here, so tags and the common markdown marks
+ * are stripped rather than rendered: this is plain text inside a <p>.
+ */
+function preview(post: Post, min: number, max: number): string {
+  const cut = (t: string) => (t.length > max ? t.slice(0, max).trimEnd() + "\u2026" : t);
+  const summary = (post.excerpt ?? "").trim();
+  if (summary.length >= min) return cut(summary);
+
+  const body = (post.content ?? "")
+    .replace(/<[^>]+>/g, " ")
+    .replace(/!?\[([^\]]*)\]\([^)]*\)/g, "$1")
+    .replace(/[#>*_`~]+/g, " ")
+    .replace(/&[a-z]+;|&#\d+;/gi, " ")
+    .replace(/\s+/g, " ")
+    .trim();
+
+  // Don't read the summary back at them if the article opens with it.
+  const rest = body.startsWith(summary) ? body.slice(summary.length).trim() : body;
+  return cut([summary, rest].filter(Boolean).join(" "));
+}
+
+/**
  * A cover image, or a labelled gap where one should be.
  *
  * Drawn rather than hidden: leaving the box out would change the shape of the
@@ -350,7 +380,7 @@ export function BlogIndex({
                       {sectionOf(highlights[0])}
                     </span>
                     <h3>{highlights[0].title}</h3>
-                    <p>{highlights[0].excerpt}</p>
+                    <p>{preview(highlights[0], 150, 260)}</p>
                     <div className="mc-byline">
                       <span className="mc-avatar">{initials(highlights[0].author || "Desk")}</span>
                       {highlights[0].author || "Desk"}
@@ -367,7 +397,7 @@ export function BlogIndex({
                       <Cover src={p.coverImageUrl} className="mc-mini-thumb" />
                       <span className={`mc-tag ${SEC_CLASS[sectionOf(p)]}`}>{sectionOf(p)}</span>
                       <h3>{p.title}</h3>
-                      <p>{p.excerpt}</p>
+                      <p>{preview(p, 110, 200)}</p>
                       <div className="mc-byline" style={{ marginTop: 12 }}>
                         {fmtLong(when(p))} · {fmtTime(when(p))}
                         <span className="mc-sep" />
