@@ -16,9 +16,9 @@ const SECTION_OF: Record<string, Section> = {
   educational: "Educational",
 };
 const SEC_CLASS: Record<Section, string> = {
-  Educational: "edu",
-  Recap: "recap",
-  "Research desk": "desk",
+  Educational: "mc-edu",
+  Recap: "mc-recap",
+  "Research desk": "mc-desk",
 };
 
 const PER_PAGE = 6;
@@ -66,7 +66,7 @@ function Cover({ src, className, eager }: { src: string | null; className: strin
         // eslint-disable-next-line @next/next/no-img-element
         <img src={src} alt="" loading={eager ? "eager" : "lazy"} />
       ) : (
-        <div className="noimg">Image not available</div>
+        <div className="mc-noimg">Image not available</div>
       )}
     </div>
   );
@@ -192,46 +192,46 @@ export function BlogIndex({ posts }: { posts: Post[] }) {
 
   return (
     <div className="mcb2" data-theme={theme}>
-      <header className="top">
-        <div className="top-in">
-          <a className="brand" href="/">
+      <header className="mc-top">
+        <div className="mc-top-in">
+          <a className="mc-brand" href="/">
             Market<span>Catalyst</span>
           </a>
-          <nav className="main">
-            <a className="active" href="/posts">Blogs</a>
-            <a className="hide-sm" href="/faqs">FAQs</a>
+          <nav className="mc-main">
+            <a className="mc-active" href="/posts">Blogs</a>
+            <a className="mc-hide-sm" href="/faqs">FAQs</a>
             <a href="/admin/login">Log in</a>
-            <a className="btn-grad" href="/contact">Sign up</a>
+            <a className="mc-btn-grad" href="/contact">Sign up</a>
             <button
               id="themeBtn"
               type="button"
               onClick={toggleTheme}
               aria-label={theme === "dark" ? "Switch to light theme" : "Switch to dark theme"}
             >
-              <svg className="sun" width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round"><circle cx="12" cy="12" r="4.2" /><path d="M12 2.5v2M12 19.5v2M4.2 4.2l1.4 1.4M18.4 18.4l1.4 1.4M2.5 12h2M19.5 12h2M4.2 19.8l1.4-1.4M18.4 5.6l1.4-1.4" /></svg>
-              <svg className="moon" width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinejoin="round"><path d="M20 14.5A8.2 8.2 0 019.6 4 8.4 8.4 0 1020 14.5z" /></svg>
+              <svg className="mc-sun" width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round"><circle cx="12" cy="12" r="4.2" /><path d="M12 2.5v2M12 19.5v2M4.2 4.2l1.4 1.4M18.4 18.4l1.4 1.4M2.5 12h2M19.5 12h2M4.2 19.8l1.4-1.4M18.4 5.6l1.4-1.4" /></svg>
+              <svg className="mc-moon" width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinejoin="round"><path d="M20 14.5A8.2 8.2 0 019.6 4 8.4 8.4 0 1020 14.5z" /></svg>
             </button>
           </nav>
         </div>
       </header>
 
-      <div className="wrap">
-        <div className="masthead">
-          <div className="eyebrow">MarketCatalyst blog</div>
+      <div className="mc-wrap">
+        <div className="mc-masthead">
+          <div className="mc-eyebrow">MarketCatalyst blog</div>
           <h1>
             What moved, why it moved,
             <br />
             and what to do with it.
           </h1>
-          <p className="stand">
+          <p className="mc-stand">
             Daily recaps, single-stock research and guides to how the market actually works.
           </p>
         </div>
 
-        <div className="controls">
-          <div className="pills" role="group" aria-label="Filter posts by section">
+        <div className="mc-controls">
+          <div className="mc-pills" role="group" aria-label="Filter posts by section">
             <button
-              className="pill"
+              className="mc-pill"
               aria-pressed={activeSec === "all"}
               onClick={() => chooseSection("all")}
             >
@@ -240,7 +240,7 @@ export function BlogIndex({ posts }: { posts: Post[] }) {
             {SECTIONS.map((sec) => (
               <button
                 key={sec}
-                className="pill"
+                className="mc-pill"
                 aria-pressed={activeSec === sec}
                 onClick={() => chooseSection(sec)}
               >
@@ -248,7 +248,7 @@ export function BlogIndex({ posts }: { posts: Post[] }) {
               </button>
             ))}
           </div>
-          <div className="search">
+          <div className="mc-search">
             <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2"><circle cx="11" cy="11" r="7" /><path d="M20 20l-3.6-3.6" /></svg>
             <input
               id="q"
@@ -265,40 +265,40 @@ export function BlogIndex({ posts }: { posts: Post[] }) {
         </div>
 
         <section id="highlights">
-          <h2 className="sec">Highlights</h2>
-          <div className="highlights">
+          <h2 className="mc-sec">Highlights</h2>
+          <div className="mc-highlights">
             {highlights.length === 0 ? (
-              <p className="empty">Nothing published yet.</p>
+              <p className="mc-empty">Nothing published yet.</p>
             ) : (
               <>
-                <a className="hero-card" href={href(highlights[0])}>
-                  <Cover src={highlights[0].coverImageUrl} className="thumb" eager />
-                  <div className="body">
-                    <span className={`tag ${SEC_CLASS[sectionOf(highlights[0])]}`}>
+                <a className="mc-hero-card" href={href(highlights[0])}>
+                  <Cover src={highlights[0].coverImageUrl} className="mc-thumb" eager />
+                  <div className="mc-body">
+                    <span className={`mc-tag ${SEC_CLASS[sectionOf(highlights[0])]}`}>
                       {sectionOf(highlights[0])}
                     </span>
                     <h3>{highlights[0].title}</h3>
                     <p>{highlights[0].excerpt}</p>
-                    <div className="byline">
-                      <span className="avatar">{initials(highlights[0].author || "Desk")}</span>
+                    <div className="mc-byline">
+                      <span className="mc-avatar">{initials(highlights[0].author || "Desk")}</span>
                       {highlights[0].author || "Desk"}
-                      <span className="sep" />
+                      <span className="mc-sep" />
                       {fmtLong(when(highlights[0]))}
-                      <span className="sep" />
+                      <span className="mc-sep" />
                       {readMins(highlights[0].content)} min read
                     </div>
                   </div>
                 </a>
-                <div className="side-stack">
+                <div className="mc-side-stack">
                   {highlights.slice(1).map((p) => (
-                    <a className="mini" key={p.id} href={href(p)}>
-                      <Cover src={p.coverImageUrl} className="mini-thumb" />
-                      <span className={`tag ${SEC_CLASS[sectionOf(p)]}`}>{sectionOf(p)}</span>
+                    <a className="mc-mini" key={p.id} href={href(p)}>
+                      <Cover src={p.coverImageUrl} className="mc-mini-thumb" />
+                      <span className={`mc-tag ${SEC_CLASS[sectionOf(p)]}`}>{sectionOf(p)}</span>
                       <h3>{p.title}</h3>
                       <p>{p.excerpt}</p>
-                      <div className="byline" style={{ marginTop: 12 }}>
+                      <div className="mc-byline" style={{ marginTop: 12 }}>
                         {fmtLong(when(p))}
-                        <span className="sep" />
+                        <span className="mc-sep" />
                         {readMins(p.content)} min read
                       </div>
                     </a>
@@ -310,13 +310,13 @@ export function BlogIndex({ posts }: { posts: Post[] }) {
         </section>
 
         <section style={{ paddingTop: 10 }}>
-          <div className="cols">
+          <div className="mc-cols">
             <div>
               {/* Heading, pagination and the view switch share one line. */}
-              <div className="sec-row">
-                <h2 className="sec">Latest posts</h2>
-                <div className="sec-tools">
-                  <nav className="pager" aria-label="Pagination">
+              <div className="mc-sec-row">
+                <h2 className="mc-sec">Latest posts</h2>
+                <div className="mc-sec-tools">
+                  <nav className="mc-pager" aria-label="Pagination">
                     <button
                       type="button"
                       onClick={() => setPage(current - 1)}
@@ -327,7 +327,7 @@ export function BlogIndex({ posts }: { posts: Post[] }) {
                     </button>
                     {pageNumbers(current, pages).map((n, i) =>
                       n === "…" ? (
-                        <span className="gap" key={`gap${i}`}>
+                        <span className="mc-gap" key={`gap${i}`}>
                           …
                         </span>
                       ) : (
@@ -350,7 +350,7 @@ export function BlogIndex({ posts }: { posts: Post[] }) {
                       ›
                     </button>
                   </nav>
-                  <div className="viewsw" role="group" aria-label="Layout">
+                  <div className="mc-viewsw" role="group" aria-label="Layout">
                     <button
                       type="button"
                       aria-pressed={view === "list"}
@@ -371,30 +371,30 @@ export function BlogIndex({ posts }: { posts: Post[] }) {
                 </div>
               </div>
 
-              <div className={`feed ${view}`} id="feed">
+              <div className={`mc-feed mc-${view}`} id="feed">
                 {shown.length === 0 ? (
-                  <p className="empty">No posts match that filter yet.</p>
+                  <p className="mc-empty">No posts match that filter yet.</p>
                 ) : (
                   shown.map((p) => {
                     const d = new Date(when(p));
                     return (
-                      <a className="post" key={p.id} href={href(p)}>
-                        <div className="p-when">
+                      <a className="mc-post" key={p.id} href={href(p)}>
+                        <div className="mc-p-when">
                           <b>{d.toLocaleDateString("en-GB", { day: "2-digit", month: "short" })}</b>
                           {d.getFullYear()}
                         </div>
                         <div>
-                          <span className={`tag ${SEC_CLASS[sectionOf(p)]}`}>{sectionOf(p)}</span>
-                          <h3 className="p-title">{p.title}</h3>
-                          <p className="p-dek">{p.excerpt}</p>
-                          <div className="byline">
-                            <span className="avatar">{initials(p.author || "Desk")}</span>
+                          <span className={`mc-tag ${SEC_CLASS[sectionOf(p)]}`}>{sectionOf(p)}</span>
+                          <h3 className="mc-p-title">{p.title}</h3>
+                          <p className="mc-p-dek">{p.excerpt}</p>
+                          <div className="mc-byline">
+                            <span className="mc-avatar">{initials(p.author || "Desk")}</span>
                             {p.author || "Desk"}
-                            <span className="sep" />
+                            <span className="mc-sep" />
                             {readMins(p.content)} min read
                           </div>
                         </div>
-                        <Cover src={p.coverImageUrl} className="p-thumb" />
+                        <Cover src={p.coverImageUrl} className="mc-p-thumb" />
                       </a>
                     );
                   })
@@ -402,10 +402,10 @@ export function BlogIndex({ posts }: { posts: Post[] }) {
               </div>
             </div>
 
-            <aside className="rail">
-              <div className="rail-box">
+            <aside className="mc-rail">
+              <div className="mc-rail-box">
                 <h4>Browse by section</h4>
-                <ul className="rail-list">
+                <ul className="mc-rail-list">
                   {SECTIONS.map((sec, i) => (
                     <li key={sec}>
                       <a
@@ -416,7 +416,7 @@ export function BlogIndex({ posts }: { posts: Post[] }) {
                           document.getElementById("feed")?.scrollIntoView({ behavior: "smooth", block: "start" });
                         }}
                       >
-                        <span className="n">{String(i + 1).padStart(2, "0")}</span>
+                        <span className="mc-n">{String(i + 1).padStart(2, "0")}</span>
                         {sec} — {SECTION_BLURB[sec]}
                       </a>
                     </li>
@@ -426,26 +426,26 @@ export function BlogIndex({ posts }: { posts: Post[] }) {
 
               {/* Read back from this reader's own record — see /api/blog/track. */}
               {Object.keys(mine).length > 0 && (
-                <div className="rail-box">
+                <div className="mc-rail-box">
                   <h4>Your sections</h4>
-                  <div className="mine">
+                  <div className="mc-mine">
                     {SECTIONS.filter((s) => mine[s]).map((s) => (
                       <button key={s} type="button" onClick={() => chooseSection(s)}>
                         {s}
-                        <span className="n">{mine[s]}</span>
+                        <span className="mc-n">{mine[s]}</span>
                       </button>
                     ))}
                   </div>
                 </div>
               )}
 
-              <div className="rail-box">
+              <div className="mc-rail-box">
                 <h4>Most read this week</h4>
-                <ul className="rail-list">
+                <ul className="mc-rail-list">
                   {mostRead.map((p, i) => (
                     <li key={p.id}>
                       <a href={href(p)}>
-                        <span className="n">{String(i + 1).padStart(2, "0")}</span>
+                        <span className="mc-n">{String(i + 1).padStart(2, "0")}</span>
                         {p.title}
                       </a>
                     </li>
@@ -453,29 +453,29 @@ export function BlogIndex({ posts }: { posts: Post[] }) {
                 </ul>
               </div>
 
-              <div className="rail-box sub">
+              <div className="mc-rail-box mc-sub">
                 <h4>The daily recap</h4>
                 <p>One email after the US close. Indices, movers, and the reason behind each.</p>
                 <input type="email" placeholder="you@work.com" aria-label="Email address" />
                 {/* Attachment control — appearance only for now. Nothing is
                     uploaded and nothing is sent; the send button is disabled so
                     the UI cannot imply otherwise. */}
-                <div className="attach">
+                <div className="mc-attach">
                   <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round"><path d="M21.4 11.05 12.25 20.2a5.5 5.5 0 0 1-7.78-7.78l9.2-9.2a3.67 3.67 0 1 1 5.18 5.18l-9.2 9.2a1.83 1.83 0 1 1-2.6-2.6l8.5-8.48" /></svg>
-                  <span className="fname">No file attached</span>
+                  <span className="mc-fname">No file attached</span>
                   <button type="button">Attach</button>
                 </div>
                 <button type="button" disabled title="Not wired up yet">
                   Get the recap
                 </button>
-                <p className="note">Free. Unsubscribe anytime.</p>
+                <p className="mc-note">Free. Unsubscribe anytime.</p>
               </div>
             </aside>
           </div>
         </section>
 
-        <footer className="site">
-          <div className="fnav">
+        <footer className="mc-site">
+          <div className="mc-fnav">
             <a href="/posts">Blogs</a>
             <a href="/faqs">FAQs</a>
             <a href="/admin/login">Log in</a>
