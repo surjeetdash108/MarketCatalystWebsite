@@ -2,11 +2,15 @@
 
 import Link from "next/link";
 import { BrandLogo } from "@/components/admin/BrandLogo";
-import { BlogThemeProvider, useBlogTheme } from "./theme-context";
+import { BlogThemeProvider, useBlogTheme } from "../theme-context";
+// Scoped to /posts/view, not /posts. The index page carries its own template
+// (header, masthead, footer) and would have rendered inside a second header
+// otherwise; the ARTICLE page is what wants this shell.
+//
 // Reuse the app's dark surface + the admin table/panel classes so the public
 // blog matches the /admin/posts look. admin.css is scoped under .iq-root, so
 // importing it here only affects this subtree.
-import "../admin/admin.css";
+import "../../admin/admin.css";
 
 // Warm off-white LIGHT palette (blog-board.css light theme) — overrides
 // admin.css's cool/pure-white light tokens so the header + background match the
@@ -83,7 +87,7 @@ function PostsShell({ children }: { children: React.ReactNode }) {
   );
 }
 
-export default function PostsLayout({ children }: { children: React.ReactNode }) {
+export default function PostViewLayout({ children }: { children: React.ReactNode }) {
   return (
     <BlogThemeProvider>
       <PostsShell>{children}</PostsShell>

@@ -1,0 +1,231 @@
+/* The public blog index — the approved "MarketCatalyst blog v2" template.
+ *
+ * Transcribed from the design's own stylesheet with one change: its tokens were
+ * declared on html[data-theme] and its base rules on body/*, which would have
+ * restyled every page on the site. Everything is scoped under .mcb2 and the
+ * theme attribute rides on that element, so the template themes itself and
+ * nothing else.
+ *
+ * Rules ADDED beyond the original are at the bottom, under their own heading. */
+
+.mcb2[data-theme="light"]{--bg:#f5f8fd; --surface:#ffffff; --surface-2:#ffffff;
+  --line:rgba(24,52,105,.13); --line-2:rgba(24,52,105,.24);
+  --ink:#0b1430; --body:#33425f; --mute:#5a6b8c; --dim:#8291ad;
+  --accent:#0a7ea3; --blue:#3b63e8; --purple:#7c3fe4;
+  --up:#0a8f5f; --down:#c53a4e; --amber:#b06a00;
+  
+  --hover:rgba(59,99,232,.05);
+  --input:#ffffff;
+  --shadow:0 1px 2px rgba(16,34,70,.05), 0 8px 24px rgba(16,34,70,.05);
+  --shadow-hi:0 2px 4px rgba(16,34,70,.06), 0 14px 38px rgba(16,34,70,.08);
+  --thumb-a:rgba(59,99,232,.13); --thumb-b:rgba(124,63,228,.09);
+  --thumb-grid:rgba(24,52,105,.07); --spark:rgba(10,126,163,.22);
+  --avatar-ink:#ffffff;}
+.mcb2[data-theme="dark"]{--bg:#070d20; --surface:rgba(18,29,61,.6); --surface-2:#0b1430;
+  --line:rgba(120,160,230,.16); --line-2:rgba(120,160,230,.30);
+  --ink:#eaf0fb; --body:#c6d2e8; --mute:#93a6c9; --dim:#6c7fa2;
+  --accent:#3ddcf5; --blue:#4f7cff; --purple:#a86bff;
+  --up:#3ddc9a; --down:#ff7a8a; --amber:#ffb648;
+  --glow-1:rgba(79,124,255,.20); 
+  --hover:rgba(79,124,255,.055);
+  --input:rgba(11,20,48,.8);
+  --shadow:none; --shadow-hi:none;
+  --thumb-a:rgba(79,124,255,.22); --thumb-b:rgba(168,107,255,.14);
+  --thumb-grid:rgba(255,255,255,.05); --spark:rgba(61,220,245,.34);
+  --avatar-ink:#08101f;}
+.mcb2{--cell:34px}
+.mcb2 *{box-sizing:border-box}
+.mcb2{margin:0;background:var(--bg);color:var(--ink);
+  font:400 16px/1.6 ui-sans-serif,-apple-system,"Segoe UI",Inter,Roboto,Helvetica,Arial,sans-serif;
+  transition:background-color .2s ease,color .2s ease}
+.mcb2 .num{font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;font-variant-numeric:tabular-nums}
+.mcb2 .wrap{max-width:1180px;margin:0 auto;padding:0 22px}
+.mcb2 a{color:inherit;text-decoration:none}
+.mcb2 :focus-visible{outline:2px solid var(--blue);outline-offset:3px;border-radius:4px}
+.mcb2 header.top{position:sticky;top:0;z-index:40;border-bottom:1px solid var(--line);
+  background:color-mix(in srgb,var(--bg) 80%,transparent);backdrop-filter:blur(10px)}
+.mcb2 .top-in{max-width:1180px;margin:0 auto;padding:13px 22px;display:flex;align-items:center;gap:18px}
+.mcb2 .brand{font-weight:700;letter-spacing:.02em;font-size:17px}
+.mcb2 .brand span{background:linear-gradient(90deg,var(--blue),var(--purple));
+  -webkit-background-clip:text;background-clip:text;color:transparent}
+.mcb2 nav.main{margin-left:auto;display:flex;align-items:center;gap:20px;font-size:14.5px}
+.mcb2 nav.main a{color:var(--mute)}
+.mcb2 nav.main a:hover,.mcb2 nav.main a.active{color:var(--ink)}
+.mcb2 nav.main a.active::after{content:"";display:block;height:2px;margin-top:5px;border-radius:2px;
+  background:linear-gradient(90deg,var(--blue),var(--purple))}
+.mcb2 .btn-grad{padding:9px 18px;border-radius:9px;background:linear-gradient(90deg,var(--blue),var(--purple));
+  color:#fff!important;font-weight:600;font-size:14px}
+.mcb2 .btn-grad:hover{filter:brightness(1.08)}
+.mcb2 #themeBtn{width:34px;height:34px;display:grid;place-items:center;border-radius:9px;cursor:pointer;
+  border:1px solid var(--line-2);background:transparent;color:var(--mute)}
+.mcb2 #themeBtn:hover{color:var(--ink);border-color:var(--blue)}
+.mcb2[data-theme="light"] .moon{display:none}
+.mcb2[data-theme="dark"] .sun{display:none}
+@media(max-width:760px){.mcb2 nav.main{gap:13px;font-size:13.5px}
+.mcb2 nav.main a.hide-sm{display:none}}
+.mcb2 .masthead{padding:54px 0 28px}
+.mcb2 .eyebrow{font:600 12px/1 ui-monospace,monospace;letter-spacing:.22em;text-transform:uppercase;color:var(--accent)}
+.mcb2 h1{font-size:clamp(32px,5vw,52px);line-height:1.05;letter-spacing:-.025em;margin:16px 0 12px;font-weight:700}
+.mcb2 .stand{color:var(--mute);font-size:18px;max-width:58ch;margin:0}
+.mcb2 .controls{display:flex;gap:14px;align-items:center;flex-wrap:wrap;padding:26px 0 22px;border-bottom:1px solid var(--line)}
+.mcb2 .pills{display:flex;gap:8px;flex-wrap:wrap}
+.mcb2 .pill{padding:8px 15px;border-radius:999px;border:1px solid var(--line-2);background:transparent;
+  color:var(--mute);font:500 13.5px/1 inherit;cursor:pointer}
+.mcb2 .pill:hover{color:var(--ink);border-color:var(--blue)}
+.mcb2 .pill[aria-pressed="true"]{background:var(--blue);border-color:var(--blue);color:#fff}
+.mcb2[data-theme="dark"] .pill[aria-pressed="true"]{background:rgba(79,124,255,.18);color:var(--ink)}
+.mcb2 .search{margin-left:auto;position:relative}
+.mcb2 .search input{width:250px;max-width:52vw;padding:10px 14px 10px 36px;border-radius:9px;
+  border:1px solid var(--line-2);background:var(--input);color:var(--ink);font:400 14px inherit}
+.mcb2 .search input::placeholder{color:var(--dim)}
+.mcb2 .search svg{position:absolute;left:12px;top:11px;opacity:.55;color:var(--mute)}
+.mcb2 section{padding:44px 0}
+.mcb2 h2.sec{font:600 12px/1 ui-monospace,monospace;letter-spacing:.2em;text-transform:uppercase;
+  color:var(--accent);margin:0 0 20px;display:flex;align-items:center;gap:14px}
+.mcb2 h2.sec::after{content:"";flex:1;height:1px;background:var(--line)}
+.mcb2 .highlights{display:grid;grid-template-columns:1.55fr 1fr;gap:18px}
+@media(max-width:900px){.mcb2 .highlights{grid-template-columns:1fr}}
+.mcb2 .hero-card,.mcb2 .mini{background:var(--surface);border:1px solid var(--line);border-radius:16px;box-shadow:var(--shadow)}
+.mcb2 .hero-card:hover,.mcb2 .mini:hover{border-color:var(--line-2);box-shadow:var(--shadow-hi)}
+.mcb2 .hero-card{overflow:hidden;display:flex;flex-direction:column}
+.mcb2 .thumb{height:212px;position:relative;border-bottom:1px solid var(--line);background:
+  linear-gradient(180deg,var(--thumb-a),var(--thumb-b)),
+  repeating-linear-gradient(0deg,var(--thumb-grid) 0 1px,transparent 1px 34px)}
+.mcb2 .thumb .spark{position:absolute;inset:auto 0 0 0;height:74%;
+  clip-path:polygon(0 82%,9% 70%,18% 76%,28% 52%,37% 60%,47% 38%,58% 46%,68% 25%,79% 32%,89% 12%,100% 18%,100% 100%,0 100%);
+  background:linear-gradient(180deg,var(--spark),transparent 78%)}
+.mcb2 .hero-card .body{padding:22px 24px 26px}
+.mcb2 .hero-card h3{font-size:26px;line-height:1.22;margin:12px 0 10px;letter-spacing:-.015em}
+.mcb2 .hero-card p{color:var(--mute);margin:0 0 16px;font-size:15px}
+.mcb2 .side-stack{display:flex;flex-direction:column;gap:18px}
+.mcb2 .mini{padding:20px 20px 22px;flex:1}
+.mcb2 .mini h3{font-size:17.5px;line-height:1.3;margin:11px 0 8px;letter-spacing:-.01em}
+.mcb2 .mini p{color:var(--mute);font-size:14px;margin:0}
+.mcb2 .tag{display:inline-flex;align-items:center;gap:7px;font:600 11px/1 ui-monospace,monospace;
+  letter-spacing:.14em;text-transform:uppercase;color:var(--accent)}
+.mcb2 .tag::before{content:"";width:7px;height:7px;border-radius:50%;background:currentColor}
+.mcb2 .tag.recap{color:var(--amber)}
+.mcb2 .tag.desk{color:var(--purple)}
+.mcb2 .tag.edu{color:var(--accent)}
+.mcb2 .thumb img,.mcb2 .mini-thumb img,.mcb2 .p-thumb img,.mcb2 .card-thumb img{width:100%;height:100%;object-fit:cover;display:block}
+.mcb2 .mini-thumb,.mcb2 .p-thumb,.mcb2 .card-thumb{border-radius:10px;overflow:hidden;
+  border:1px solid var(--line);background:linear-gradient(140deg,var(--thumb-a),var(--thumb-b))}
+.mcb2 .mini-thumb{aspect-ratio:16/9;margin-bottom:13px}
+.mcb2 .p-thumb{width:150px;aspect-ratio:16/9;align-self:flex-start}
+@media(max-width:760px){.mcb2 .p-thumb{display:none}}
+.mcb2 .cols{display:grid;grid-template-columns:1fr 296px;gap:46px;align-items:start}
+@media(max-width:960px){.mcb2 .cols{grid-template-columns:1fr;gap:34px}}
+.mcb2 .post{display:grid;grid-template-columns:96px 1fr 150px;gap:20px;padding:24px 0;border-bottom:1px solid var(--line);
+  border-radius:10px}
+.mcb2 .post:hover{background:var(--hover)}
+.mcb2 .post:hover .p-title{color:var(--blue)}
+.mcb2[data-theme="dark"] .post:hover .p-title{color:#fff}
+.mcb2 .p-when{font:500 12px/1.5 ui-monospace,monospace;color:var(--dim);padding-top:3px}
+.mcb2 .p-when b{display:block;color:var(--mute);font-size:15px;font-weight:600;letter-spacing:-.01em}
+.mcb2 .p-title{font-size:19.5px;line-height:1.32;margin:9px 0 8px;letter-spacing:-.012em;font-weight:650}
+.mcb2 .p-dek{color:var(--mute);font-size:14.5px;margin:0 0 12px;max-width:66ch}
+.mcb2 .byline{display:flex;align-items:center;gap:10px;font-size:12.5px;color:var(--dim);flex-wrap:wrap}
+.mcb2 .avatar{width:24px;height:24px;border-radius:50%;display:grid;place-items:center;font:700 10.5px/1 inherit;
+  color:var(--avatar-ink);background:linear-gradient(135deg,var(--blue),var(--purple))}
+.mcb2 .byline .sep{width:3px;height:3px;border-radius:50%;background:var(--line-2)}
+@media(max-width:960px){.mcb2 .post{grid-template-columns:96px 1fr;}}
+@media(max-width:620px){.mcb2 .post{grid-template-columns:1fr;gap:8px}
+.mcb2 .p-when{display:flex;gap:8px;align-items:baseline}}
+.mcb2 .more{margin:30px auto 0;display:block;padding:12px 26px;border-radius:10px;border:1px solid var(--line-2);
+  background:var(--surface);color:var(--ink);font:600 14.5px inherit;cursor:pointer}
+.mcb2 .more:hover{border-color:var(--blue);color:var(--blue)}
+.mcb2 .empty{padding:44px 0;color:var(--dim);text-align:center}
+.mcb2 .rail{position:sticky;top:86px;display:flex;flex-direction:column;gap:20px}
+.mcb2 .rail-box{border:1px solid var(--line);border-radius:14px;background:var(--surface);padding:20px;box-shadow:var(--shadow)}
+.mcb2 .rail-box h4{margin:0 0 14px;font:600 11.5px/1 ui-monospace,monospace;letter-spacing:.18em;
+  text-transform:uppercase;color:var(--mute)}
+.mcb2 .rail-list{list-style:none;margin:0;padding:0}
+.mcb2 .rail-list li{padding:11px 0;border-top:1px solid var(--line);font-size:14.5px;line-height:1.4}
+.mcb2 .rail-list li:first-child{border-top:0;padding-top:0}
+.mcb2 .rail-list .n{font:700 12px/1 ui-monospace,monospace;color:var(--dim);margin-right:9px}
+.mcb2 .rail-list a:hover{color:var(--blue)}
+.mcb2 .sub p{color:var(--mute);font-size:13.5px;margin:0 0 14px}
+.mcb2 .sub input{width:100%;padding:10px 12px;border-radius:9px;border:1px solid var(--line-2);
+  background:var(--input);color:var(--ink);font:400 14px inherit;margin-bottom:10px}
+.mcb2 .sub button{width:100%;padding:11px;border:0;border-radius:9px;cursor:pointer;
+  background:linear-gradient(90deg,var(--blue),var(--purple));color:#fff;font:600 14px inherit}
+.mcb2 .sub button:hover{filter:brightness(1.08)}
+.mcb2 .note{font-size:12px;color:var(--dim);margin:10px 0 0}
+.mcb2 footer.site{border-top:1px solid var(--line);margin-top:40px;padding:34px 0 60px;color:var(--dim);font-size:13px}
+.mcb2 footer.site .fnav{display:flex;gap:20px;flex-wrap:wrap;margin-bottom:14px}
+.mcb2 footer.site a:hover{color:var(--blue)}
+@media(prefers-reduced-motion:no-preference){.mcb2 .post,.mcb2 .hero-card,.mcb2 .mini,.mcb2 .rail-box{transition:background-color .18s ease,border-color .18s ease,box-shadow .18s ease}
+.mcb2 .p-title{transition:color .18s ease}}
+
+/* ══════════════════════ ADDED — not in the original template ══════════════ */
+
+/* The template was a whole document and painted the page through `body`. Here
+   it is a block inside the site's own body, which is dark — so without this the
+   site's colour shows below a short page and past the end of a long one. */
+.mcb2{min-height:100vh}
+
+/* The "Latest posts" heading shares its line with the pagination and the view
+   switch. h2.sec ends in a flex:1 rule that eats the row, so the heading and
+   the tools sit in a flex row and the rule fills whatever is left between. */
+.mcb2 .sec-row{display:flex;align-items:center;gap:16px;margin:0 0 20px;flex-wrap:wrap}
+.mcb2 .sec-row h2.sec{margin:0;flex:1;min-width:180px}
+.mcb2 .sec-tools{display:flex;align-items:center;gap:10px;flex:none}
+
+.mcb2 .pager{display:flex;align-items:center;gap:4px}
+.mcb2 .pager button{min-width:30px;height:30px;padding:0 8px;border-radius:8px;cursor:pointer;
+  border:1px solid var(--line-2);background:transparent;color:var(--mute);
+  font:600 13px/1 ui-monospace,monospace}
+.mcb2 .pager button:hover:not(:disabled){color:var(--ink);border-color:var(--blue)}
+.mcb2 .pager button[aria-current="page"]{background:var(--blue);border-color:var(--blue);color:#fff}
+.mcb2[data-theme="dark"] .pager button[aria-current="page"]{background:rgba(79,124,255,.18);color:var(--ink)}
+.mcb2 .pager button:disabled{opacity:.4;cursor:default}
+.mcb2 .pager .gap{color:var(--dim);padding:0 2px}
+
+.mcb2 .viewsw{display:inline-flex;gap:2px;padding:3px;border-radius:9px;
+  border:1px solid var(--line-2);background:var(--surface)}
+.mcb2 .viewsw button{display:grid;place-items:center;width:28px;height:24px;border:0;border-radius:6px;
+  background:none;color:var(--dim);cursor:pointer}
+.mcb2 .viewsw button:hover{color:var(--ink)}
+.mcb2 .viewsw button[aria-pressed="true"]{background:var(--blue);color:#fff}
+.mcb2[data-theme="dark"] .viewsw button[aria-pressed="true"]{background:rgba(79,124,255,.22);color:var(--ink)}
+
+/* Grid view of the feed. The same .post markup: the row becomes a card, the
+   date joins the byline, and the thumbnail moves to the top at a fixed ratio,
+   so every card is the same size whatever the post wrote. */
+.mcb2 .feed.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(268px,1fr));gap:18px}
+.mcb2 .feed.grid .post{display:flex;flex-direction:column;gap:0;height:404px;padding:0;
+  border:1px solid var(--line);border-radius:14px;background:var(--surface);
+  box-shadow:var(--shadow);overflow:hidden}
+.mcb2 .feed.grid .post:hover{box-shadow:var(--shadow-hi);border-color:var(--line-2)}
+.mcb2 .feed.grid .p-thumb{display:block;width:auto;order:-1;aspect-ratio:16/9;border-radius:0;border:0;
+  border-bottom:1px solid var(--line);align-self:stretch}
+.mcb2 .feed.grid .p-when{display:flex;gap:7px;align-items:baseline;padding:16px 18px 0}
+.mcb2 .feed.grid .p-when b{display:inline;font-size:12px}
+.mcb2 .feed.grid .post > div:not(.p-when):not(.p-thumb){display:flex;flex-direction:column;flex:1;
+  min-height:0;padding:6px 18px 18px}
+.mcb2 .feed.grid .p-title{font-size:17px;display:-webkit-box;-webkit-box-orient:vertical;
+  -webkit-line-clamp:3;overflow:hidden}
+.mcb2 .feed.grid .p-dek{display:-webkit-box;-webkit-box-orient:vertical;-webkit-line-clamp:2;overflow:hidden}
+.mcb2 .feed.grid .byline{margin-top:auto}
+
+/* A post with no cover art. Drawn rather than hidden so the row keeps its
+   shape, and labelled so it reads as missing rather than broken. */
+.mcb2 .noimg{width:100%;height:100%;display:grid;place-items:center;padding:8px;text-align:center;
+  font:500 10.5px/1.35 ui-monospace,monospace;color:var(--dim);letter-spacing:.02em}
+.mcb2 .thumb .noimg{font-size:13px}
+
+/* Attachment box — UI only for now; nothing is wired up behind it. */
+.mcb2 .attach{display:flex;align-items:center;gap:10px;padding:10px 12px;margin-bottom:10px;
+  border:1px dashed var(--line-2);border-radius:9px;color:var(--dim);font-size:13px}
+.mcb2 .attach svg{flex:none;opacity:.7}
+.mcb2 .attach .fname{flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.mcb2 .attach button{flex:none;border:1px solid var(--line-2);background:transparent;color:var(--mute);
+  border-radius:7px;padding:5px 10px;font:600 12px inherit;cursor:pointer}
+.mcb2 .attach button:hover{color:var(--ink);border-color:var(--blue)}
+
+/* "Your sections" — read back from the reader's own browsing record. */
+.mcb2 .mine{display:flex;flex-wrap:wrap;gap:7px}
+.mcb2 .mine button{padding:6px 11px;border-radius:999px;cursor:pointer;
+  border:1px solid var(--line-2);background:transparent;color:var(--mute);font:500 12.5px/1 inherit}
+.mcb2 .mine button:hover{color:var(--ink);border-color:var(--blue)}
+.mcb2 .mine .n{font:700 11px ui-monospace,monospace;color:var(--dim);margin-left:6px}
