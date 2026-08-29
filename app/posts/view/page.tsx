@@ -8,6 +8,9 @@ import { PostPdf } from "@/components/blog/PostPdf";
 import { PostDocx } from "@/components/blog/PostDocx";
 import { PostHtmlDoc } from "@/components/blog/PostHtmlDoc";
 import { getBlogTheme } from "@/lib/blog/theme";
+// The article's own baseline. Every rule is :where()-wrapped, so an uploaded
+// design still wins — this only covers what that design does not mention.
+import "../blog-doc.css";
 import { buildArticleJsonLd } from "@/lib/seo/jsonld";
 
 // Reading searchParams makes this dynamic (per-slug), so there is no ISR

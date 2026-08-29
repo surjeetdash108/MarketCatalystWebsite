@@ -1,0 +1,96 @@
+/* The blog article's own stylesheet.
+ *
+ * Every rule is wrapped in :where(), which contributes ZERO specificity, so
+ * anything the shared theme carries overrides it outright. This is the floor,
+ * not the look: what an article falls back to when the theme has nothing to say
+ * about an element — which is most of the time, because a pasted or rich-text
+ * post is plain <h2>/<p>/<ul>, and a stylesheet written for one document only
+ * ever names the classes THAT document used.
+ *
+ * The masthead is styled here rather than left to Tailwind on purpose. It is
+ * ours, it appears on every article, and it should not depend on a runtime
+ * compiler having loaded.
+ */
+
+.mc-doc {
+  --doc-ink: #1a1a1a;
+  --doc-body: #33425f;
+  --doc-mute: #5a6b8c;
+  --doc-line: #e5e7eb;
+  --doc-blue: #0984e3;
+  background: #ffffff;
+  color: var(--doc-ink);
+  font-family: Inter, ui-sans-serif, -apple-system, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+  -webkit-font-smoothing: antialiased;
+}
+
+/* ── the column ──────────────────────────────────────────────────────────── */
+:where(.mc-doc > div) { max-width: 800px; margin: 0 auto; padding: 40px 20px 56px; }
+
+/* ── masthead ────────────────────────────────────────────────────────────── */
+:where(.mc-doc .mc-badge) {
+  text-transform: uppercase; letter-spacing: .14em;
+  font-size: .78rem; font-weight: 700; color: var(--doc-blue); margin-bottom: 16px;
+}
+:where(.mc-doc header) { margin-bottom: 40px; }
+:where(.mc-doc header h1) {
+  font-size: clamp(1.9rem, 4.4vw, 2.6rem); line-height: 1.14; letter-spacing: -.02em;
+  font-weight: 800; margin: 0 0 16px; color: var(--doc-ink);
+}
+:where(.mc-doc header p) { color: var(--doc-mute); font-size: 1.06rem; line-height: 1.6; margin: 0 0 12px; }
+:where(.mc-doc header p:last-child) { font-size: .87rem; color: #6b7280; }
+
+/* ── the article body: plain semantic HTML, which is what most posts are ─── */
+:where(.mc-doc h2) { font-size: 1.6rem; line-height: 1.25; letter-spacing: -.018em; font-weight: 700; margin: 40px 0 14px; }
+:where(.mc-doc h3) { font-size: 1.25rem; line-height: 1.3; letter-spacing: -.012em; font-weight: 700; margin: 32px 0 12px; }
+:where(.mc-doc h4) { font-size: 1.05rem; font-weight: 700; margin: 26px 0 10px; }
+:where(.mc-doc p) { font-size: 1.02rem; line-height: 1.75; color: var(--doc-body); margin: 0 0 20px; }
+:where(.mc-doc ul, .mc-doc ol) { margin: 0 0 20px; padding-left: 26px; color: var(--doc-body); }
+:where(.mc-doc li) { font-size: 1.02rem; line-height: 1.7; margin: 8px 0; }
+:where(.mc-doc a) { color: var(--doc-blue); text-decoration: underline; text-underline-offset: 2px; }
+:where(.mc-doc strong, .mc-doc b) { color: var(--doc-ink); font-weight: 700; }
+:where(.mc-doc blockquote) {
+  margin: 0 0 20px; padding: 4px 0 4px 18px;
+  border-left: 3px solid var(--doc-line); color: var(--doc-mute);
+}
+:where(.mc-doc img) { max-width: 100%; height: auto; display: block; border-radius: 8px; }
+:where(.mc-doc figure) { margin: 28px 0; }
+:where(.mc-doc figcaption) { font-size: .88rem; color: #666; font-style: italic; text-align: center; margin-top: 10px; }
+:where(.mc-doc hr) { border: 0; border-top: 1px solid var(--doc-line); margin: 40px 0; }
+:where(.mc-doc code) { font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; font-size: .9em;
+  background: #f3f4f6; padding: 2px 6px; border-radius: 5px; }
+:where(.mc-doc pre) { background: #0b1220; color: #e6edf7; padding: 16px 18px; border-radius: 10px;
+  overflow-x: auto; margin: 0 0 20px; }
+:where(.mc-doc pre code) { background: none; padding: 0; color: inherit; }
+:where(.mc-doc table) { width: 100%; border-collapse: collapse; margin: 0 0 20px; }
+:where(.mc-doc th) { text-align: left; font-size: .72rem; text-transform: uppercase; letter-spacing: .08em;
+  color: #6b7280; padding: 10px 12px; border-bottom: 2px solid var(--doc-line); }
+:where(.mc-doc td) { padding: 12px; border-bottom: 1px solid #f0f0f0; font-size: .95rem; }
+
+/* ── the recap template's own components ─────────────────────────────────
+   Kept here as well as in the theme so a recap still renders if the shared
+   design is empty or has been replaced by a document that does not define
+   them. These are the class names our own builder emits. */
+:where(.mc-doc .kicker) { text-transform: uppercase; letter-spacing: .12em; font-size: .7rem;
+  font-weight: 700; color: #6b7280; margin-bottom: 12px; }
+:where(.mc-doc .card) { background: #fff; border: 1px solid #ececec; border-radius: 10px; padding: 20px; }
+:where(.mc-doc .mistake-card) { border-left: 4px solid #00b894; background: #f0fff4; padding: 24px;
+  border-radius: 0 8px 8px 0; }
+:where(.mc-doc .image-container) { margin: 32px 0; }
+:where(.mc-doc .image-container svg, .mc-doc .image-container img) { width: 100%; height: auto; display: block;
+  border-radius: 8px; background: #fff; border: 1px solid #e8e8e8; }
+:where(.mc-doc .image-caption) { font-style: italic; color: #666; font-size: .9rem; text-align: center; margin-top: 10px; }
+:where(.mc-doc .tag-pill) { display: inline-block; background: #e2e8f0; color: #4a5568; padding: 4px 12px;
+  border-radius: 9999px; font-size: .8rem; font-weight: 500; margin: 0 6px 8px 0; }
+:where(.mc-doc .up) { color: #00b894; font-weight: 600; }
+:where(.mc-doc .down) { color: #d63031; font-weight: 600; }
+:where(.mc-doc .flat) { color: #4a5568; font-weight: 600; }
+:where(.mc-doc .section-rule) { border: 0; border-top: 1px solid var(--doc-line); margin: 44px 0; }
+:where(.mc-doc .num) { text-align: right; font-variant-numeric: tabular-nums; }
+:where(.mc-doc .space-y-4 > * + *) { margin-top: 16px; }
+:where(.mc-doc .space-y-6 > * + *) { margin-top: 24px; }
+:where(.mc-doc .grid) { display: grid; gap: 16px; }
+@media (min-width: 768px) {
+  :where(.mc-doc .md\:grid-cols-2) { grid-template-columns: 1fr 1fr; }
+  :where(.mc-doc .md\:grid-cols-3) { grid-template-columns: repeat(3, 1fr); }
+}
