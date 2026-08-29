@@ -115,7 +115,12 @@
 .mcb .card .thumb{position:relative;flex:none;overflow:hidden;background:var(--surface2);
   display:flex;align-items:center;justify-content:center}
 .mcb .card .thumb .ph{font-family:var(--disp);font-weight:700;font-size:34px;color:var(--dim2)}
-.mcb .card .cbody{display:flex;flex-direction:column;min-width:0;padding:18px 20px 16px}
+/* flex:1 so the body fills whatever the card's fixed height leaves over. In the
+   list the card stretches its children and this was already true; stacked in
+   the grid the body only took its content height, so a short post's footer
+   stopped wherever its text ended and the row of footers came out at four
+   different heights. */
+.mcb .card .cbody{display:flex;flex-direction:column;flex:1;min-height:0;min-width:0;padding:18px 20px 16px}
 
 .mcb .card .cmeta{display:flex;align-items:center;gap:10px;margin-bottom:9px;
   font-family:var(--disp);font-weight:500;font-size:12.5px;color:var(--dim2)}
@@ -132,21 +137,33 @@
 .mcb .card .cfoot{margin-top:auto;padding-top:12px;border-top:1px solid var(--line);
   font-family:var(--disp);font-weight:500;font-size:13px;color:var(--dim)}
 
-/* List: image on the left at a fixed width, text takes the rest. */
-.mcb .content.list .card{flex-direction:row;align-items:stretch}
-.mcb .content.list .card .thumb{width:300px;align-self:stretch;margin:14px 0 14px 14px;border-radius:12px}
-.mcb .content.list .card p{-webkit-line-clamp:3}
+/* Every card is the same size, in both views.
+   Left to size themselves, cards took their height from whatever the post
+   happened to write: a one-line summary sat next to a five-line one and the
+   grid came out ragged, with footers at four different heights across a row.
+   A fixed height plus line clamps means the board reads as a board — the eye
+   compares posts, not the lengths of their excerpts. The footer is pinned to
+   the bottom (margin-top:auto) so a short post still closes its card where
+   every other one does. */
+.mcb .card h3{display:-webkit-box;-webkit-box-orient:vertical;-webkit-line-clamp:2;overflow:hidden}
 
-/* Grid: image on top at a fixed ratio, text below. */
-.mcb .content.grid .card{flex-direction:column}
+/* List: image on the left at a fixed width, text takes the rest. */
+.mcb .content.list .card{flex-direction:row;align-items:stretch;height:240px}
+.mcb .content.list .card .thumb{width:300px;align-self:stretch;margin:14px 0 14px 14px;border-radius:12px}
+.mcb .content.list .card p{-webkit-line-clamp:2}
+
+/* Grid: image on top at a fixed ratio, text below. auto-fill keeps every
+   column the same width, so height is the only thing left to pin. */
+.mcb .content.grid .card{flex-direction:column;height:462px}
 .mcb .content.grid .card .thumb{width:auto;aspect-ratio:16/10;margin:14px 14px 0;border-radius:12px}
 .mcb .content.grid .card p{-webkit-line-clamp:3}
 
 /* One column below this: a 300px image beside text leaves the headline nowhere
-   to go, so the list card takes the grid's stacked shape. */
+   to go, so the list card takes the grid's stacked shape — and its height. */
 @media(max-width:760px){
-  .mcb .content.list .card{flex-direction:column}
+  .mcb .content.list .card{flex-direction:column;height:462px}
   .mcb .content.list .card .thumb{width:auto;aspect-ratio:16/10;margin:14px 14px 0}
+  .mcb .content.list .card p{-webkit-line-clamp:3}
 }
 
 /* View switch in the masthead. */
