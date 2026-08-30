@@ -144,24 +144,20 @@
 .mc-doc { background:transparent; color:var(--ink);
   font:400 16px/1.6 ui-sans-serif,-apple-system,"Segoe UI",Inter,Roboto,Helvetica,Arial,sans-serif;
   transition:background-color .2s ease,color .2s ease }
-/* The post sits directly on the page background — strip the white .article card
-   (background/border/radius/padding from admin.css) and keep the .mc-doc box
-   transparent, so there is no white frame around the article. Higher specificity
-   than admin.css's `.iq-root[data-theme="light"] .article` and any per-post
-   injected `.mc-doc{background}`. Scoped to the HTML-post case via :has(.mc-doc)
-   and to this page (blog-doc.css only loads on /posts/view). */
-.iq-root[data-theme] .article:has(.mc-doc) {
-  background-color: transparent; border: 0; border-radius: 0; padding: 0;
+/* One white panel, no border. The previous design was a white .article card
+   (#fff, 1px border, 14px radius) with a LIGHTER .mc-doc box (#f9f9f9) inside —
+   a border plus two shades of white. Keep the white but: (a) remove the border
+   line, (b) collapse to a SINGLE shade — .article is the one white surface and
+   .mc-doc stays transparent so the inner #f9f9f9 no longer shows through.
+   Independent of the .iq-root wrapper (the posts layout may not render it), so a
+   direct selector + !important. Scoped to /posts/view (this file) and HTML posts
+   (:has(.mc-doc)). The .mc-doc override uses the background-COLOR longhand: a
+   `background` shorthand is minified to a bare position, dropping the color. */
+.article:has(.mc-doc) {
+  background-color: #ffffff !important;
+  border: 0 !important;
+  border-radius: 14px !important;
 }
-/* Same, but not depending on the .iq-root wrapper (which the posts layout may
-   or may not render). !important beats admin.css's `.article{background:#fff}`
-   regardless of whether .iq-root is present. */
-.article:has(.mc-doc) { background-color: transparent !important; border: 0 !important; border-radius: 0 !important; }
-/* Target .mc-doc DIRECTLY — no .iq-root ancestor (the posts layout does not
-   always wrap it in one). Use the background-COLOR longhand + !important to beat
-   the per-post theme's injected `.mc-doc{background-color:var(--mc-bg)}` (#f9f9f9)
-   — a shorthand `background:transparent` gets minified to a bare position and
-   drops the color. Only the .mc-doc box; child components keep their backgrounds. */
 .mc-doc { background-color: transparent !important; }
 .mc-doc .num { font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;font-variant-numeric:tabular-nums }
 .mc-doc .wrap { max-width:1180px;margin:0 auto;padding:0 22px }
