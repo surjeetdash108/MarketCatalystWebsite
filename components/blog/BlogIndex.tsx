@@ -80,6 +80,20 @@ const when = (p: Post) => p.publishedAt ?? p.createdAt;
  * Markdown and HTML both arrive here, so tags and the common markdown marks
  * are stripped rather than rendered: this is plain text inside a <p>.
  */
+/**
+ * Entities have to be DECODED, not dropped.
+ *
+ * The blurb is plain text in a <p>, so the stored "&amp;" would otherwise be
+ * printed literally — but blanking every entity turned "S&amp;P 500" into
+ * "S P 500", which is a real index with its name mangled. Only the handful
+ * Numeric forms (&#8217;) are decoded by code point rather than listed, so
+ * every curly quote and dash comes through without an entry each.
+ */
+const ENTITY: Record<string, string> = {
+  "&amp;": "&", "&lt;": "<", "&gt;": ">", "&quot;": '"', "&apos;": "'",
+  "&nbsp;": " ",
+};
+
 function preview(post: Post, min: number, max: number): string {
   const cut = (t: string) => (t.length > max ? t.slice(0, max).trimEnd() + "\u2026" : t);
   const summary = (post.excerpt ?? "").trim();
@@ -88,8 +102,19 @@ function preview(post: Post, min: number, max: number): string {
   const body = (post.content ?? "")
     .replace(/<[^>]+>/g, " ")
     .replace(/!?\[([^\]]*)\]\([^)]*\)/g, "$1")
-    .replace(/[#>*_`~]+/g, " ")
-    .replace(/&[a-z]+;|&#\d+;/gi, " ")
+    // Entities BEFORE markdown marks: the mark stripper removes "#", which
+    // would turn "&#8217;" into "& 8217;" — the apostrophe printed as debris.
+    .replace(/&(amp|lt|gt|quot|apos|nbsp);/gi, (m) => ENTITY[m.toLowerCase()] ?? " ")
+    .replace(/&#(\d+);/g, (_m, n) => String.fromCodePoint(Number(n)))
+    .replace(/&#x([0-9a-f]+);/gi, (_m, n) => String.fromCodePoint(parseInt(n, 16)))
+    // Anything still entity-shaped is one we do not decode; a space beats
+    // printing "&copy;" at the reader.
+    .replace(/&[a-z][a-z0-9]*;/gi, " ")
+    // "#" and ">" only carry meaning at the start of a line — a heading and a
+    // blockquote. Stripping them everywhere ate a decoded ">" out of the prose
+    // and turned "C# 15" into "C 15". Emphasis marks are stripped anywhere.
+    .replace(/^[#>]+\s*/gm, " ")
+    .replace(/[*_`~]+/g, "")
     .replace(/\s+/g, " ")
     .trim();
 
