@@ -151,15 +151,18 @@
    injected `.mc-doc{background}`. Scoped to the HTML-post case via :has(.mc-doc)
    and to this page (blog-doc.css only loads on /posts/view). */
 .iq-root[data-theme] .article:has(.mc-doc) {
-  background: transparent; border: 0; border-radius: 0; padding: 0;
+  background-color: transparent; border: 0; border-radius: 0; padding: 0;
 }
-/* Use the background-COLOR longhand, not the `background` shorthand: the
-   injected per-post theme sets `.mc-doc{background-color:var(--mc-bg)}` (#f9f9f9),
-   and Next's CSS minifier reduced our shorthand `background:transparent` to a
-   bare position (dropping the color), so it never overrode that longhand. Target
-   the same longhand + !important so the article box is truly transparent. Only
-   the .mc-doc box itself — child components keep their own backgrounds. */
-.iq-root .mc-doc { background-color: transparent !important; }
+/* Same, but not depending on the .iq-root wrapper (which the posts layout may
+   or may not render). !important beats admin.css's `.article{background:#fff}`
+   regardless of whether .iq-root is present. */
+.article:has(.mc-doc) { background-color: transparent !important; border: 0 !important; border-radius: 0 !important; }
+/* Target .mc-doc DIRECTLY — no .iq-root ancestor (the posts layout does not
+   always wrap it in one). Use the background-COLOR longhand + !important to beat
+   the per-post theme's injected `.mc-doc{background-color:var(--mc-bg)}` (#f9f9f9)
+   — a shorthand `background:transparent` gets minified to a bare position and
+   drops the color. Only the .mc-doc box; child components keep their backgrounds. */
+.mc-doc { background-color: transparent !important; }
 .mc-doc .num { font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;font-variant-numeric:tabular-nums }
 .mc-doc .wrap { max-width:1180px;margin:0 auto;padding:0 22px }
 .mc-doc a { color:inherit;text-decoration:none }
