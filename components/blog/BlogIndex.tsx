@@ -337,11 +337,6 @@ export function BlogIndex({
 
       <div className="mc-wrap">
         <div className="mc-masthead">
-          <h1>
-            What moved, why it moved,
-            <br />
-            and what to do with it.
-          </h1>
           <p className="mc-stand">
             Daily recaps, single-stock research and guides to how the market actually works.
           </p>

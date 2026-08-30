@@ -68,7 +68,11 @@
 .mcb2 .mc-masthead{padding:26px 0 8px}
 .mcb2 .mc-eyebrow{font:600 12px/1 ui-monospace,monospace;letter-spacing:.22em;text-transform:uppercase;color:var(--accent)}
 .mcb2 h1{font-size:clamp(32px,5vw,52px);line-height:1.05;letter-spacing:-.025em;margin:0 0 10px;font-weight:700}
-.mcb2 .mc-stand{color:var(--mute);font-size:18px;max-width:58ch;margin:0}
+/* The standfirst is the masthead now that the headline above it is gone, so
+   it is set like the hero card's title — same 26px and the same ink — and
+   bold, because it is the page's opening line rather than a caption. */
+.mcb2 .mc-stand{color:var(--ink);font-size:26px;font-weight:700;line-height:1.22;
+  letter-spacing:-.015em;max-width:58ch;margin:0}
 .mcb2 .mc-controls{display:flex;gap:14px;align-items:center;flex-wrap:wrap;padding:12px 0 12px;border-bottom:1px solid var(--line)}
 .mcb2 .mc-pills{display:flex;gap:8px;flex-wrap:wrap}
 .mcb2 .mc-pill{padding:8px 15px;border-radius:999px;border:1px solid var(--line-2);background:transparent;
