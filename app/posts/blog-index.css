@@ -83,12 +83,14 @@
 .mcb2 h2.mc-sec{font:600 12px/1 ui-monospace,monospace;letter-spacing:.2em;text-transform:uppercase;
   color:var(--accent);margin:0 0 20px;display:flex;align-items:center;gap:14px}
 .mcb2 h2.mc-sec::after{content:"";flex:1;height:1px;background:var(--line)}
-.mcb2 .mc-highlights{display:grid;grid-template-columns:1.55fr 1fr;gap:18px}
+/* One highlight, full width. It was a 1.55fr/1fr split with two mini cards
+   beside the lead; the lead is now the only card, so it takes the row. */
+.mcb2 .mc-highlights{display:grid;grid-template-columns:1fr;gap:18px}
 @media(max-width:900px){.mcb2 .highlights{grid-template-columns:1fr}}
 .mcb2 .mc-hero-card,.mcb2 .mc-mini{background:var(--surface);border:1px solid var(--line);border-radius:16px;box-shadow:var(--shadow)}
 .mcb2 .mc-hero-card:hover,.mcb2 .mc-mini:hover{border-color:var(--line-2);box-shadow:var(--shadow-hi)}
 .mcb2 .mc-hero-card{overflow:hidden;display:flex;flex-direction:column}
-.mcb2 .mc-thumb{height:212px;position:relative;border-bottom:1px solid var(--line);background:
+.mcb2 .mc-thumb{height:300px;position:relative;border-bottom:1px solid var(--line);background:
   linear-gradient(180deg,var(--thumb-a),var(--thumb-b)),
   repeating-linear-gradient(0deg,var(--thumb-grid) 0 1px,transparent 1px 34px)}
 .mcb2 .mc-thumb .mc-spark{position:absolute;inset:auto 0 0 0;height:74%;

@@ -159,8 +159,6 @@ export function BlogIndex({
   const [query, setQuery] = useState("");
   const [page, setPage] = useState(1);
   const [view, setView] = useState<"list" | "grid">("list");
-  /** This reader's own section counts, read back from Firestore. */
-  const [mine, setMine] = useState<Record<string, number>>({});
 
   /* ── theme, remembered ──────────────────────────────────────────────────
      The template kept this in memory only and left a note to persist it. */
@@ -196,10 +194,10 @@ export function BlogIndex({
         const res = await fetch(`/api/blog/track?readerId=${encodeURIComponent(id)}`);
         const data = await res.json();
         if (cancelled || !data?.ok) return;
-        setMine(data.sections ?? {});
-        // Open where they left off. Only when they have not already chosen —
-        // a deliberate click must not be overwritten by a slow fetch.
-        setActiveSec((cur) => (cur === "all" && data.lastSection ? data.lastSection : cur));
+        // The board opens on All posts, always. It used to restore the last
+        // section browsed, which meant a returning reader landed in Recap and
+        // saw a filtered board they had not asked for — and could not tell it
+        // was filtered without noticing the pill.
       } catch {
         /* offline, or the endpoint is unavailable */
       }
@@ -212,7 +210,6 @@ export function BlogIndex({
   const track = useCallback((section: Section) => {
     const id = readerId();
     if (!id) return;
-    setMine((m) => ({ ...m, [section]: (m[section] ?? 0) + 1 }));
     void fetch("/api/blog/track", {
       method: "POST",
       headers: { "content-type": "application/json" },
@@ -242,22 +239,18 @@ export function BlogIndex({
    * is whichever of those three is newest.
    */
   const highlights = useMemo(() => {
-    const picked = SECTIONS.map((sec) => sorted.find((p) => sectionOf(p) === sec)).filter(
-      (p): p is Post => !!p,
-    );
-    return picked.sort((a, b) => when(b).localeCompare(when(a)));
-  }, [sorted]);
+    const pool = activeSec === "all" ? sorted : sorted.filter((p) => sectionOf(p) === activeSec);
+    if (pool.length === 0) return [];
+    // Most read wins; with nothing read yet the newest stands in, so the slot
+    // is never empty on a quiet week. `sorted` is already newest-first, so the
+    // fallback needs no second sort.
+    const best = [...pool].sort((a, b) => (reads[b.slug] ?? 0) - (reads[a.slug] ?? 0))[0];
+    return [best];
+  }, [sorted, activeSec, reads]);
 
   /* ── section + search, applied together ─────────────────────────────────
      The search runs inside the section on screen, which is what the pills
      mean: "Recap" plus a query reads as "recaps about that". */
-  /** Live count per section, for the rail. */
-  const sectionCounts = useMemo(() => {
-    const m: Record<string, number> = { Recap: 0, "Research desk": 0, Educational: 0 };
-    for (const p of sorted) m[sectionOf(p)] = (m[sectionOf(p)] ?? 0) + 1;
-    return m;
-  }, [sorted]);
-
   const q = query.trim().toLowerCase();
   const filtered = useMemo(
     () =>
@@ -344,7 +337,6 @@ export function BlogIndex({
 
       <div className="mc-wrap">
         <div className="mc-masthead">
-          <div className="mc-eyebrow">MarketCatalyst blog</div>
           <h1>
             What moved, why it moved,
             <br />
@@ -416,21 +408,7 @@ export function BlogIndex({
                     </div>
                   </div>
                 </a>
-                <div className="mc-side-stack">
-                  {highlights.slice(1).map((p) => (
-                    <a className="mc-mini" key={p.id} href={href(p)} onClick={() => countOpen(p)}>
-                      <Cover src={p.coverImageUrl} className="mc-mini-thumb" />
-                      <span className={`mc-tag ${SEC_CLASS[sectionOf(p)]}`}>{sectionOf(p)}</span>
-                      <h3>{p.title}</h3>
-                      <p>{preview(p, 110, 200)}</p>
-                      <div className="mc-byline" style={{ marginTop: 12 }}>
-                        {fmtLong(when(p))} · {fmtTime(when(p))}
-                        <span className="mc-sep" />
-                        {readMins(p.content)} min read
-                      </div>
-                    </a>
-                  ))}
-                </div>
+
               </>
             )}
           </div>
@@ -531,43 +509,6 @@ export function BlogIndex({
             </div>
 
             <aside className="mc-rail">
-              <div className="mc-rail-box">
-                <h4>Browse by section</h4>
-                <ul className="mc-rail-list">
-                  {SECTIONS.map((sec, i) => (
-                    <li key={sec}>
-                      <a
-                        href="#feed"
-                        onClick={(e) => {
-                          e.preventDefault();
-                          chooseSection(sec);
-                          document.getElementById("feed")?.scrollIntoView({ behavior: "smooth", block: "start" });
-                        }}
-                      >
-                        <span className="mc-n">{String(i + 1).padStart(2, "0")}</span>
-                        {sec} — {SECTION_BLURB[sec]}
-                        <span className="mc-count">{sectionCounts[sec] ?? 0}</span>
-                      </a>
-                    </li>
-                  ))}
-                </ul>
-              </div>
-
-              {/* Read back from this reader's own record — see /api/blog/track. */}
-              {Object.keys(mine).length > 0 && (
-                <div className="mc-rail-box">
-                  <h4>Your sections</h4>
-                  <div className="mc-mine">
-                    {SECTIONS.filter((s) => mine[s]).map((s) => (
-                      <button key={s} type="button" onClick={() => chooseSection(s)}>
-                        {s}
-                        <span className="mc-n">{mine[s]}</span>
-                      </button>
-                    ))}
-                  </div>
-                </div>
-              )}
-
               <div className="mc-rail-box">
                 <h4>Most read this week</h4>
                 <ul className="mc-rail-list">
