@@ -63,11 +63,13 @@
 .mcb2[data-theme="dark"] .mc-sun{display:none}
 @media(max-width:760px){.mcb2 nav.main{gap:13px;font-size:13.5px}
 .mcb2 nav.mc-main a.mc-hide-sm{display:none}}
-.mcb2 .mc-masthead{padding:54px 0 28px}
+/* Tightened from 54/28. The eyebrow above the headline is gone, so the
+   original top padding was holding space for something no longer there. */
+.mcb2 .mc-masthead{padding:26px 0 8px}
 .mcb2 .mc-eyebrow{font:600 12px/1 ui-monospace,monospace;letter-spacing:.22em;text-transform:uppercase;color:var(--accent)}
-.mcb2 h1{font-size:clamp(32px,5vw,52px);line-height:1.05;letter-spacing:-.025em;margin:16px 0 12px;font-weight:700}
+.mcb2 h1{font-size:clamp(32px,5vw,52px);line-height:1.05;letter-spacing:-.025em;margin:0 0 10px;font-weight:700}
 .mcb2 .mc-stand{color:var(--mute);font-size:18px;max-width:58ch;margin:0}
-.mcb2 .mc-controls{display:flex;gap:14px;align-items:center;flex-wrap:wrap;padding:26px 0 22px;border-bottom:1px solid var(--line)}
+.mcb2 .mc-controls{display:flex;gap:14px;align-items:center;flex-wrap:wrap;padding:12px 0 12px;border-bottom:1px solid var(--line)}
 .mcb2 .mc-pills{display:flex;gap:8px;flex-wrap:wrap}
 .mcb2 .mc-pill{padding:8px 15px;border-radius:999px;border:1px solid var(--line-2);background:transparent;
   color:var(--mute);font:500 13.5px/1 inherit;cursor:pointer}
@@ -79,9 +81,11 @@
   border:1px solid var(--line-2);background:var(--input);color:var(--ink);font:400 14px inherit}
 .mcb2 .mc-search input::placeholder{color:var(--dim)}
 .mcb2 .mc-search svg{position:absolute;left:12px;top:11px;opacity:.55;color:var(--mute)}
-.mcb2 section{padding:44px 0}
+/* 44px above and below every section put a large gap between the filter
+   chips and the first thing they filter. */
+.mcb2 section{padding:14px 0 24px}
 .mcb2 h2.mc-sec{font:600 12px/1 ui-monospace,monospace;letter-spacing:.2em;text-transform:uppercase;
-  color:var(--accent);margin:0 0 20px;display:flex;align-items:center;gap:14px}
+  color:var(--accent);margin:0 0 14px;display:flex;align-items:center;gap:14px}
 .mcb2 h2.mc-sec::after{content:"";flex:1;height:1px;background:var(--line)}
 /* One highlight, full width. It was a 1.55fr/1fr split with two mini cards
    beside the lead; the lead is now the only card, so it takes the row. */
