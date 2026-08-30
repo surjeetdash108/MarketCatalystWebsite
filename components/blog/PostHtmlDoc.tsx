@@ -1,6 +1,9 @@
 import Script from "next/script";
 import { sanitizeRichPostHtml } from "@/lib/security/sanitize";
 import { scopeCss } from "@/lib/blog/scope-css";
+import { buildToc } from "@/lib/blog/toc";
+import { ShareRail } from "./ShareRail";
+import { TocSpy } from "./TocSpy";
 import type { BlogTheme } from "@/lib/blog/theme";
 
 /**
@@ -14,6 +17,11 @@ import type { BlogTheme } from "@/lib/blog/theme";
  *
  * The design comes from the shared theme rather than the post, so every article
  * looks the same and a design change lands everywhere at once.
+ *
+ * Three things are derived PER POST, not authored: the keyword chips (from the
+ * post's tags/categories), the share rail, and the "On this page" nav — the
+ * last built from whatever <h2> sections the article actually contains, so it is
+ * dynamic and correct for every blog with no per-post work. See buildToc.
  */
 
 const ET = "America/New_York";
@@ -30,6 +38,8 @@ export function PostHtmlDoc({
   publishedAt,
   html,
   theme,
+  tags,
+  categories,
 }: {
   title: string;
   summary: string;
@@ -37,8 +47,21 @@ export function PostHtmlDoc({
   publishedAt: string | null;
   html: string;
   theme: BlogTheme;
+  tags?: string[];
+  categories?: string[];
 }) {
-  const body = sanitizeRichPostHtml(html);
+  const sanitized = sanitizeRichPostHtml(html);
+  // Give each <h2> a stable id and collect the section list for the nav.
+  const { html: body, toc } = buildToc(sanitized);
+
+  // Keyword chips — the post's own tags/categories, deduped and capped.
+  const chips = Array.from(
+    new Set([...(categories ?? []), ...(tags ?? [])].map((s) => s.trim()).filter(Boolean)),
+  ).slice(0, 6);
+
+  // The nav is only worth its column when there are a couple of sections.
+  const hasToc = toc.length >= 2;
+
   /**
    * The stored design is written as a whole page would be — `body { … }`,
    * `h2 { … }`, `a { … }` — because that is what an uploaded document
@@ -66,17 +89,26 @@ export function PostHtmlDoc({
           classes — it compiles what it finds. */}
       <Script src="/blog-tailwind.js" strategy="afterInteractive" />
 
-      <div className="max-w-[800px] mx-auto px-5 py-10 md:py-14">
-        <header className="mb-10">
-          <div className="mc-badge mb-4">MarketCatalyst</div>
-          <h1 className="text-3xl md:text-[2.6rem] font-extrabold leading-tight mb-4">{title}</h1>
-          {summary && (
-            <p className="text-base md:text-lg text-gray-600 leading-relaxed mb-3">{summary}</p>
+      <div style={{ maxWidth: 1080, margin: "0 auto", padding: "40px 22px 64px" }}>
+        <header className="art-head">
+          <div className="mc-badge">MarketCatalyst</div>
+          <h1>{title}</h1>
+          {summary && <p className="dek">{summary}</p>}
+          {chips.length > 0 && (
+            <div className="chips">
+              {chips.map((c) => (
+                <span className="chip" key={c}>{c}</span>
+              ))}
+            </div>
           )}
           {publishedAt && (
-            <p className="text-sm text-gray-500">
-              Daily Market Recap &middot; {fmtDate(publishedAt)} &middot; Published after the 4:00 p.m. ET close
-            </p>
+            <div className="meta">
+              Daily Market Recap
+              <span className="sep" />
+              {fmtDate(publishedAt)}
+              <span className="sep" />
+              Published after the 4:00 p.m. ET close
+            </div>
           )}
         </header>
 
@@ -90,10 +122,34 @@ export function PostHtmlDoc({
           </div>
         )}
 
-        {/* Safe: sanitizeRichPostHtml is an allowlist — no script, iframe,
-            object, form, on* handler or non-http scheme survives it. */}
-        <div dangerouslySetInnerHTML={{ __html: body }} />
+        {/* [ share rail | article | on-this-page ] — collapses to one column on
+            smaller screens (see .mc-doc .layout in blog-doc.css). */}
+        <div className={hasToc ? "layout" : "layout no-toc"}>
+          <ShareRail title={title} />
+
+          <article>
+            {/* Safe: sanitizeRichPostHtml is an allowlist — no script, iframe,
+                object, form, on* handler or non-http scheme survives it. */}
+            <div className="post-body" id="postBody" dangerouslySetInnerHTML={{ __html: body }} />
+          </article>
+
+          {hasToc && (
+            <aside className="toc" aria-label="On this page">
+              <h4>On this page</h4>
+              <ol>
+                {toc.map((t) => (
+                  <li key={t.id}>
+                    <a href={`#${t.id}`}>{t.text}</a>
+                  </li>
+                ))}
+              </ol>
+            </aside>
+          )}
+        </div>
       </div>
+
+      {/* Client-only: highlights the current section in the nav while scrolling. */}
+      <TocSpy />
     </div>
   );
 }

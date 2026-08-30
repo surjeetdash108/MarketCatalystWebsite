@@ -226,6 +226,8 @@
 
 /* layout */
 .mc-doc .layout { display:grid;grid-template-columns:52px minmax(0,1fr) 232px;gap:38px;padding:38px 0 10px;align-items:start }
+/* No "On this page" nav (a short post) → drop the right column. */
+.mc-doc .layout.no-toc { grid-template-columns:52px minmax(0,1fr) }
 @media(max-width:1040px){ .mc-doc .layout { grid-template-columns:52px minmax(0,1fr);gap:26px } .mc-doc .toc { display:none } }
 @media(max-width:700px){ .mc-doc .layout { grid-template-columns:1fr }
   .mc-doc .share { flex-direction:row!important;position:static!important;border-bottom:1px solid var(--line);

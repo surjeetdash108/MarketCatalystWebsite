@@ -167,6 +167,8 @@ export default async function PostViewPage({
               publishedAt={post.publishedAt ?? post.createdAt}
               html={post.content}
               theme={theme}
+              tags={post.tags}
+              categories={post.categories}
             />
           ) : (
             <div className="post-content">
