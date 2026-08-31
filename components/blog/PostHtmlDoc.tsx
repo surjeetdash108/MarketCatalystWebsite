@@ -64,12 +64,16 @@ export function PostHtmlDoc({
 
   /**
    * The stored design is written as a whole page would be — `body { … }`,
-   * `h2 { … }`, `a { … }` — because that is what an uploaded document
-   * contains. Applied as-is it would restyle the site around the article, so
-   * every selector is prefixed with the article's own container first, and
-   * `body`/`:root` map onto that container. See scopeCss.
+   * `h2 { … }`, `a { … }`, and even `header { … }` — because that is what an
+   * uploaded document contains. Scope it to the ARTICLE BODY, not the whole
+   * `.mc-doc`: the masthead (title, summary, hero, chips, meta) and the reader
+   * chrome (share rail, "On this page") are built from form fields and styled by
+   * OUR CSS — a post must not restyle them. A post that carries `header {…}` or
+   * `h1 {…}` (a full-page design) would otherwise land on the reader's <header>
+   * masthead. Confining to `.post-body` keeps a post's CSS on its own content
+   * while the common blog CSS (blog-doc.css) styles everything. See scopeCss.
    */
-  const themeCss = scopeCss(theme.css.join("\n"), ".mc-doc");
+  const themeCss = scopeCss(theme.css.join("\n"), ".mc-doc .post-body");
 
   return (
     <div className="mc-doc">
