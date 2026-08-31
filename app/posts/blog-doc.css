@@ -159,6 +159,14 @@
   border-radius: 14px !important;
 }
 .mc-doc { background-color: transparent !important; }
+/* Masthead headline uses the full masthead width so a short title stays on one
+   line — the base `.mc-doc h1` caps at 22ch, which wrapped ".NET Conf 2026 –
+   Save the Date". */
+.mc-doc .art-head h1 { max-width: none; }
+/* More horizontal margin around the article content; the inner container's
+   inline padding is 22px, so !important is needed to widen it. clamp keeps it
+   generous on desktop and tighter on phones. */
+.mc-doc > div { padding-left: clamp(24px, 5vw, 64px) !important; padding-right: clamp(24px, 5vw, 64px) !important; }
 .mc-doc .num { font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;font-variant-numeric:tabular-nums }
 .mc-doc .wrap { max-width:1180px;margin:0 auto;padding:0 22px }
 .mc-doc a { color:inherit;text-decoration:none }
