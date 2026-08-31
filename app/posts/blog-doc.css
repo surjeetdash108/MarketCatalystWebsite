@@ -163,6 +163,10 @@
    line — the base `.mc-doc h1` caps at 22ch, which wrapped ".NET Conf 2026 –
    Save the Date". */
 .mc-doc .art-head h1 { max-width: none; }
+/* The summary runs to the same margin as the headline above it. The base
+   `.dek` caps at 64ch, a reading measure that made the summary stop short of
+   the title and look tied to it rather than to the page. */
+.mc-doc .art-head .dek { max-width: none; }
 /* More horizontal margin around the article content; the inner container's
    inline padding is 22px, so !important is needed to widen it. clamp keeps it
    generous on desktop and tighter on phones. */
