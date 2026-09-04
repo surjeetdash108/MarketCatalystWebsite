@@ -284,7 +284,7 @@ export function BlogIndex({
       .slice(0, 4);
   }, [sorted, reads, hasReads]);
 
-  const href = (p: Post) => `/posts/view?slug=${encodeURIComponent(p.slug)}`;
+  const href = (p: Post) => `/posts/${encodeURIComponent(p.slug)}`;
 
   /**
    * Count the open. sendBeacon because the click is navigating away — a fetch

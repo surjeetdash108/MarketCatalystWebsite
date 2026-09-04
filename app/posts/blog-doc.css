@@ -278,7 +278,11 @@
 .mc-doc .toc li a.on { color:var(--blue);border-left-color:var(--blue) }
 
 /* POST BODY */
-.mc-doc .post-body { max-width:70ch;font-size:17px;line-height:1.75;color:var(--body) }
+/* A designed document sets its own widths — a 70ch prose measure squeezed it
+   into a column narrower than the page it was drawn on (the masthead wrapped,
+   the hero headline broke over eight lines). Prose keeps its measure via
+   .post-content; this class is only ever an html-format post. */
+.mc-doc .post-body { max-width:none;font-size:17px;line-height:1.75;color:var(--body) }
 .mc-doc .post-body>*:first-child { margin-top:0 }
 .mc-doc .post-body h2 { font-size:26px;line-height:1.25;letter-spacing:-.015em;color:var(--ink);margin:44px 0 14px;scroll-margin-top:96px }
 .mc-doc .post-body h3 { font-size:19.5px;line-height:1.35;color:var(--ink);margin:32px 0 10px;scroll-margin-top:96px }
@@ -296,6 +300,14 @@
 .mc-doc .post-body table { width:100%;border-collapse:collapse;font-size:14.5px;margin:8px 0 22px;min-width:460px }
 .mc-doc .post-body th, .mc-doc .post-body td { padding:11px 12px;border-bottom:1px solid var(--line);text-align:right }
 .mc-doc .post-body th:first-child, .mc-doc .post-body td:first-child { text-align:left;color:var(--mute);font-weight:500 }
+/* A designed document's table carries no .t-scroll wrapper (we cannot add one —
+   the body is injected as markup), so the 460px floor above became horizontal
+   overflow on the whole PAGE at phone widths. Below the layout's own 700px
+   breakpoint let the table scroll inside its own box instead. */
+@media(max-width:700px){
+  .mc-doc .post-body table { display:block;overflow-x:auto;-webkit-overflow-scrolling:touch;
+    min-width:0;max-width:100% }
+}
 .mc-doc .post-body thead th { font:600 11px/1 ui-monospace,monospace;letter-spacing:.13em;text-transform:uppercase;
   color:var(--mute);border-bottom:1px solid var(--line-2) }
 .mc-doc .post-body tbody tr:hover { background:var(--hover) }
@@ -354,3 +366,32 @@
 .mc-doc footer.site .fnav { display:flex;gap:20px;flex-wrap:wrap;margin-bottom:12px }
 .mc-doc footer.site a:hover { color:var(--blue) }
 @media(prefers-reduced-motion:reduce){ .mc-doc * { scroll-behavior:auto!important } }
+
+/* ─── AUTHORED-HTML POSTS (.post-doc) ──────────────────────────────────────
+   A designed document owns the page: it is NOT wrapped in .article, NOT given
+   .mc-doc's masthead, and NOT laid into the share-rail/TOC grid. Those three
+   are why an uploaded page arrived squeezed into ~390px with its nav stacked
+   one item per line. Everything here is site chrome around the document — the
+   document's own stylesheet (scoped to .post-doc) draws the rest. */
+
+/* The one strip of site UI on the page. Matches the document's own centring so
+   the link lines up with the content below it rather than floating at the edge. */
+.post-doc-back {
+  max-width: 1180px;
+  margin: 0 auto;
+  padding: 18px clamp(16px, 4vw, 32px) 6px;
+}
+
+/* The document ground. White by default so a page whose own stylesheet sets no
+   background does not inherit the board's cream; a document that DOES set one
+   overrides this, because its rules are real selectors and this is :where(). */
+:where(.post-doc) { background: #ffffff; }
+
+/* The horizontal-overflow backstop.
+   Confined to the document container, so it cannot clip the site's own sticky
+   header, and applied at every width rather than under a breakpoint: an
+   absolutely-positioned decoration inside an uploaded page (a glow, a bleed,
+   a rotated card) can stick out past the viewport at ANY size, and one such
+   element puts a horizontal scrollbar on the whole site. */
+.post-doc { overflow-x: clip; }
+@supports not (overflow: clip) { .post-doc { overflow-x: hidden; } }

@@ -63,6 +63,18 @@ function buildCsp(nonce: string | null): string {
 export function middleware(request: NextRequest) {
   const { pathname } = request.nextUrl;
 
+  /* Articles moved from /posts/view?slug=<slug> to the statically generated
+     /posts/<slug>. Redirected HERE rather than from the page component: a
+     `permanentRedirect()` inside a rendered page comes back as 200 with a
+     <meta http-equiv="refresh">, which browsers honour but search engines treat
+     as a weak signal and which passes no link equity cleanly. Middleware issues
+     a real 308 before anything renders. */
+  if (pathname === "/posts/view") {
+    const slug = request.nextUrl.searchParams.get("slug");
+    const to = new URL(slug ? `/posts/${encodeURIComponent(slug)}` : "/posts", request.url);
+    return NextResponse.redirect(to, 308);
+  }
+
   if (pathname.startsWith("/admin") && pathname !== "/admin/login" && !hasSessionCookie(request)) {
     const loginUrl = new URL("/admin/login", request.url);
     return NextResponse.redirect(loginUrl);

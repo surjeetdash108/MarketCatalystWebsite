@@ -116,11 +116,41 @@ const RICH_TAGS = [
   "h6", "b", "i", "u", "s", "mark", "abbr", "time", "cite", "q", "del", "ins",
   "article", "header", "footer", "main", "aside", "nav",
   "dl", "dt", "dd", "col", "colgroup", "details", "summary",
+  /* Responsive images. Without these a <picture> collapsed to its fallback
+     <img> and the art direction went with it — the exact opposite of what the
+     element is for on the small screens we are trying to serve. Neither tag
+     executes; `source` only names candidate URLs, scheme-checked like any
+     other. */
+  "picture", "source", "wbr", "hgroup", "address", "kbd", "samp", "var",
+  /* Inert controls a designed page lays out with — a theme toggle, filter
+     pills, a search box. They were being DROPPED while their contents were
+     kept, which unwrapped each control's children into the flex row above it
+     and pulled the document's own header apart. Nothing here can act: `form`
+     is not an allowed tag, so there is nothing to submit to; `on*` handlers,
+     `formaction` and `type=image`'s `src` are not allowed attributes; and no
+     script runs on the page to read them. */
+  "button", "input", "label", "select", "option", "textarea",
   ...SVG_TAGS,
 ];
 
-/** `class`/`id`/`style` on everything — the post's CSS selects on them. */
-const RICH_GLOBAL = ["class", "id", "style", "title"];
+/**
+ * What every tag may carry in an authored post.
+ *
+ * `data-*` is here because a designed page does not only select on classes:
+ * `.chip[data-tone="up"]`, `.tab[data-active]`, `[data-col="3"]` are ordinary
+ * hooks, and stripping the attribute left those rules matching nothing. The
+ * stylesheet survived scoping intact and the post STILL rendered unstyled in
+ * places, which is the hardest version of this bug to see — the CSS is right
+ * there in the page, simply describing elements that no longer exist.
+ *
+ * `aria-*` and `role` are here because dropping them silently degrades the
+ * article for screen-reader users, and they carry no more risk than `class`.
+ *
+ * A wildcard cannot smuggle anything in: sanitize-html matches these by name,
+ * and `on*` handlers are not `data-*`/`aria-*`. `style` is still passed through
+ * stripRemoteRefs below, and `src`/`href` remain per-tag and scheme-checked.
+ */
+const RICH_GLOBAL = ["class", "id", "style", "title", "lang", "dir", "role", "data-*", "aria-*"];
 
 export function sanitizeRichPostHtml(html: string): string {
   return sanitizeHtml(html, {
@@ -131,12 +161,24 @@ export function sanitizeRichPostHtml(html: string): string {
     allowedAttributes: {
       "*": [...RICH_GLOBAL, ...SVG_ATTRS_ALL],
       a: [...RICH_GLOBAL, "href", "rel", "target"],
-      img: [...RICH_GLOBAL, "src", "alt", "width", "height", "loading"],
+      /* srcset/sizes were absent, so every responsive image served its single
+         fallback file — a 2000px asset to a 390px phone, or a blurry 400px one
+         to a desktop. decoding/fetchpriority are inert hints. */
+      img: [...RICH_GLOBAL, "src", "alt", "width", "height", "loading", "srcset", "sizes", "decoding", "fetchpriority"],
+      source: [...RICH_GLOBAL, "srcset", "sizes", "media", "type", "width", "height"],
       th: [...RICH_GLOBAL, "colspan", "rowspan", "scope"],
       td: [...RICH_GLOBAL, "colspan", "rowspan"],
       time: [...RICH_GLOBAL, "datetime"],
       col: [...RICH_GLOBAL, "span"],
       colgroup: [...RICH_GLOBAL, "span"],
+      // Presentation only. `name`, `formaction`, `form` and every `on*` are
+      // absent by omission, so these render and do nothing.
+      button: [...RICH_GLOBAL, "type", "disabled", "aria-pressed", "aria-label", "aria-expanded"],
+      input: [...RICH_GLOBAL, "type", "placeholder", "value", "disabled", "readonly", "checked", "aria-label"],
+      label: [...RICH_GLOBAL, "for"],
+      select: [...RICH_GLOBAL, "disabled", "aria-label"],
+      option: [...RICH_GLOBAL, "value", "selected", "disabled"],
+      textarea: [...RICH_GLOBAL, "placeholder", "disabled", "readonly", "rows", "cols", "aria-label"],
     },
     allowedSchemes: ["http", "https", "mailto"],
     // Inline images the post embedded itself, which carry no request.

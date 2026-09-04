@@ -60,8 +60,16 @@ export type Post = {
    *  own CSS, or prose. */
   format: BlogFormat;
   /** Stylesheets for an html post, already split out of the body by the admin
-   *  service. Scoped to the article before they are applied. */
+   *  service. Scoped to the article before they are applied.
+   *
+   *  THIS post's design, not the site's: the shared theme is one document that
+   *  every upload overwrites, so resolving a post's look from it meant a
+   *  published article was restyled by the next article. See resolvePostDesign. */
   css: string[];
+  /** The html post's document as uploaded, <head> included. Kept so a post can
+   *  be reproduced exactly — and so a post stored before `css` existed can have
+   *  its stylesheet recovered from it rather than re-uploaded. */
+  documentHtml: string | null;
   seo: PostSeo;
   publishedAt: string | null;
   createdAt: string;
@@ -117,8 +125,13 @@ function mapPost(id: string, data: FirebaseFirestore.DocumentData): Post {
           ? data.sourceKind === "docx" ? "doc" : "pdf"
           : "text",
     css: Array.isArray(data.css)
-      ? (data.css as unknown[]).filter((c): c is string => typeof c === "string")
+      ? (data.css as unknown[]).filter(
+          (c): c is string => typeof c === "string" && !!c.trim(),
+        )
       : [],
+    documentHtml: typeof data.documentHtml === "string" && data.documentHtml
+      ? data.documentHtml
+      : null,
     // Posts written before Word support carry no kind and were all PDFs.
     sourceKind:
       data.sourceKind === "docx" || data.sourceKind === "pdf"
