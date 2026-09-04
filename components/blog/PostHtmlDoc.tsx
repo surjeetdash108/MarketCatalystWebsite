@@ -2,6 +2,9 @@ import Script from "next/script";
 import { sanitizeRichPostHtml } from "@/lib/security/sanitize";
 import { scopeCss } from "@/lib/blog/scope-css";
 import { PostThemeBinding } from "./PostThemeBinding";
+import { PostToc } from "./PostToc";
+import { TocSpy } from "./TocSpy";
+import { buildToc } from "@/lib/blog/toc";
 import type { PostDesign } from "@/lib/blog/post-design";
 
 /**
@@ -150,7 +153,24 @@ export function PostHtmlDoc({
 
   // Safe: sanitizeRichPostHtml is an allowlist — no script, iframe, object,
   // form, on* handler or non-http scheme survives it.
-  const body = wrapTables(sanitizeRichPostHtml(html));
+  const sanitized = sanitizeRichPostHtml(html);
+  // Give each <h2> a stable id and collect the section list for the overview.
+  // buildToc only ADDS ids; it changes nothing else about the markup, so a post
+  // renders identically whether or not the overview ends up being shown.
+  const { html: withIds, toc } = buildToc(sanitized);
+  const body = wrapTables(withIds);
+
+  /* Three sections, not two: this is an overview, and a two-item list beside a
+     long article tells the reader less than the article's own headings already
+     do. Below the threshold nothing is rendered at all — no empty rail. */
+  const hasToc = toc.length >= 3;
+
+  /* Capped, because the rail does not scroll. Entries past the bottom of the
+     viewport would be clipped by `overflow:hidden` and simply not exist for the
+     reader — so the cap is the honest version of the same limit, and it keeps
+     the rail short enough that the clip never actually fires. Ten full-text
+     entries at 10.5px come to roughly 300px. */
+  const tocEntries = toc.slice(0, 10);
 
   /**
    * Scoped to the document container, which IS the page as far as the post is
@@ -176,7 +196,7 @@ export function PostHtmlDoc({
   const themeGated = /\[data-theme\s*[~|^$*]?=/.test(themeCss);
   const docTheme = attrs["data-theme"] ?? (themeGated ? "light" : undefined);
 
-  return (
+  const doc = (
     <div
       {...attrs}
       id={DOC_ID}
@@ -212,5 +232,19 @@ export function PostHtmlDoc({
           the article is styled with scripting off. */}
       {themeGated && <PostThemeBinding targetId={DOC_ID} />}
     </div>
+  );
+
+  /* The overview is a SIBLING of the document, never a child: outside
+     .post-doc the post's own stylesheet cannot restyle it, and
+     .post-doc { overflow-x: clip } cannot clip it. It is fixed-position, so it
+     takes no space and the document keeps the whole page either way. */
+  if (!hasToc) return doc;
+  return (
+    <>
+      {doc}
+      <PostToc entries={tocEntries} />
+      {/* Client-only: highlights the current section while scrolling. */}
+      <TocSpy />
+    </>
   );
 }

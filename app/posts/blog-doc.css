@@ -395,3 +395,105 @@
    element puts a horizontal scrollbar on the whole site. */
 .post-doc { overflow-x: clip; }
 @supports not (overflow: clip) { .post-doc { overflow-x: hidden; } }
+
+/* ─── "ON THIS PAGE" OVERVIEW (.post-toc) ──────────────────────────────────
+   An overlay, never a column. The previous version was a 232px grid track that,
+   with the share rail and gaps, took 360px off the article and squeezed a
+   1180px design into under 400px. This one is position:fixed: it occupies no
+   space, so the document keeps the full width of the page and a post lays out
+   identically whether the overview is shown or not.
+
+   Hidden by default and revealed only above 1460px. Both presets cap their
+   content at 1180px, which leaves (1460-1180)/2 = 140px of empty gutter each
+   side — exactly enough for a 130px rail with a 10px margin. Below that width
+   there is nowhere for it to go that is not on top of the article, and covering
+   the article to show a contents list is a bad trade.
+
+   It sits IN the margin rather than on top of it: no panel, no border box, no
+   shadow. A white card floating over the article read as a separate widget
+   pasted onto the page — the opposite of what a marginal aid should do. What is
+   left is text in the gutter, at low contrast, that firms up only for the
+   section being read. */
+.post-toc { display: none; }
+
+@media (min-width: 1460px) {
+  .post-toc {
+    display: block;
+    position: fixed;
+    right: 10px;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 130px;
+    /* Under the site header (z-index 10), above the article. */
+    z-index: 5;
+    padding-left: 9px;
+    /* The only mark it makes: a hairline in its own (inherited) colour. */
+    border-left: 1px solid currentColor;
+    /* Ink, not a surface. The colour is set below from the DOCUMENT's own
+       background, not from the site's, because this floats over the post and a
+       fixed grey would vanish on half of them. */
+    color: rgba(17, 17, 17, .38);
+    /* Never scrolls: a scrollbar in the margin is more furniture than the
+       overview is worth. A list long enough to reach this cap is clipped
+       silently instead — see the entry cap in PostHtmlDoc, which is what
+       actually keeps it short. */
+    max-height: 74vh;
+    overflow: hidden;
+  }
+  /* Set by TocSpy from the post's measured background luminance. */
+  .post-toc.on-dark { color: rgba(255, 255, 255, .40); }
+
+  .post-toc h4 {
+    margin: 0 0 8px;
+    font-size: 8.5px;
+    letter-spacing: .11em;
+    text-transform: uppercase;
+    font-weight: 600;
+    color: inherit;
+    opacity: .75;
+  }
+  .post-toc ol {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+  }
+  .post-toc a {
+    display: block;
+    /* Full heading, wrapped. No line clamp: a clamped entry ended mid-phrase,
+       and an ellipsis in a 130px column tells the reader a section exists
+       without telling them what it is — which is the one job this has. Long
+       words break rather than push the rail wider. */
+    font-size: 10.5px;
+    line-height: 1.35;
+    color: inherit;
+    text-decoration: none;
+    overflow-wrap: break-word;
+    transition: color .15s, opacity .15s;
+  }
+  .post-toc a:hover { color: rgba(17, 17, 17, .78); }
+  .post-toc.on-dark a:hover { color: rgba(255, 255, 255, .82); }
+
+  /* The section being read: the one place contrast is spent. */
+  .post-toc a.on { color: rgba(17, 17, 17, .92); font-weight: 600; }
+  .post-toc.on-dark a.on { color: rgba(255, 255, 255, .95); }
+}
+
+/* No motion for readers who asked for none. */
+@media (prefers-reduced-motion: reduce) {
+  .post-toc a { transition: none; }
+}
+
+/* A design may ship its own "On this page" and fill it with JavaScript — both
+   presets do, as <ol id="tocList"></ol>. Scripts never run here, so that block
+   publishes as a heading with nothing under it, and alongside the site's own
+   overview it reads as a second, broken one. Hide a nav or aside whose list was
+   meant to be filled and never was.
+
+   Deliberately narrow: only <aside>/<nav> (not <div>, which holds real content),
+   and only when the EMPTY list is a direct child. An aside whose own list is
+   empty has nothing to say either way, so hiding it loses nothing. */
+.post-doc :where(aside, nav):has(> ol:empty),
+.post-doc :where(aside, nav):has(> ul:empty) { display: none; }

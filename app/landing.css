@@ -748,6 +748,9 @@
 @media (max-width: 600px) {
   .mq-title { font-size: 2.6rem; }
   .auth-panel { padding: 22px 18px 18px; }
+  .hw-nav { flex-wrap: wrap; padding: 12px 24px; margin: 0 -24px; }
+  .hw-brand { margin: 0 auto; }
+  .hw-nav-cta { width: 100%; margin-left: 0; justify-content: center; gap: 14px; margin-top: 6px; }
 }
 @media (prefers-reduced-motion: reduce) {
   .sp-aurora i, .mq-scrollcue i, .hw-logo, .hw-solid { animation: none !important; }

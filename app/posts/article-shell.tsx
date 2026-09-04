@@ -69,6 +69,7 @@ function PostsShell({ children }: { children: React.ReactNode }) {
           position: "sticky", top: 0, zIndex: 10,
           background: "color-mix(in srgb, var(--bg) 92%, transparent)",
           backdropFilter: "blur(8px)",
+          flexWrap: "wrap",
         }}
       >
         <Link href="/" style={{ display: "inline-flex" }} aria-label="MarketCatalyst home">

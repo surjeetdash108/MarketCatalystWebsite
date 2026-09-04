@@ -61,8 +61,17 @@
 .mcb2 #themeBtn:hover{color:var(--ink);border-color:var(--blue)}
 .mcb2[data-theme="light"] .mc-moon{display:none}
 .mcb2[data-theme="dark"] .mc-sun{display:none}
-@media(max-width:760px){.mcb2 nav.main{gap:13px;font-size:13.5px}
-.mcb2 nav.mc-main a.mc-hide-sm{display:none}}
+@media(max-width:760px){
+  .mcb2 .mc-top-in{padding:12px 16px;gap:10px}
+  .mcb2 nav.mc-main{gap:12px;font-size:13.5px}
+  .mcb2 nav.mc-main a.mc-hide-sm{display:none}
+}
+@media(max-width:480px){
+  .mcb2 .mc-top-in{flex-wrap:wrap;padding:12px 14px}
+  .mcb2 nav.mc-main{width:100%;justify-content:space-between;margin-top:2px}
+  .mcb2 .mc-brand{margin:0 auto}
+  .mcb2 .mc-search, .mcb2 .mc-search input{width:100%;max-width:none}
+}
 /* Tightened from 54/28. The eyebrow above the headline is gone, so the
    original top padding was holding space for something no longer there. */
 .mcb2 .mc-masthead{padding:26px 0 8px}
@@ -94,7 +103,7 @@
 /* One highlight, full width. It was a 1.55fr/1fr split with two mini cards
    beside the lead; the lead is now the only card, so it takes the row. */
 .mcb2 .mc-highlights{display:grid;grid-template-columns:1fr;gap:18px}
-@media(max-width:900px){.mcb2 .highlights{grid-template-columns:1fr}}
+@media(max-width:900px){.mcb2 .mc-highlights{grid-template-columns:1fr}}
 .mcb2 .mc-hero-card,.mcb2 .mc-mini{background:var(--surface);border:1px solid var(--line);border-radius:16px;box-shadow:var(--shadow)}
 .mcb2 .mc-hero-card:hover,.mcb2 .mc-mini:hover{border-color:var(--line-2);box-shadow:var(--shadow-hi)}
 .mcb2 .mc-hero-card{overflow:hidden;display:flex;flex-direction:column}
@@ -122,9 +131,9 @@
   border:1px solid var(--line);background:linear-gradient(140deg,var(--thumb-a),var(--thumb-b))}
 .mcb2 .mc-mini-thumb{aspect-ratio:16/9;margin-bottom:13px}
 .mcb2 .mc-p-thumb{width:150px;aspect-ratio:16/9;align-self:flex-start}
-@media(max-width:760px){.mcb2 .p-thumb{display:none}}
+@media(max-width:760px){.mcb2 .mc-p-thumb{display:none}}
 .mcb2 .mc-cols{display:grid;grid-template-columns:minmax(0,2fr) minmax(0,1fr);gap:46px;align-items:start}
-@media(max-width:960px){.mcb2 .cols{grid-template-columns:1fr;gap:34px}}
+@media(max-width:960px){.mcb2 .mc-cols{grid-template-columns:1fr;gap:34px}}
 .mcb2 .mc-post{display:grid;grid-template-columns:96px 1fr 150px;gap:20px;padding:24px 0;border-bottom:1px solid var(--line);
   border-radius:10px}
 .mcb2 .mc-post:hover{background:var(--hover)}
@@ -140,8 +149,8 @@
 .mcb2 .mc-avatar{width:24px;height:24px;border-radius:50%;display:grid;place-items:center;font:700 10.5px/1 inherit;
   color:var(--avatar-ink);background:linear-gradient(135deg,var(--blue),var(--purple))}
 .mcb2 .mc-byline .mc-sep{width:3px;height:3px;border-radius:50%;background:var(--line-2)}
-@media(max-width:960px){.mcb2 .post{grid-template-columns:96px 1fr;}}
-@media(max-width:620px){.mcb2 .post{grid-template-columns:1fr;gap:8px}
+@media(max-width:960px){.mcb2 .mc-post{grid-template-columns:96px 1fr;}}
+@media(max-width:620px){.mcb2 .mc-post{grid-template-columns:1fr;gap:8px}
 .mcb2 .mc-p-when{display:flex;gap:8px;align-items:baseline}}
 .mcb2 .mc-more{margin:30px auto 0;display:block;padding:12px 26px;border-radius:10px;border:1px solid var(--line-2);
   background:var(--surface);color:var(--ink);font:600 14.5px inherit;cursor:pointer}
@@ -170,7 +179,7 @@
 .mcb2 footer.mc-site{border-top:1px solid var(--line);margin-top:40px;padding:34px 0 60px;color:var(--dim);font-size:13px}
 .mcb2 footer.mc-site .mc-fnav{display:flex;gap:20px;flex-wrap:wrap;margin-bottom:14px}
 .mcb2 footer.mc-site a:hover{color:var(--blue)}
-@media(prefers-reduced-motion:no-preference){.mcb2 .post,.mcb2 .hero-card,.mcb2 .mini,.mcb2 .rail-box{transition:background-color .18s ease,border-color .18s ease,box-shadow .18s ease}
+@media(prefers-reduced-motion:no-preference){.mcb2 .mc-post,.mcb2 .mc-hero-card,.mcb2 .mc-mini,.mcb2 .mc-rail-box{transition:background-color .18s ease,border-color .18s ease,box-shadow .18s ease}
 .mcb2 .mc-p-title{transition:color .18s ease}}
 
 /* ══════════════════════ ADDED — not in the original template ══════════════ */
