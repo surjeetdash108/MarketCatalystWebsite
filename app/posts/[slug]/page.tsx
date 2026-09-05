@@ -1,6 +1,5 @@
 import type { Metadata } from "next";
 import Link from "next/link";
-import Image from "next/image";
 import { notFound } from "next/navigation";
 import { getPublishedPostBySlug, getPublishedPosts } from "@/lib/blog/posts";
 import { PostBody } from "@/components/blog/PostBody";
@@ -70,6 +69,37 @@ export async function generateMetadata({
   };
 }
 
+/**
+ * The article's lead image, drawn identically on both branches below.
+ *
+ * A plain <img>, not next/image: covers are served from two different Storage
+ * hosts (the tokenised firebasestorage.googleapis.com URLs the blog service
+ * writes, and the public storage.googleapis.com ones the media library writes),
+ * and the optimiser only accepts hosts named in next.config — a cover from the
+ * other one rendered as a broken image rather than an unoptimised one.
+ *
+ * The box takes its height from the picture (capped) instead of forcing 16/9.
+ * The covers are DESIGNED banners with words on them — the Palantir one is
+ * 1245×456 — and cropping a 2.7:1 graphic to 16/9 cut its own headline off at
+ * both ends. Only the empty state keeps a fixed ratio, since there is no
+ * picture to take a shape from.
+ */
+function ArticleHero({ src }: { src: string | null }) {
+  if (!src) {
+    return (
+      <div className="article-hero article-hero-empty">
+        <span>Image not available</span>
+      </div>
+    );
+  }
+  return (
+    <div className="article-hero">
+      {/* eslint-disable-next-line @next/next/no-img-element */}
+      <img src={src} alt="" />
+    </div>
+  );
+}
+
 export default async function PostPage({
   params,
 }: {
@@ -93,6 +123,12 @@ export default async function PostPage({
   // rather than to a blank article.
   const isDoc = (post.format === "pdf" || post.format === "doc") && !!post.pdfUrl;
 
+  /* Does the authored document print a headline of its own? Only an <h1>
+     counts: the designs put the article title there and use <h2>/<h3> for
+     sections, so anything looser would read a section heading as the headline
+     and suppress ours on a page that still has none. */
+  const hasOwnHeadline = /<h1[\s>]/i.test(post.content);
+
   /* An authored-HTML post is a complete designed page, so it is given the page:
      full width, a white ground, and none of the site's own article furniture.
      Everything below this branch is the site DRAWING an article — card,
@@ -109,9 +145,28 @@ export default async function PostPage({
           type="application/ld+json"
           dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
         />
+        {/* Both strips share .post-doc-back's measure so the link sits at the
+            same left edge as the picture under it, rather than each carrying
+            its own inline width. */}
         <div className="post-doc-back">
           <Link href="/posts" className="btn sm">← Back to blogs</Link>
         </div>
+        <div className="post-doc-back post-doc-hero">
+          <ArticleHero src={post.coverImageUrl} />
+        </div>
+        {/* The site normally stays out of an html post's way — the document
+            draws its own headline, which is the whole point of the format. But
+            a document that carries NO <h1> published as an untitled article:
+            eyebrow, tag, date, then straight into the prose, with the headline
+            existing only in the browser tab and on the board. When the document
+            has nothing to say here, we say it. */}
+        {!hasOwnHeadline && (
+          <div className="post-doc-back post-doc-headline">
+            <h1 className="article-title">{post.title}</h1>
+            {post.excerpt && <p className="article-sub">{post.excerpt}</p>}
+          </div>
+        )}
+
         <PostHtmlDoc html={post.content} design={design} />
       </div>
     );
@@ -129,22 +184,23 @@ export default async function PostPage({
         dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
       />
 
-      <div>
+      <div style={{ marginBottom: "16px" }}>
         <Link href="/posts" className="btn sm">← Back to blogs</Link>
       </div>
 
       <article className="article">
-        {post.coverImageUrl && post.format !== "html" && (
-          <div className="article-hero">
-            <Image src={post.coverImageUrl} alt="" fill priority sizes="760px" className="object-cover" />
-          </div>
-        )}
+        <ArticleHero src={post.coverImageUrl} />
         {/* A source document opens with its own masthead, headline and date —
             so printing ours above it stated the same thing twice, in the
             importer's mangled words. The title still names the post everywhere
             it is referenced: the browser tab, the board, link previews and this
             page's JSON-LD. */}
-        {!isDoc && post.format !== "html" && (
+        {/* Was `post.format !== "html"`, which assumed every html post is a
+            designed page that prints its own headline. An html post only
+            reaches this branch when it has NO design — plain prose typed into
+            the console — and that assumption left it with no headline at all.
+            Ask the markup instead of the format. */}
+        {!isDoc && !hasOwnHeadline && (
           <>
             <h1 className="article-title">{post.title}</h1>
             {post.excerpt && <p className="article-sub">{post.excerpt}</p>}

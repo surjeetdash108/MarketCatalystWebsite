@@ -106,6 +106,19 @@ ${SCOPE} :where(img, svg, video, canvas) { height: auto !important; }
      the same long words but leaves intrinsic sizing alone, so a flex row still
      reserves the space its content needs. */
   ${SCOPE} :where(p, li, td, th, dd, blockquote, figcaption) { overflow-wrap: break-word; }
+  /* white-space:nowrap is the one overflow the rest of this net cannot
+     reach. max-width does not shorten a line that refuses to break, so a
+     nowrap headline ran straight out of the column — and because .post-doc
+     clips (blog-doc.css), it was CUT OFF rather than merely wide: the reader
+     lost the end of the sentence with no way to scroll to it.
+
+     Excludes td/th and pre deliberately. Tabular data and code are the cases
+     where nowrap is meant, and both already have somewhere to go — every table
+     is wrapped in .post-doc-scroll and pre gets overflow-x:auto (BASELINE
+     above), so they scroll inside their own box instead of being clipped. */
+  ${SCOPE} :where(h1, h2, h3, h4, h5, h6, p, li, dd, blockquote, figcaption, a, span, div, strong, em) {
+    white-space: normal !important;
+  }
   /* A sticky nav inside the document must not also pin under the site header. */
   ${SCOPE} :where(header, nav) { position: static !important; }
 }

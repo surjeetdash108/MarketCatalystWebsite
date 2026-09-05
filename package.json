@@ -11,7 +11,8 @@
     "seed:admin": "tsx scripts/seed-admin.ts",
     "seed:faqs": "tsx scripts/seed-faqs.ts",
     "seed:blogs": "tsx scripts/seed-blogs.ts",
-    "clear:blogs": "tsx scripts/clear-blogs.ts"
+    "clear:blogs": "tsx scripts/clear-blogs.ts",
+    "blogs:strip-chrome": "tsx --env-file=.env scripts/strip-post-chrome.ts"
   },
   "dependencies": {
     "@sentry/nextjs": "^10.68.0",

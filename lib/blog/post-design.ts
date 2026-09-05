@@ -122,9 +122,61 @@ export async function resolvePostDesign(post: Post): Promise<PostDesign | null> 
     }
   }
 
-  // Genuinely carries no design of its own: an authored fragment, written
-  // against the house style. That is exactly what the shared theme is for.
-  return { theme: await getBlogTheme(), rootAttrs };
+  /* Nothing of its own to draw with. The shared theme is the fallback — but
+     only when it is actually a stylesheet for THIS markup.
+
+     The theme is not a house style. It is whichever designed document was
+     uploaded last, and its rules are written for that document's structure
+     (.card, .eyebrow, .meta, .stat-strip). Handing it to a post typed as plain
+     prose in the console — <h2>, <p>, <a>, nothing more — matched no selector
+     at all, and the article published as raw browser-default text running the
+     full width of the window: no measure, no padding, no card.
+
+     So ask whether the theme has anything to say about this post before giving
+     it the page. If it does not, return null and the post is drawn by the
+     SITE's own article furniture instead (headline, dateline, and the
+     .post-content measure in blog-doc.css) — which is what prose wants and has
+     always had. A designed post that predates the `css` field still matches on
+     .card and keeps the theme it was written against. */
+  const theme = await getBlogTheme();
+  if (themeStyles(theme.css, classNamesIn(post.content))) {
+    return { theme, rootAttrs };
+  }
+  return null;
+}
+
+/** Every distinct class name the markup applies. */
+function classNamesIn(html: string): Set<string> {
+  const out = new Set<string>();
+  const re = /\sclass\s*=\s*(?:"([^"]*)"|'([^']*)')/gi;
+  let m: RegExpExecArray | null;
+  while ((m = re.exec(html)) !== null) {
+    for (const name of (m[1] ?? m[2] ?? "").split(/\s+/)) {
+      if (name) out.add(name);
+    }
+  }
+  return out;
+}
+
+/**
+ * Does this stylesheet carry a rule for any of these classes?
+ *
+ * A crude scan for `.name` rather than a real CSS parse, and deliberately so:
+ * the only cost of a false positive is keeping the shared theme, which is the
+ * behaviour this guard replaced — it can only ever fail back to what was there
+ * before, never past it.
+ */
+function themeStyles(css: string[], used: Set<string>): boolean {
+  if (!used.size) return false;
+  const re = /\.(-?[_a-zA-Z][\w-]*)/g;
+  for (const sheet of css) {
+    let m: RegExpExecArray | null;
+    re.lastIndex = 0;
+    while ((m = re.exec(sheet)) !== null) {
+      if (used.has(m[1])) return true;
+    }
+  }
+  return false;
 }
 
 const sheet = (css: string[]): BlogTheme => ({

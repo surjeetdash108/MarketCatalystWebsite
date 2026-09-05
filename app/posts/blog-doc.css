@@ -382,6 +382,27 @@
   padding: 18px clamp(16px, 4vw, 32px) 6px;
 }
 
+/* The lead image, on the SAME measure as the back link above it — the two were
+   drifting apart because each carried its own inline max-width. The hero's own
+   26px bottom margin (admin.css) is what separates it from the document. */
+.post-doc-hero {
+  padding-top: 10px;
+  padding-bottom: 0;
+}
+
+/* The stand-in headline, for a document that prints none of its own. Left
+   aligned rather than centred like .article-title's default: it sits above a
+   designed page, not on top of the site's own centred article card. */
+.post-doc-headline {
+  padding-top: 0;
+  padding-bottom: 18px;
+}
+.post-doc-headline .article-title,
+.post-doc-headline .article-sub {
+  text-align: left;
+  max-width: 900px;
+}
+
 /* The document ground. White by default so a page whose own stylesheet sets no
    background does not inherit the board's cream; a document that DOES set one
    overrides this, because its rules are real selectors and this is :where(). */
