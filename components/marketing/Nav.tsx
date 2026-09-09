@@ -16,6 +16,9 @@ export function Nav() {
         MarketCatalyst
       </Link>
       <div className="hw-nav-cta">
+        <Link className="hw-ghost" href="/about">
+          About us
+        </Link>
         <Link className="hw-ghost" href="/posts">
           Blogs
         </Link>

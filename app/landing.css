@@ -730,6 +730,239 @@
 .cf-error { font-size: .82rem; color: var(--down, #FF5470); margin: -6px 0 0; }
 .cf-sent { font-size: 1rem; color: var(--text-hi, #EAEFF6); }
 
+/* ============================================================
+   ABOUT PAGE  (ab-*)
+   ============================================================
+   Sits on the landing page's own backdrop — the WebGL grid/wave
+   field plus the aurora — with one drifting gradient beam of its
+   own (.ab-beam) so a page that is mostly reading still moves.
+   Type, card surfaces (#0c0c0c on #242424) and the brand
+   purple -> cyan accent are the mq-* language unchanged.
+
+   Deliberately NOT using .reveal: nothing in this codebase adds
+   the .in class that makes a .reveal element visible, so anything
+   given that class would fade to nothing and stay there. */
+
+.ab-page { position: relative; z-index: 2; padding: 0 0 20px; }
+
+/* ---- Drifting gradient beam ----
+   Above the WebGL canvas (z-index 0) and below .hw (z-index 2). Very low
+   opacity and a very long cycle: at this size anything faster reads as a
+   distraction behind body copy rather than as depth. */
+.ab-beam {
+  position: fixed;
+  inset: -30% -20%;
+  z-index: 1;
+  pointer-events: none;
+  background:
+    conic-gradient(from 210deg at 30% 20%, rgba(124,108,245,.16), transparent 28%),
+    conic-gradient(from 40deg at 78% 62%, rgba(52,226,240,.13), transparent 26%);
+  filter: blur(70px);
+  animation: abBeam 34s ease-in-out infinite alternate;
+}
+@keyframes abBeam {
+  0%   { transform: translate3d(-3%, -2%, 0) scale(1);    opacity: .75; }
+  50%  { transform: translate3d(4%, 3%, 0)  scale(1.08);  opacity: 1; }
+  100% { transform: translate3d(-2%, 4%, 0) scale(1.03);  opacity: .8; }
+}
+
+/* ---- Positioning ---- */
+.ab-hero { padding: 74px 0 0; max-width: 780px; }
+.ab-title {
+  font-family: var(--f-display, 'Space Grotesk', sans-serif);
+  font-weight: 800;
+  font-size: clamp(2.2rem, 5.6vw, 3.7rem);
+  line-height: 1.03;
+  letter-spacing: -.032em;
+  color: #fff;
+  margin: 12px 0 0;
+}
+/* The one gradient on the page. Flat brand colour is the declared value, so a
+   browser without background-clip:text renders a readable headline rather than
+   an invisible one; @supports only then makes the text transparent. */
+.ab-grad {
+  color: var(--brand-2, #9B8BFF);
+  background: linear-gradient(100deg, var(--brand, #7C6CF5), var(--ai, #34E2F0));
+  -webkit-background-clip: text;
+  background-clip: text;
+}
+@supports ((-webkit-background-clip: text) or (background-clip: text)) {
+  .ab-grad { color: transparent; }
+}
+.ab-lede {
+  max-width: 660px;
+  color: #b2b2b2;
+  font-size: clamp(1rem, 1.5vw, 1.1rem);
+  line-height: 1.66;
+  margin: 22px 0 0;
+}
+
+/* ---- Figure band ---- */
+.ab-figs {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 1px;
+  margin: 54px 0 0;
+  background: #1c1c1c;              /* the gap colour = the hairline rules */
+  border: 1px solid #1c1c1c;
+  border-radius: 16px;
+  overflow: hidden;
+}
+.ab-fig { background: rgba(8,8,10,.72); padding: 22px 20px 20px; }
+.ab-fig-v {
+  font-family: var(--f-display, 'Space Grotesk', sans-serif);
+  font-weight: 800;
+  font-size: 2.1rem;
+  line-height: 1;
+  letter-spacing: -.03em;
+  background: linear-gradient(120deg, #fff, var(--brand-2, #9B8BFF));
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: #fff;
+}
+@supports ((-webkit-background-clip: text) or (background-clip: text)) {
+  .ab-fig-v { color: transparent; }
+}
+.ab-fig-k {
+  font: 700 0.6875rem var(--f-display, 'Space Grotesk', sans-serif);
+  letter-spacing: .16em;
+  text-transform: uppercase;
+  color: var(--ai, #34E2F0);
+  margin: 10px 0 7px;
+}
+.ab-fig p { color: #8f9ab0; font-size: .84rem; line-height: 1.5; margin: 0; }
+
+/* ---- Section scaffold ---- */
+.ab-sec { padding: 62px 0 0; }
+.ab-sec-h { display: flex; align-items: baseline; gap: 16px; margin: 0 0 22px; }
+.ab-sec-n {
+  font: 700 0.6875rem var(--f-display, 'Space Grotesk', sans-serif);
+  letter-spacing: .2em;
+  text-transform: uppercase;
+  color: #5c6780;
+  flex: none;
+}
+.ab-sec-h h2 {
+  font-family: var(--f-display, 'Space Grotesk', sans-serif);
+  font-weight: 800;
+  font-size: clamp(1.55rem, 3vw, 2.1rem);
+  letter-spacing: -.022em;
+  color: #fff;
+  margin: 0;
+}
+.ab-sec-h::after {
+  content: "";
+  flex: 1;
+  height: 1px;
+  align-self: center;
+  background: linear-gradient(90deg, #2a2a2a, transparent);
+}
+
+/* ---- Prose ---- */
+.ab-prose { max-width: 680px; }
+.ab-prose p { color: #b2b2b2; font-size: 1rem; line-height: 1.74; margin: 0 0 17px; }
+.ab-prose p:last-child { margin-bottom: 0; }
+
+/* ---- Pipeline ----
+   A numbered ledger rather than four cards: the stages are sequential, and a
+   card grid would present them as parallel options. */
+.ab-steps { list-style: none; padding: 0; margin: 0; border-top: 1px solid #1c1c1c; }
+.ab-step {
+  display: grid;
+  grid-template-columns: 72px 1fr;
+  gap: 20px;
+  padding: 24px 4px;
+  border-bottom: 1px solid #1c1c1c;
+  transition: background .18s;
+}
+.ab-step:hover { background: rgba(124,108,245,.05); }
+.ab-step-n {
+  font: 800 1.5rem/1 var(--f-display, 'Space Grotesk', sans-serif);
+  letter-spacing: -.02em;
+  color: #2f3646;
+  transition: color .18s;
+}
+.ab-step:hover .ab-step-n { color: var(--brand-2, #9B8BFF); }
+.ab-step-b h3 {
+  font-family: var(--f-display, 'Space Grotesk', sans-serif);
+  font-weight: 700;
+  font-size: 1.08rem;
+  color: #fff;
+  margin: 0 0 8px;
+  letter-spacing: -.01em;
+}
+.ab-step-b p { color: #9aa6bd; font-size: .95rem; line-height: 1.66; margin: 0; max-width: 640px; }
+
+/* ---- Standards ---- */
+.ab-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 16px; }
+.ab-card {
+  background: #0c0c0c;
+  border: 1px solid #242424;
+  border-radius: 18px;
+  padding: 24px 24px 26px;
+  transition: transform .2s, border-color .2s;
+}
+.ab-card:hover { transform: translateY(-3px); border-color: #3a3a3a; }
+.ab-card h3 {
+  font-family: var(--f-display, 'Space Grotesk', sans-serif);
+  font-weight: 700;
+  font-size: 1.02rem;
+  color: #fff;
+  margin: 0 0 9px;
+  letter-spacing: -.01em;
+}
+.ab-card p { color: #9aa6bd; font-size: .92rem; line-height: 1.62; margin: 0; }
+
+/* ---- Scope ----
+   Cyan rule down the left: the page's one "read this carefully" block, marked
+   rather than shouted. */
+.ab-line-lede { margin: 0 0 22px; }
+.ab-line { list-style: none; padding: 0; margin: 0; display: flex; flex-direction: column; gap: 15px; }
+.ab-line li {
+  border-left: 2px solid rgba(52,226,240,.45);
+  padding: 2px 0 2px 17px;
+  color: #9aa6bd;
+  font-size: .95rem;
+  line-height: 1.64;
+  max-width: 720px;
+}
+.ab-line b { color: #fff; font-weight: 700; }
+
+/* ---- Close ---- */
+.ab-close { text-align: center; padding: 78px 0 8px; margin-top: 34px; border-top: 1px solid #1c1c1c; }
+.ab-close h2 {
+  font-family: var(--f-display, 'Space Grotesk', sans-serif);
+  font-weight: 800;
+  font-size: clamp(1.7rem, 3.6vw, 2.3rem);
+  letter-spacing: -.025em;
+  color: #fff;
+  margin: 0 0 12px;
+}
+.ab-close > p { color: #9aa6bd; font-size: 1rem; line-height: 1.62; margin: 0 auto; max-width: 560px; }
+.ab-actions { display: flex; flex-wrap: wrap; gap: 12px; justify-content: center; margin-top: 26px; }
+.ab-btn { width: auto; min-width: 210px; text-align: center; text-decoration: none; display: inline-block; }
+.ab-fine { color: #666; font-size: .74rem; line-height: 1.55; margin: 22px 0 0; }
+
+/* ---- Responsive ---- */
+@media (max-width: 900px) {
+  .ab-figs { grid-template-columns: repeat(2, 1fr); }
+}
+@media (max-width: 680px) {
+  .ab-hero { padding-top: 54px; }
+  .ab-grid { grid-template-columns: 1fr; }
+  /* The stage number moves above its heading rather than holding a 72px gutter
+     that would leave the copy too narrow to read. */
+  .ab-step { grid-template-columns: 1fr; gap: 8px; padding: 20px 2px; }
+  .ab-step-n { font-size: 1.05rem; color: var(--brand-2, #9B8BFF); }
+  .ab-btn { min-width: 0; flex: 1 1 100%; }
+}
+@media (max-width: 440px) {
+  .ab-figs { grid-template-columns: 1fr; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .ab-beam { animation: none; }
+}
+
 /* ---- Reveal on scroll ---- */
 .reveal { opacity: 0; transform: translateY(20px) scale(.985); transition: opacity .6s cubic-bezier(.2,.8,.3,1), transform .6s cubic-bezier(.2,.8,.3,1); will-change: opacity, transform; }
 .reveal.in { opacity: 1; transform: none; }
@@ -750,7 +983,15 @@
   .auth-panel { padding: 22px 18px 18px; }
   .hw-nav { flex-wrap: wrap; padding: 12px 24px; margin: 0 -24px; }
   .hw-brand { margin: 0 auto; }
-  .hw-nav-cta { width: 100%; margin-left: 0; justify-content: center; gap: 14px; margin-top: 6px; }
+  /* Five items now (About, Blogs, FAQs, Log in, Sign up) on their own row
+     under the centred brand. wrap + row-gap so the set can break to a second
+     line on a narrow phone instead of overflowing, and the gap tightens rather
+     than the links shrinking below a tappable size. */
+  .hw-nav-cta { width: 100%; margin-left: 0; justify-content: center; flex-wrap: wrap; gap: 8px 14px; margin-top: 6px; }
+}
+@media (max-width: 380px) {
+  .hw-nav-cta { gap: 7px 11px; }
+  .hw-solid { padding: 8px 13px; }
 }
 @media (prefers-reduced-motion: reduce) {
   .sp-aurora i, .mq-scrollcue i, .hw-logo, .hw-solid { animation: none !important; }

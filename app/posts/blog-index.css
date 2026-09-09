@@ -61,16 +61,28 @@
 .mcb2 #themeBtn:hover{color:var(--ink);border-color:var(--blue)}
 .mcb2[data-theme="light"] .mc-moon{display:none}
 .mcb2[data-theme="dark"] .mc-sun{display:none}
+/* The board's nav is five items — About us, Blogs, Log in, Sign up, theme — and
+   it keeps all five at every width. It only ever dropped one link on a narrow
+   screen (FAQs, via .mc-hide-sm), and that rule went with the link, so the nav
+   no longer changes its CONTENTS between breakpoints, only its spacing. */
 @media(max-width:760px){
   .mcb2 .mc-top-in{padding:12px 16px;gap:10px}
-  .mcb2 nav.mc-main{gap:12px;font-size:13.5px}
-  .mcb2 nav.mc-main a.mc-hide-sm{display:none}
+  .mcb2 nav.mc-main{gap:11px;font-size:13.5px}
+  .mcb2 .mc-btn-grad{padding:8px 13px;font-size:13.5px}
 }
 @media(max-width:480px){
   .mcb2 .mc-top-in{flex-wrap:wrap;padding:12px 14px}
-  .mcb2 nav.mc-main{width:100%;justify-content:space-between;margin-top:2px}
+  /* Second row, all five items. wrap + row-gap so the set breaks to a third
+     line on a very narrow phone instead of overflowing, and the gap tightens
+     rather than the links shrinking below a tappable size. */
+  .mcb2 nav.mc-main{width:100%;justify-content:space-between;flex-wrap:wrap;gap:7px 9px;margin-top:2px}
   .mcb2 .mc-brand{margin:0 auto}
+  .mcb2 .mc-btn-grad{padding:8px 12px;font-size:12.5px}
+  .mcb2 #themeBtn{width:32px;height:32px}
   .mcb2 .mc-search, .mcb2 .mc-search input{width:100%;max-width:none}
+}
+@media(max-width:380px){
+  .mcb2 nav.mc-main{gap:6px 8px;font-size:12.5px}
 }
 /* Tightened from 54/28. The eyebrow above the headline is gone, so the
    original top padding was holding space for something no longer there. */
@@ -89,11 +101,23 @@
 .mcb2 .mc-pill:hover{color:var(--ink);border-color:var(--blue)}
 .mcb2 .mc-pill[aria-pressed="true"]{background:var(--blue);border-color:var(--blue);color:#fff}
 .mcb2[data-theme="dark"] .mc-pill[aria-pressed="true"]{background:rgba(79,124,255,.18);color:var(--ink)}
-.mcb2 .mc-search{margin-left:auto;position:relative}
-.mcb2 .mc-search input{width:250px;max-width:52vw;padding:10px 14px 10px 36px;border-radius:9px;
-  border:1px solid var(--line-2);background:var(--input);color:var(--ink);font:400 14px inherit}
+/* The magnifier is centred on the field, not parked at a measured offset.
+
+   It used to sit at a hard-coded top:11px inside a wrapper that was TALLER than
+   the input it wrapped: the input is inline-block by default, so the wrapper
+   carried a line box's descender space under it and the field floated up inside
+   its own box. The icon, positioned against the wrapper, ended up above the
+   placeholder's centre line instead of on it.
+
+   Making the wrapper a centring flex box takes the inline leading out (so the
+   wrapper is exactly as tall as the field), and top:50% + translateY keeps the
+   icon centred whatever the field's font size or padding becomes. */
+.mcb2 .mc-search{margin-left:auto;position:relative;display:flex;align-items:center}
+.mcb2 .mc-search input{display:block;width:250px;max-width:52vw;padding:10px 14px 10px 36px;border-radius:9px;
+  border:1px solid var(--line-2);background:var(--input);color:var(--ink);font:400 14px inherit;line-height:1.25}
 .mcb2 .mc-search input::placeholder{color:var(--dim)}
-.mcb2 .mc-search svg{position:absolute;left:12px;top:11px;opacity:.55;color:var(--mute)}
+.mcb2 .mc-search svg{position:absolute;left:12px;top:50%;transform:translateY(-50%);
+  opacity:.55;color:var(--mute);pointer-events:none}
 /* 44px above and below every section put a large gap between the filter
    chips and the first thing they filter. */
 .mcb2 section{padding:14px 0 24px}
@@ -243,8 +267,24 @@
 .mcb2 .mc-feed.mc-grid .mc-p-dek{display:-webkit-box;-webkit-box-orient:vertical;-webkit-line-clamp:2;overflow:hidden}
 .mcb2 .mc-feed.mc-grid .mc-byline{margin-top:auto}
 
-/* A post with no cover art. Drawn rather than hidden so the row keeps its
-   shape, and labelled so it reads as missing rather than broken. */
+/* A post with no cover art.
+
+   The hero image is optional, so a post without one is ordinary, not broken:
+   the thumbnail is left out entirely (Cover renders null) and the card closes
+   the gap instead of drawing a labelled placeholder where a picture failed.
+
+   The feed row is a three-column grid — date | text | thumb — so dropping the
+   thumbnail alone would leave 150px of dead track on the right. .mc-nothumb
+   drops that track at every width the row is a grid; in the mobile and grid-view
+   card layouts the row is a flex column whose banner is simply absent, so those
+   need nothing. The highlight card is a flex column for the same reason: its
+   300px .mc-thumb banner just does not exist, and .mc-body already carries the
+   card's own padding. */
+.mcb2 .mc-post.mc-nothumb{grid-template-columns:96px 1fr}
+@media(max-width:960px){.mcb2 .mc-post.mc-nothumb{grid-template-columns:96px 1fr}}
+@media(max-width:760px){.mcb2 .mc-post.mc-nothumb{grid-template-columns:none}}
+
+/* Kept for any older markup still drawing the placeholder box. */
 .mcb2 .mc-noimg{width:100%;height:100%;display:grid;place-items:center;padding:8px;text-align:center;
   font:500 10.5px/1.35 ui-monospace,monospace;color:var(--dim);letter-spacing:.02em}
 .mcb2 .mc-thumb .mc-noimg{font-size:13px}

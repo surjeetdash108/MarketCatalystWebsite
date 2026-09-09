@@ -130,18 +130,24 @@ function preview(post: Post, min: number, max: number): string {
  * row for that one post, and an <img> pointed at nothing renders as a broken
  * icon. Saying so is more useful to whoever has to go and add the art.
  */
+/**
+ * A post's cover art, or NOTHING at all.
+ *
+ * The hero image is optional on the way in, so a post without one is a normal
+ * post rather than a broken one. It used to draw a bordered "Image not
+ * available" box, which read as a failure on a board where half the posts may
+ * legitimately carry no art. Now the thumbnail is simply absent, and the card
+ * closes the gap it left (see .mc-nothumb in blog-index.css).
+ */
 function Cover({ src, className, eager }: { src: string | null; className: string; eager?: boolean }) {
+  if (!src) return null;
   return (
     <div className={className}>
-      {src ? (
-        // Plain <img>, not next/image: covers come from two different Storage
-        // hosts and an unconfigured one makes next/image throw rather than
-        // degrade — on an index page that would take the whole board down.
-        // eslint-disable-next-line @next/next/no-img-element
-        <img src={src} alt="" loading={eager ? "eager" : "lazy"} />
-      ) : (
-        <div className="mc-noimg">Image not available</div>
-      )}
+      {/* Plain <img>, not next/image: covers come from two different Storage
+          hosts and an unconfigured one makes next/image throw rather than
+          degrade — on an index page that would take the whole board down. */}
+      {/* eslint-disable-next-line @next/next/no-img-element */}
+      <img src={src} alt="" loading={eager ? "eager" : "lazy"} />
     </div>
   );
 }
@@ -318,8 +324,13 @@ export function BlogIndex({
             Market<span>Catalyst</span>
           </a>
           <nav className="mc-main">
+            <a href="/about">About us</a>
             <a className="mc-active" href="/posts">Blogs</a>
-            <a className="mc-hide-sm" href="/faqs">FAQs</a>
+            {/* FAQs only is left out here — it was the first item dropped on a
+                narrow screen, so the nav changed shape between widths. The
+                board's own footer still links to /faqs for anyone who wants it.
+                About us has no such rule and carries through from the marketing
+                nav (components/marketing/Nav.tsx) like the rest. */}
             <a href="/admin/login">Log in</a>
             <a className="mc-btn-grad" href="/contact">Sign up</a>
             <button
@@ -385,7 +396,11 @@ export function BlogIndex({
               <p className="mc-empty">Nothing published yet.</p>
             ) : (
               <>
-                <a className="mc-hero-card" href={href(highlights[0])} onClick={() => countOpen(highlights[0])}>
+                <a
+                  className={`mc-hero-card${highlights[0].coverImageUrl ? "" : " mc-nothumb"}`}
+                  href={href(highlights[0])}
+                  onClick={() => countOpen(highlights[0])}
+                >
                   <Cover src={highlights[0].coverImageUrl} className="mc-thumb" eager />
                   <div className="mc-body">
                     <span className={`mc-tag ${SEC_CLASS[sectionOf(highlights[0])]}`}>
@@ -478,7 +493,12 @@ export function BlogIndex({
                   shown.map((p) => {
                     const d = new Date(when(p));
                     return (
-                      <a className="mc-post" key={p.id} href={href(p)} onClick={() => countOpen(p)}>
+                      <a
+                        className={`mc-post${p.coverImageUrl ? "" : " mc-nothumb"}`}
+                        key={p.id}
+                        href={href(p)}
+                        onClick={() => countOpen(p)}
+                      >
                         <div className="mc-p-when">
                           <b>{d.toLocaleDateString("en-GB", { day: "2-digit", month: "short", timeZone: ET })}</b>
                           {d.toLocaleDateString("en-GB", { year: "numeric", timeZone: ET })}

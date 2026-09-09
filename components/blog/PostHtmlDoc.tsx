@@ -2,8 +2,9 @@ import Script from "next/script";
 import { sanitizeRichPostHtml } from "@/lib/security/sanitize";
 import { scopeCss } from "@/lib/blog/scope-css";
 import { PostThemeBinding } from "./PostThemeBinding";
-import { PostToc } from "./PostToc";
-import { TocSpy } from "./TocSpy";
+// Both used only by the commented-out "On this page" overview below.
+// import { PostToc } from "./PostToc";
+// import { TocSpy } from "./TocSpy";
 import { buildToc } from "@/lib/blog/toc";
 import type { PostDesign } from "@/lib/blog/post-design";
 
@@ -176,6 +177,8 @@ export function PostHtmlDoc({
   /* Three sections, not two: this is an overview, and a two-item list beside a
      long article tells the reader less than the article's own headings already
      do. Below the threshold nothing is rendered at all — no empty rail. */
+  // Kept for the commented-out overview at the end of this file.
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const hasToc = toc.length >= 3;
 
   /* Capped, because the rail does not scroll. Entries past the bottom of the
@@ -183,6 +186,7 @@ export function PostHtmlDoc({
      reader — so the cap is the honest version of the same limit, and it keeps
      the rail short enough that the clip never actually fires. Ten full-text
      entries at 10.5px come to roughly 300px. */
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const tocEntries = toc.slice(0, 10);
 
   /**
@@ -247,17 +251,26 @@ export function PostHtmlDoc({
     </div>
   );
 
-  /* The overview is a SIBLING of the document, never a child: outside
-     .post-doc the post's own stylesheet cannot restyle it, and
+  /* The "On this page" overview is TURNED OFF on the article page — commented
+     out rather than deleted so it is a one-line revert.
+
+     Everything it needs is still built above (`toc`, `hasToc`, `tocEntries`)
+     and both components still exist, so restoring it is a matter of dropping
+     the early return below and un-commenting the block.
+
+     When it was on: the overview was a SIBLING of the document, never a child —
+     outside .post-doc the post's own stylesheet cannot restyle it, and
      .post-doc { overflow-x: clip } cannot clip it. It is fixed-position, so it
      takes no space and the document keeps the whole page either way. */
-  if (!hasToc) return doc;
-  return (
-    <>
-      {doc}
-      <PostToc entries={tocEntries} />
-      {/* Client-only: highlights the current section while scrolling. */}
-      <TocSpy />
-    </>
-  );
+  return doc;
+
+  // if (!hasToc) return doc;
+  // return (
+  //   <>
+  //     {doc}
+  //     <PostToc entries={tocEntries} />
+  //     {/* Client-only: highlights the current section while scrolling. */}
+  //     <TocSpy />
+  //   </>
+  // );
 }

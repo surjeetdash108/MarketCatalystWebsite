@@ -81,17 +81,15 @@ export async function generateMetadata({
  * The box takes its height from the picture (capped) instead of forcing 16/9.
  * The covers are DESIGNED banners with words on them — the Palantir one is
  * 1245×456 — and cropping a 2.7:1 graphic to 16/9 cut its own headline off at
- * both ends. Only the empty state keeps a fixed ratio, since there is no
- * picture to take a shape from.
+ * both ends.
+ *
+ * A post with no cover renders NOTHING here. The hero is optional on the way
+ * in, so a heroless article is an ordinary article that opens on its headline —
+ * the old "Image not available" panel announced a failure that had not
+ * happened, and reserved 16/9 of the page to do it.
  */
 function ArticleHero({ src }: { src: string | null }) {
-  if (!src) {
-    return (
-      <div className="article-hero article-hero-empty">
-        <span>Image not available</span>
-      </div>
-    );
-  }
+  if (!src) return null;
   return (
     <div className="article-hero">
       {/* eslint-disable-next-line @next/next/no-img-element */}
@@ -151,9 +149,13 @@ export default async function PostPage({
         <div className="post-doc-back">
           <Link href="/posts" className="btn sm">← Back to blogs</Link>
         </div>
-        <div className="post-doc-back post-doc-hero">
-          <ArticleHero src={post.coverImageUrl} />
-        </div>
+        {/* The strip exists only to give the hero the same measure as the
+            document under it — with no hero it is bare margin, so it goes. */}
+        {post.coverImageUrl && (
+          <div className="post-doc-back post-doc-hero">
+            <ArticleHero src={post.coverImageUrl} />
+          </div>
+        )}
         {/* The site normally stays out of an html post's way — the document
             draws its own headline, which is the whole point of the format. But
             a document that carries NO <h1> published as an untitled article:

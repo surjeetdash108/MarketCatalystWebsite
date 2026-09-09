@@ -79,7 +79,7 @@ function PostsShell({ children }: { children: React.ReactNode }) {
             in the blog board's masthead (shared via BlogThemeProvider). */}
         <nav style={{ marginLeft: "auto", display: "flex", gap: 18, alignItems: "center" }}>
           <Link href="/" className="hw-ghost">Home</Link>
-          <Link href="/faqs" className="hw-ghost">FAQs</Link>
+          <Link href="/about" className="hw-ghost">About us</Link>
         </nav>
       </header>
       {/* No padding here: the /posts board is full-bleed (owns its own padding);
