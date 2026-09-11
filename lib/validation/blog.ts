@@ -23,7 +23,7 @@ export const createPostSchema = z.object({
   rank: z.coerce.number().int().min(1).max(9999).optional(),
   categories: z.array(z.string().trim().max(60)).max(20).default([]),
   tags: z.array(z.string().trim().max(60)).max(30).default([]),
-  coverImageUrl: z.string().trim().url().optional().or(z.literal("")),
+  coverImageUrl: z.string().trim().url().or(z.literal("")).nullable().optional(),
   seo: seoSchema.optional(),
 });
 

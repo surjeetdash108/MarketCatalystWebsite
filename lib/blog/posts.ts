@@ -110,7 +110,7 @@ function mapPost(id: string, data: FirebaseFirestore.DocumentData): Post {
     editorId: data.editorId ?? null,
     categories: data.categories ?? [],
     tags: data.tags ?? [],
-    coverImageUrl: data.coverImageUrl ?? null,
+    coverImageUrl: typeof data.coverImageUrl === "string" && data.coverImageUrl.trim() ? data.coverImageUrl.trim() : null,
     pdfUrl: typeof data.pdfUrl === "string" ? data.pdfUrl : null,
     pdfName: typeof data.pdfName === "string" ? data.pdfName : null,
     pdfPages: typeof data.pdfPages === "number" ? data.pdfPages : null,
