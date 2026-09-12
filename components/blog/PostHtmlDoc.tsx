@@ -54,7 +54,7 @@ const DOC_ID = "mc-post-doc";
  */
 const BASELINE = `
 :where(${SCOPE}), :where(${SCOPE} *), :where(${SCOPE} *::before), :where(${SCOPE} *::after) { box-sizing: border-box; }
-:where(${SCOPE}) { width: 100%; margin: 0; }
+:where(${SCOPE}) { width: 100%; max-width: 1180px; margin-left: auto; margin-right: auto; padding: 0 clamp(16px, 4vw, 32px); box-sizing: border-box; }
 :where(${SCOPE} img), :where(${SCOPE} svg), :where(${SCOPE} video) { max-width: 100%; height: auto; }
 :where(${SCOPE} pre) { overflow-x: auto; }
 :where(${SCOPE} table) { border-collapse: collapse; }
@@ -66,77 +66,42 @@ const BASELINE = `
 /**
  * The responsive safety net.
  *
- * A design uploaded here may be responsive, partly responsive, or not at all —
- * we do not control what gets written. Nothing the site does can invent a
- * designed mobile layout for a page that has none, but it CAN guarantee the
- * page never pushes the viewport sideways at any width, which is the difference
- * between "narrow" and "unusable".
- *
- * Every rule is confined to a max-width query and touches only properties that
- * cause overflow, always in the direction of fitting. A design that IS
- * responsive has already set these for itself at these widths, so the net costs
- * it nothing.
+ * Guarantees that laptop & desktop viewports receive full-width, centered,
+ * readable multi-column layouts, while tablets and mobile gracefully adapt
+ * without overflow.
  */
 const RESPONSIVE_NET = `
-/* At EVERY width: a direct child of the document cannot be wider than the
-   document. This is the fixed-width wrapper case — width:1200px on the outer
-   .wrap — and it was the gap in the first version of this net, which only
-   clamped below 760px: a 1200px page still overflowed every laptop and tablet
-   between 761px and 1199px, which is most of them. Restricting it to direct
-   children keeps it off the deliberately-wider decorations (a full-bleed band,
-   a negative-margin rule) that live deeper in a design. */
+${SCOPE} { max-width: 1180px !important; margin-left: auto !important; margin-right: auto !important; width: 100% !important; box-sizing: border-box !important; }
 ${SCOPE} > * { max-width: 100% !important; }
+${SCOPE} > div { max-width: 100% !important; width: 100% !important; }
+${SCOPE} main { max-width: 100% !important; margin-left: auto !important; margin-right: auto !important; padding: 0 0 80px !important; width: 100% !important; }
+${SCOPE} .card { max-width: 100% !important; margin-left: auto !important; margin-right: auto !important; margin-bottom: 36px !important; width: 100% !important; }
+${SCOPE} .card-body { padding: 36px clamp(20px, 4vw, 56px) 0; }
+${SCOPE} .stat-strip { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 16px; margin: 20px 0 32px; }
+${SCOPE} .bullbear-wrap { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 18px; margin: 24px 0 32px; }
+${SCOPE} .toc ol { columns: 2; column-gap: 32px; }
 
 @media (max-width: 1024px) {
-  /* A flex or grid child defaults to min-width:auto, so it refuses to shrink
-     below its content and pushes its whole row wider than the screen — the
-     single most common reason an uploaded page overflows. */
-  ${SCOPE} * { min-width: 0 !important; }
-  /* Clamps fixed pixel widths further in, not just at the top level. */
-  ${SCOPE} * { max-width: 100% !important; }
+  ${SCOPE} * { min-width: 0; }
+  ${SCOPE} * { max-width: 100%; }
 }
-@media (max-width: 760px) {
-${SCOPE} :where(img, svg, video, canvas) { height: auto !important; }
-  /* A long ticker or URL cannot widen its column.
-
-     break-word, NOT anywhere, and deliberately not on headings or links:
-     overflow-wrap:anywhere also shrinks an element's MIN-CONTENT width, and
-     combined with the min-width:0 above that let a flex item collapse to the
-     width of one character — the brand lockup in a document's own header
-     rendered as "M / ar / k / et / UI", one letter per line. break-word breaks
-     the same long words but leaves intrinsic sizing alone, so a flex row still
-     reserves the space its content needs. */
+@media (max-width: 768px) {
+  ${SCOPE} .card-body { padding: 24px 16px 0 !important; }
+  ${SCOPE} .stat-strip { grid-template-columns: repeat(2, 1fr) !important; gap: 10px !important; }
+  ${SCOPE} .bullbear-wrap { grid-template-columns: 1fr !important; gap: 14px !important; }
+  ${SCOPE} .toc ol { columns: 1 !important; }
+  ${SCOPE} :where(img, svg, video, canvas) { height: auto !important; }
   ${SCOPE} :where(p, li, td, th, dd, blockquote, figcaption) { overflow-wrap: break-word; }
-  /* white-space:nowrap is the one overflow the rest of this net cannot
-     reach. max-width does not shorten a line that refuses to break, so a
-     nowrap headline ran straight out of the column — and because .post-doc
-     clips (blog-doc.css), it was CUT OFF rather than merely wide: the reader
-     lost the end of the sentence with no way to scroll to it.
-
-     Excludes td/th and pre deliberately. Tabular data and code are the cases
-     where nowrap is meant, and both already have somewhere to go — every table
-     is wrapped in .post-doc-scroll and pre gets overflow-x:auto (BASELINE
-     above), so they scroll inside their own box instead of being clipped. */
   ${SCOPE} :where(h1, h2, h3, h4, h5, h6, p, li, dd, blockquote, figcaption, a, span, div, strong, em) {
     white-space: normal !important;
   }
-  /* A sticky nav inside the document must not also pin under the site header. */
   ${SCOPE} :where(header, nav) { position: static !important; }
 }
-@media (max-width: 560px) {
-  /* Phone width: a multi-column track cannot fit, whatever it was set to.
-     minmax(0,1fr) rather than 1fr so a long unbreakable string in a cell
-     still cannot force the track wider than the column. */
+@media (max-width: 480px) {
+  ${SCOPE} .stat-strip { grid-template-columns: 1fr !important; }
   ${SCOPE} :where(div, section, main, article, aside, ul, ol) {
     grid-template-columns: minmax(0, 1fr) !important;
   }
-  /* A row of fixed-width cards wraps instead of overflowing.
-
-     Content containers only — NOT header/footer/nav. Those hold brand lockups
-     and nav bars that a design gives a fixed height, so wrapping them pushed
-     the second half of a logo out through the bottom of its own header. A card
-     row is what needs to wrap; site chrome already has the design's own
-     handling, and where it does not, min-width:0 above is enough. */
   ${SCOPE} :where(div, section, ul, ol) { flex-wrap: wrap; }
 }
 `;

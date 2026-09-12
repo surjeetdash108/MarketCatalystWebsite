@@ -25,7 +25,7 @@
 }
 
 /* ── the column ──────────────────────────────────────────────────────────── */
-:where(.mc-doc > div) { max-width: 800px; margin: 0 auto; padding: 40px 20px 56px; }
+:where(.mc-doc:not(.post-doc) > div) { max-width: 800px; margin: 0 auto; padding: 40px 20px 56px; }
 
 /* ── masthead ────────────────────────────────────────────────────────────── */
 :where(.mc-doc .mc-badge) {
@@ -170,7 +170,7 @@
 /* More horizontal margin around the article content; the inner container's
    inline padding is 22px, so !important is needed to widen it. clamp keeps it
    generous on desktop and tighter on phones. */
-.mc-doc > div { padding-left: clamp(24px, 5vw, 64px) !important; padding-right: clamp(24px, 5vw, 64px) !important; }
+.mc-doc:not(.post-doc) > div { padding-left: clamp(24px, 5vw, 64px) !important; padding-right: clamp(24px, 5vw, 64px) !important; }
 .mc-doc .num { font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;font-variant-numeric:tabular-nums }
 .mc-doc .wrap { max-width:1180px;margin:0 auto;padding:0 22px }
 .mc-doc a { color:inherit;text-decoration:none }
@@ -382,12 +382,48 @@
   padding: 18px clamp(16px, 4vw, 32px) 6px;
 }
 
-/* The lead image, on the SAME measure as the back link above it — the two were
-   drifting apart because each carried its own inline max-width. The hero's own
-   26px bottom margin (admin.css) is what separates it from the document. */
+/* The lead image, balanced medium size with graceful optional handling */
 .post-doc-hero {
-  padding-top: 10px;
-  padding-bottom: 0;
+  max-width: 1180px;
+  margin: 0 auto;
+  padding: 10px clamp(16px, 4vw, 32px) 0;
+  display: flex;
+  justify-content: center;
+}
+.post-doc-hero:empty {
+  display: none !important;
+}
+.post-doc-hero .article-hero {
+  max-width: 820px;
+  width: 100%;
+  margin: 0 auto 24px;
+  border-radius: 14px;
+  overflow: hidden;
+  background: var(--surface-2, #f4f4f5);
+  border: 1px solid var(--border, rgba(0, 0, 0, 0.08));
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
+  line-height: 0;
+}
+.post-doc-hero .article-hero:empty {
+  display: none !important;
+}
+.post-doc-hero .article-hero img {
+  display: block;
+  width: 100%;
+  height: auto;
+  max-height: 320px;
+  object-fit: cover;
+  object-position: center;
+}
+@media (max-width: 640px) {
+  .post-doc-hero .article-hero {
+    max-width: 100%;
+    margin-bottom: 16px;
+    border-radius: 10px;
+  }
+  .post-doc-hero .article-hero img {
+    max-height: 200px;
+  }
 }
 
 /* The stand-in headline, for a document that prints none of its own. Left
@@ -406,7 +442,8 @@
 /* The document ground. White by default so a page whose own stylesheet sets no
    background does not inherit the board's cream; a document that DOES set one
    overrides this, because its rules are real selectors and this is :where(). */
-:where(.post-doc) { background: #ffffff; }
+.post-doc, #mc-post-doc { background: #ffffff !important; }
+[data-theme="dark"] .post-doc, [data-theme="dark"] #mc-post-doc { background: #070d20 !important; }
 
 /* The horizontal-overflow backstop.
    Confined to the document container, so it cannot clip the site's own sticky
@@ -518,3 +555,728 @@
    empty has nothing to say either way, so hiding it loses nothing. */
 .post-doc :where(aside, nav):has(> ol:empty),
 .post-doc :where(aside, nav):has(> ul:empty) { display: none; }
+
+/* ============================================================================
+   MARKETCATALYST BLOG COMPONENTS & TEMPLATES
+   Styles for the rich elements present in published research, recap & educational posts.
+   Applied across .mc-doc and .post-doc to ensure consistent premium design.
+   ============================================================================ */
+
+/* ── Container Card & Header Elements ─────────────────────────────────────── */
+:where(.mc-doc, .post-doc) main {
+  max-width: 100%;
+  margin: 0 auto;
+  padding: 0 0 80px;
+}
+:where(.mc-doc, .post-doc) main > .card,
+:where(.mc-doc, .post-doc) .card {
+  background: var(--surface, #ffffff);
+  border: 1px solid var(--line, rgba(24,52,105,.13));
+  border-radius: 16px;
+  box-shadow: 0 1px 3px rgba(16,34,70,.04), 0 8px 24px rgba(16,34,70,.04);
+  margin: 0 auto 36px;
+  padding: 0;
+  max-width: 1180px;
+  width: 100%;
+  overflow: hidden;
+}
+:where(.mc-doc, .post-doc) .card-body {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  padding: clamp(24px, 4vw, 48px) clamp(20px, 4vw, 56px) 0;
+}
+@media (max-width: 640px) {
+  :where(.mc-doc, .post-doc) .card-body {
+    padding: 24px 16px 0;
+  }
+}
+:where(.mc-doc, .post-doc) .eyebrow {
+  font: 700 11px/1.2 ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--purple, #7c3fe4);
+  margin-bottom: 12px;
+}
+:where(.mc-doc, .post-doc) .subtitle {
+  font-size: 1.12rem;
+  line-height: 1.6;
+  color: var(--mute, #5a6b8c);
+  margin: 12px 0 18px;
+  font-weight: 400;
+}
+:where(.mc-doc, .post-doc) .tag,
+:where(.mc-doc, .post-doc) .tags-line {
+  display: inline-flex;
+  align-items: center;
+  background: rgba(59,99,232,0.08);
+  color: var(--blue, #3b63e8);
+  font-size: 12px;
+  font-weight: 600;
+  padding: 4px 12px;
+  border-radius: 999px;
+  margin-bottom: 16px;
+  letter-spacing: 0.04em;
+  width: fit-content;
+}
+
+/* ── Byline, Authors & Meta ────────────────────────────────────────────────── */
+:where(.mc-doc, .post-doc) .byline {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  margin: 16px 0 14px;
+  flex-wrap: wrap;
+}
+:where(.mc-doc, .post-doc) .byline .avatar {
+  width: 38px;
+  height: 38px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, var(--blue, #3b63e8), var(--purple, #7c3fe4));
+  color: #ffffff;
+  font-weight: 700;
+  font-size: 13px;
+  display: grid;
+  place-items: center;
+  flex-shrink: 0;
+}
+:where(.mc-doc, .post-doc) .byline .who {
+  display: flex;
+  flex-direction: column;
+}
+:where(.mc-doc, .post-doc) .byline .name {
+  font-weight: 700;
+  font-size: 14px;
+  color: var(--ink, #0b1430);
+}
+:where(.mc-doc, .post-doc) .byline .role {
+  font-size: 12px;
+  color: var(--mute, #5a6b8c);
+}
+:where(.mc-doc, .post-doc) .byline .verified {
+  margin-left: auto;
+  font-size: 12px;
+  font-weight: 500;
+  color: #0a8f5f;
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  background: rgba(10,143,95,0.08);
+  padding: 4px 10px;
+  border-radius: 6px;
+}
+:where(.mc-doc, .post-doc) .meta {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 12.5px;
+  color: var(--dim, #8291ad);
+  margin-top: 10px;
+  flex-wrap: wrap;
+}
+:where(.mc-doc, .post-doc) hr.rule {
+  border: 0;
+  border-top: 1px solid var(--line, rgba(24,52,105,.13));
+  margin: 24px 0 28px;
+}
+
+/* ── Inline Table of Contents ─────────────────────────────────────────────── */
+:where(.mc-doc, .post-doc) .toc {
+  background: var(--surface-2, #f8fafc);
+  border: 1px solid var(--line, rgba(24,52,105,.13));
+  border-radius: 12px;
+  padding: 18px 22px;
+  margin: 22px 0 28px;
+}
+:where(.mc-doc, .post-doc) .toc .toc-title {
+  font-size: 11.5px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.14em;
+  color: var(--dim, #8291ad);
+  margin-bottom: 12px;
+}
+:where(.mc-doc, .post-doc) .toc ol {
+  margin: 0;
+  padding-left: 20px;
+  color: var(--blue, #3b63e8);
+  font-size: 14px;
+  line-height: 1.8;
+}
+:where(.mc-doc, .post-doc) .toc ol li a {
+  color: var(--blue, #3b63e8);
+  text-decoration: none;
+  font-weight: 500;
+}
+:where(.mc-doc, .post-doc) .toc ol li a:hover {
+  text-decoration: underline;
+}
+
+/* ── Key Stats & Figures Strip ─────────────────────────────────────────────── */
+:where(.mc-doc, .post-doc) .stat-strip {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  gap: 14px;
+  margin: 28px 0;
+}
+@media (max-width: 640px) {
+  :where(.mc-doc, .post-doc) .stat-strip {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 10px;
+  }
+}
+@media (max-width: 440px) {
+  :where(.mc-doc, .post-doc) .stat-strip {
+    grid-template-columns: 1fr;
+  }
+}
+:where(.mc-doc, .post-doc) .stat-box {
+  background: var(--surface-2, #f8fafc);
+  border: 1px solid var(--line, rgba(24,52,105,.13));
+  border-radius: 12px;
+  padding: 18px 20px;
+  text-align: left;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  box-shadow: 0 1px 2px rgba(16,34,70,.03);
+}
+:where(.mc-doc, .post-doc) .stat-box .num {
+  font-size: 26px;
+  font-weight: 800;
+  color: var(--ink, #0b1430);
+  letter-spacing: -0.02em;
+  font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+  font-variant-numeric: tabular-nums;
+  line-height: 1.2;
+}
+:where(.mc-doc, .post-doc) .stat-box .label {
+  font-size: 12.5px;
+  color: var(--mute, #5a6b8c);
+  margin-top: 6px;
+  line-height: 1.4;
+  font-weight: 500;
+}
+
+/* ── Contract & Financial Metric Boxes ─────────────────────────────────────── */
+:where(.mc-doc, .post-doc) .contract-box {
+  background: var(--surface-2, #f8fafc);
+  border: 1px solid var(--line, rgba(24,52,105,.13));
+  border-radius: 12px;
+  padding: 22px 24px;
+  margin: 28px 0;
+}
+:where(.mc-doc, .post-doc) .contract-title {
+  font-size: 16px;
+  font-weight: 700;
+  color: var(--ink, #0b1430);
+  margin-bottom: 16px;
+  letter-spacing: -0.01em;
+}
+:where(.mc-doc, .post-doc) .contract-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+  gap: 14px;
+  margin-bottom: 18px;
+}
+:where(.mc-doc, .post-doc) .contract-item {
+  background: var(--surface, #ffffff);
+  border: 1px solid var(--line, rgba(24,52,105,.13));
+  border-radius: 8px;
+  padding: 12px 14px;
+}
+:where(.mc-doc, .post-doc) .contract-item .val {
+  font-size: 17px;
+  font-weight: 700;
+  color: var(--ink, #0b1430);
+  line-height: 1.2;
+}
+:where(.mc-doc, .post-doc) .contract-item .lbl {
+  font-size: 11.5px;
+  color: var(--mute, #5a6b8c);
+  margin-top: 4px;
+}
+
+/* ── Bull vs. Bear Case Grid ──────────────────────────────────────────────── */
+:where(.mc-doc, .post-doc) .bullbear-wrap {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 18px;
+  margin: 32px 0;
+}
+@media (max-width: 768px) {
+  :where(.mc-doc, .post-doc) .bullbear-wrap {
+    grid-template-columns: 1fr;
+    gap: 14px;
+  }
+}
+:where(.mc-doc, .post-doc) .bb-col {
+  border-radius: 12px;
+  padding: 20px 22px;
+}
+:where(.mc-doc, .post-doc) .bb-col.bull {
+  background: rgba(10, 143, 95, 0.05);
+  border: 1px solid rgba(10, 143, 95, 0.25);
+}
+:where(.mc-doc, .post-doc) .bb-col.bull .bb-title {
+  color: #0a8f5f;
+  font-weight: 700;
+  font-size: 15px;
+  margin-bottom: 12px;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+:where(.mc-doc, .post-doc) .bb-col.bear {
+  background: rgba(197, 58, 78, 0.05);
+  border: 1px solid rgba(197, 58, 78, 0.25);
+}
+:where(.mc-doc, .post-doc) .bb-col.bear .bb-title {
+  color: #c53a4e;
+  font-weight: 700;
+  font-size: 15px;
+  margin-bottom: 12px;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+:where(.mc-doc, .post-doc) .bb-col ul {
+  margin: 0;
+  padding-left: 20px;
+  font-size: 14px;
+  line-height: 1.65;
+  color: var(--body, #33425f);
+}
+:where(.mc-doc, .post-doc) .bb-col li {
+  margin-bottom: 8px;
+}
+
+/* ── Interactive Timeline ─────────────────────────────────────────────────── */
+:where(.mc-doc, .post-doc) .timeline {
+  position: relative;
+  margin: 26px 0 32px;
+  padding-left: 24px;
+  border-left: 2px solid var(--line, rgba(24,52,105,.13));
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+:where(.mc-doc, .post-doc) .timeline-item {
+  position: relative;
+}
+:where(.mc-doc, .post-doc) .timeline-item::before {
+  content: "";
+  position: absolute;
+  left: -31px;
+  top: 4px;
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  background: var(--surface, #ffffff);
+  border: 2px solid var(--blue, #3b63e8);
+}
+:where(.mc-doc, .post-doc) .timeline-item.good::before {
+  border-color: #0a8f5f;
+  background: #0a8f5f;
+}
+:where(.mc-doc, .post-doc) .timeline-item.flag::before {
+  border-color: #c53a4e;
+  background: #c53a4e;
+}
+:where(.mc-doc, .post-doc) .timeline-date {
+  font-size: 11.5px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  color: var(--dim, #8291ad);
+  margin-bottom: 4px;
+}
+:where(.mc-doc, .post-doc) .timeline-text {
+  font-size: 14.5px;
+  line-height: 1.55;
+  color: var(--body, #33425f);
+}
+
+/* ── Bar Chart Visuals ─────────────────────────────────────────────────────── */
+:where(.mc-doc, .post-doc) .bar-chart {
+  background: var(--surface-2, #f8fafc);
+  border: 1px solid var(--line, rgba(24,52,105,.13));
+  border-radius: 12px;
+  padding: 20px;
+  margin: 28px 0;
+}
+:where(.mc-doc, .post-doc) .bar-chart-title {
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--ink, #0b1430);
+  margin-bottom: 16px;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+}
+:where(.mc-doc, .post-doc) .bar-row {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  margin-bottom: 10px;
+  font-size: 13.5px;
+}
+:where(.mc-doc, .post-doc) .bar-row .ticker {
+  width: 50px;
+  font-weight: 700;
+  font-family: ui-monospace, monospace;
+  color: var(--ink, #0b1430);
+}
+:where(.mc-doc, .post-doc) .bar-row .bar-track {
+  flex: 1;
+  height: 12px;
+  background: rgba(0,0,0,0.06);
+  border-radius: 6px;
+  overflow: hidden;
+}
+:where(.mc-doc, .post-doc) .bar-row .bar-fill {
+  height: 100%;
+  border-radius: 6px;
+  background: linear-gradient(90deg, #f2555f, #c53a4e);
+}
+:where(.mc-doc, .post-doc) .bar-row .val {
+  width: 58px;
+  text-align: right;
+  font-weight: 600;
+  font-family: ui-monospace, monospace;
+  color: var(--down, #c53a4e);
+}
+
+/* ── Reason / Stock Analysis Breakdown Cards ──────────────────────────────── */
+:where(.mc-doc, .post-doc) .reason-card {
+  background: var(--surface, #ffffff);
+  border: 1px solid var(--line, rgba(24,52,105,.13));
+  border-radius: 10px;
+  padding: 16px 18px;
+  margin: 14px 0;
+  box-shadow: 0 1px 2px rgba(16,34,70,.02);
+}
+:where(.mc-doc, .post-doc) .reason-card .head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 8px;
+}
+:where(.mc-doc, .post-doc) .reason-card .name {
+  font-size: 15px;
+  font-weight: 700;
+  color: var(--ink, #0b1430);
+}
+:where(.mc-doc, .post-doc) .reason-card .pct {
+  font-size: 13.5px;
+  font-weight: 700;
+  color: #c53a4e;
+  font-family: ui-monospace, monospace;
+}
+:where(.mc-doc, .post-doc) .reason-card .why {
+  font-size: 14px;
+  line-height: 1.6;
+  color: var(--body, #33425f);
+  margin: 0;
+}
+
+/* ── Risk, Reminder, Warning & Note Boxes ──────────────────────────────────── */
+:where(.mc-doc, .post-doc) .risk-box {
+  background: rgba(197, 58, 78, 0.03);
+  border: 1px solid rgba(197, 58, 78, 0.18);
+  border-left: 4px solid #c53a4e;
+  border-radius: 0 10px 10px 0;
+  padding: 18px 20px;
+  margin: 22px 0;
+}
+:where(.mc-doc, .post-doc) .risk-title {
+  font-weight: 700;
+  font-size: 15px;
+  color: #c53a4e;
+  margin-bottom: 8px;
+}
+:where(.mc-doc, .post-doc) .reminder-box {
+  background: rgba(59, 99, 232, 0.03);
+  border: 1px solid rgba(59, 99, 232, 0.18);
+  border-left: 4px solid var(--blue, #3b63e8);
+  border-radius: 0 10px 10px 0;
+  padding: 18px 20px;
+  margin: 22px 0;
+}
+:where(.mc-doc, .post-doc) .reminder-title {
+  font-weight: 700;
+  font-size: 15px;
+  color: var(--blue, #3b63e8);
+  margin-bottom: 8px;
+}
+:where(.mc-doc, .post-doc) .takeaway-list {
+  background: var(--surface-2, #f8fafc);
+  border: 1px solid var(--line, rgba(24,52,105,.13));
+  border-radius: 12px;
+  padding: 20px 24px 20px 42px;
+  margin: 24px 0;
+  font-size: 15px;
+  line-height: 1.7;
+}
+:where(.mc-doc, .post-doc) .takeaway-list li {
+  margin-bottom: 12px;
+  color: var(--body, #33425f);
+}
+:where(.mc-doc, .post-doc) .warning {
+  background: rgba(176, 106, 0, 0.06);
+  border: 1px solid rgba(176, 106, 0, 0.22);
+  border-left: 4px solid #b06a00;
+  border-radius: 0 10px 10px 0;
+  padding: 16px 20px;
+  margin: 24px 0;
+  font-size: 14.5px;
+  line-height: 1.6;
+  color: var(--ink, #0b1430);
+}
+:where(.mc-doc, .post-doc) .quote {
+  font-style: italic;
+  border-left: 3px solid var(--blue, #3b63e8);
+  padding-left: 16px;
+  margin: 18px 0;
+  color: var(--mute, #5a6b8c);
+  font-size: 15.5px;
+}
+:where(.mc-doc, .post-doc) .highlight {
+  background: rgba(10, 126, 163, 0.08);
+  padding: 2px 6px;
+  border-radius: 4px;
+}
+:where(.mc-doc, .post-doc) .ai-note {
+  font-size: 11.5px;
+  color: var(--dim, #8291ad);
+  margin-top: 10px;
+  font-style: italic;
+}
+:where(.mc-doc, .post-doc) .disclaimer {
+  margin: 32px 0 0;
+  padding: 16px 18px;
+  border: 1px dashed var(--line, rgba(24,52,105,.13));
+  border-radius: 10px;
+  font-size: 12.5px;
+  line-height: 1.6;
+  color: var(--dim, #8291ad);
+}
+
+/* ── Educational & Framework Lists (Mistakes, VSA, Retests) ────────────────── */
+:where(.mc-doc, .post-doc) .mistake-list,
+:where(.mc-doc, .post-doc) .vsa-list {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  margin: 24px 0;
+}
+:where(.mc-doc, .post-doc) .mistake-item {
+  background: var(--surface, #ffffff);
+  border: 1px solid var(--line, rgba(24,52,105,.13));
+  border-radius: 10px;
+  padding: 16px 18px;
+  border-left: 4px solid #f2555f;
+}
+:where(.mc-doc, .post-doc) .m-title {
+  font-weight: 700;
+  font-size: 15px;
+  color: var(--ink, #0b1430);
+  margin-bottom: 6px;
+}
+:where(.mc-doc, .post-doc) .m-fix {
+  margin: 0;
+  font-size: 14px;
+  line-height: 1.6;
+  color: var(--body, #33425f);
+}
+:where(.mc-doc, .post-doc) .vsa-item {
+  background: var(--surface-2, #f8fafc);
+  border: 1px solid var(--line, rgba(24,52,105,.13));
+  border-radius: 10px;
+  padding: 16px 18px;
+}
+:where(.mc-doc, .post-doc) .vsa-term {
+  font-weight: 700;
+  font-size: 15px;
+  color: var(--blue, #3b63e8);
+  margin-bottom: 6px;
+}
+:where(.mc-doc, .post-doc) .vsa-def {
+  margin: 0;
+  font-size: 14px;
+  line-height: 1.6;
+  color: var(--body, #33425f);
+}
+:where(.mc-doc, .post-doc) .retest-steps {
+  margin: 20px 0;
+  padding-left: 22px;
+  font-size: 14.5px;
+  line-height: 1.7;
+  color: var(--body, #33425f);
+}
+
+/* ── FAQ Items ─────────────────────────────────────────────────────────────── */
+:where(.mc-doc, .post-doc) .faq-item {
+  background: var(--surface-2, #f8fafc);
+  border: 1px solid var(--line, rgba(24,52,105,.13));
+  border-radius: 10px;
+  padding: 16px 18px;
+  margin: 12px 0;
+}
+:where(.mc-doc, .post-doc) .faq-q {
+  font-weight: 700;
+  font-size: 15px;
+  color: var(--ink, #0b1430);
+  margin: 0 0 8px;
+}
+:where(.mc-doc, .post-doc) .faq-a {
+  font-size: 14px;
+  line-height: 1.65;
+  color: var(--body, #33425f);
+  margin: 0;
+}
+
+/* ── Tables & Metric Values ────────────────────────────────────────────────── */
+:where(.mc-doc, .post-doc) table {
+  width: 100%;
+  border-collapse: collapse;
+  margin: 24px 0;
+  font-size: 14px;
+}
+:where(.mc-doc, .post-doc) th {
+  text-align: left;
+  font-size: 12px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--mute, #5a6b8c);
+  padding: 10px 14px;
+  border-bottom: 2px solid var(--line, rgba(24,52,105,.13));
+  background: var(--surface-2, #f8fafc);
+}
+:where(.mc-doc, .post-doc) td {
+  padding: 12px 14px;
+  border-bottom: 1px solid var(--line, rgba(24,52,105,.13));
+  color: var(--body, #33425f);
+}
+:where(.mc-doc, .post-doc) td.metric {
+  font-weight: 600;
+  color: var(--ink, #0b1430);
+}
+:where(.mc-doc, .post-doc) td.pos,
+:where(.mc-doc, .post-doc) .pos,
+:where(.mc-doc, .post-doc) .good {
+  color: #0a8f5f !important;
+  font-weight: 600;
+}
+:where(.mc-doc, .post-doc) td.neg,
+:where(.mc-doc, .post-doc) td.negative,
+:where(.mc-doc, .post-doc) .neg,
+:where(.mc-doc, .post-doc) .negative {
+  color: #c53a4e !important;
+  font-weight: 600;
+}
+:where(.mc-doc, .post-doc) .amber {
+  color: #b06a00 !important;
+  font-weight: 600;
+}
+:where(.mc-doc, .post-doc) .table-scroll {
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+  margin: 20px 0;
+}
+
+/* ── Charts, Diagrams & Image Descriptions ─────────────────────────────────── */
+:where(.mc-doc, .post-doc) .example-chart {
+  background: #0b1220;
+  border-radius: 12px;
+  padding: 16px;
+  margin: 24px 0;
+  overflow-x: auto;
+}
+:where(.mc-doc, .post-doc) .example-chart svg {
+  max-width: 100%;
+  height: auto;
+  display: block;
+}
+:where(.mc-doc, .post-doc) .example-caption,
+:where(.mc-doc, .post-doc) .imgcap {
+  font-size: 13px;
+  color: var(--mute, #5a6b8c);
+  font-style: italic;
+  margin-top: 8px;
+  text-align: center;
+}
+:where(.mc-doc, .post-doc) .faq-last {
+  margin-bottom: 0;
+}
+:where(.mc-doc, .post-doc) .return,
+:where(.mc-doc, .post-doc) td.return {
+  font-weight: 700;
+  font-family: ui-monospace, monospace;
+}
+:where(.mc-doc, .post-doc) .year,
+:where(.mc-doc, .post-doc) .baseline {
+  font-weight: 600;
+  color: var(--dim, #8291ad);
+  font-size: 13px;
+}
+:where(.mc-doc, .post-doc) .img-block,
+:where(.mc-doc, .post-doc) .image-plan {
+  background: var(--surface-2, #f8fafc);
+  border: 1px dashed var(--line, rgba(24,52,105,.13));
+  border-radius: 10px;
+  padding: 16px 18px;
+  margin: 20px 0;
+  font-size: 13.5px;
+  color: var(--mute, #5a6b8c);
+}
+:where(.mc-doc, .post-doc) .img-label {
+  font-weight: 700;
+  color: var(--ink, #0b1430);
+}
+
+/* ── Dark Theme Overrides ──────────────────────────────────────────────────── */
+[data-theme="dark"] :where(.mc-doc, .post-doc) main > .card,
+[data-theme="dark"] :where(.mc-doc, .post-doc) .card {
+  background: rgba(18, 29, 61, 0.6) !important;
+  border-color: rgba(120, 160, 230, 0.16) !important;
+}
+[data-theme="dark"] :where(.mc-doc, .post-doc) .stat-box,
+[data-theme="dark"] :where(.mc-doc, .post-doc) .toc,
+[data-theme="dark"] :where(.mc-doc, .post-doc) .contract-box,
+[data-theme="dark"] :where(.mc-doc, .post-doc) .takeaway-list,
+[data-theme="dark"] :where(.mc-doc, .post-doc) .faq-item,
+[data-theme="dark"] :where(.mc-doc, .post-doc) .bar-chart,
+[data-theme="dark"] :where(.mc-doc, .post-doc) .vsa-item,
+[data-theme="dark"] :where(.mc-doc, .post-doc) .img-block,
+[data-theme="dark"] :where(.mc-doc, .post-doc) .image-plan {
+  background: rgba(11, 20, 48, 0.6) !important;
+  border-color: rgba(120, 160, 230, 0.16) !important;
+}
+[data-theme="dark"] :where(.mc-doc, .post-doc) .stat-box .num,
+[data-theme="dark"] :where(.mc-doc, .post-doc) .contract-title,
+[data-theme="dark"] :where(.mc-doc, .post-doc) .contract-item .val,
+[data-theme="dark"] :where(.mc-doc, .post-doc) .reason-card .name,
+[data-theme="dark"] :where(.mc-doc, .post-doc) .m-title,
+[data-theme="dark"] :where(.mc-doc, .post-doc) .faq-q,
+[data-theme="dark"] :where(.mc-doc, .post-doc) .img-label,
+[data-theme="dark"] :where(.mc-doc, .post-doc) td.metric {
+  color: #eaf0fb !important;
+}
+[data-theme="dark"] :where(.mc-doc, .post-doc) .reason-card,
+[data-theme="dark"] :where(.mc-doc, .post-doc) .contract-item,
+[data-theme="dark"] :where(.mc-doc, .post-doc) .mistake-item {
+  background: rgba(18, 29, 61, 0.7) !important;
+  border-color: rgba(120, 160, 230, 0.16) !important;
+}
+[data-theme="dark"] :where(.mc-doc, .post-doc) th {
+  background: rgba(11, 20, 48, 0.8) !important;
+  border-color: rgba(120, 160, 230, 0.16) !important;
+}
+[data-theme="dark"] :where(.mc-doc, .post-doc) td {
+  border-color: rgba(120, 160, 230, 0.16) !important;
+}
+[data-theme="dark"] :where(.mc-doc, .post-doc) .bar-row .bar-track {
+  background: rgba(255, 255, 255, 0.08) !important;
+}
+

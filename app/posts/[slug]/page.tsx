@@ -6,6 +6,7 @@ import { PostBody } from "@/components/blog/PostBody";
 import { PostPdf } from "@/components/blog/PostPdf";
 import { PostDocx } from "@/components/blog/PostDocx";
 import { PostHtmlDoc } from "@/components/blog/PostHtmlDoc";
+import { ArticleHero } from "@/components/blog/ArticleHero";
 import { resolvePostDesign } from "@/lib/blog/post-design";
 // The article's own baseline. Every rule is :where()-wrapped, so an uploaded
 // design still wins — this only covers what that design does not mention.
@@ -25,8 +26,9 @@ import { buildArticleJsonLd } from "@/lib/seo/jsonld";
  * post published between builds working, rendering it on first request and
  * caching it from then on.
  */
-export const revalidate = 300;
-export const dynamicParams = true;
+// Rendered on demand so updates and deletions made in the admin console
+// reflect immediately on the site without waiting for a revalidation cache window.
+export const dynamic = "force-dynamic";
 
 export async function generateStaticParams() {
   try {
@@ -88,14 +90,12 @@ export async function generateMetadata({
  * the old "Image not available" panel announced a failure that had not
  * happened, and reserved 16/9 of the page to do it.
  */
-function ArticleHero({ src }: { src: string | null }) {
-  if (!src) return null;
-  return (
-    <div className="article-hero">
-      {/* eslint-disable-next-line @next/next/no-img-element */}
-      <img src={src} alt="" />
-    </div>
-  );
+function isValidHeroSrc(src: unknown): src is string {
+  if (typeof src !== "string") return false;
+  const clean = src.trim();
+  if (!clean || clean === "null" || clean === "undefined") return false;
+  if (!/^https?:\/\//i.test(clean) && !clean.startsWith("/")) return false;
+  return true;
 }
 
 export default async function PostPage({
@@ -126,6 +126,7 @@ export default async function PostPage({
      sections, so anything looser would read a section heading as the headline
      and suppress ours on a page that still has none. */
   const hasOwnHeadline = /<h1[\s>]/i.test(post.content);
+  const heroSrc = isValidHeroSrc(post?.coverImageUrl) ? post?.coverImageUrl?.trim() : null;
 
   /* An authored-HTML post is a complete designed page, so it is given the page:
      full width, a white ground, and none of the site's own article furniture.
@@ -138,7 +139,7 @@ export default async function PostPage({
       // blog BOARD's palette, and it was showing through as the ground of a
       // designed page that expects to own its own background. The document
       // paints over this wherever its own stylesheet says to.
-      <div style={{ background: "#ffffff", minHeight: "100vh", width: "100%" }}>
+      <div className="post-html-doc-page" style={{ background: "#ffffff", minHeight: "100vh", width: "100%" }}>
         <script
           type="application/ld+json"
           dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
@@ -151,9 +152,9 @@ export default async function PostPage({
         </div>
         {/* The strip exists only to give the hero the same measure as the
             document under it — with no hero it is bare margin, so it goes. */}
-        {post.coverImageUrl && (
+        {heroSrc && (
           <div className="post-doc-back post-doc-hero">
-            <ArticleHero src={post.coverImageUrl} />
+            <ArticleHero src={heroSrc} />
           </div>
         )}
         {/* The site normally stays out of an html post's way — the document
@@ -190,8 +191,8 @@ export default async function PostPage({
         <Link href="/posts" className="btn sm">← Back to blogs</Link>
       </div>
 
-      <article className="article">
-        <ArticleHero src={post.coverImageUrl} />
+      <article className="article mc-doc">
+        {heroSrc && <ArticleHero src={heroSrc} />}
         {/* A source document opens with its own masthead, headline and date —
             so printing ours above it stated the same thing twice, in the
             importer's mangled words. The title still names the post everywhere
@@ -258,7 +259,7 @@ export default async function PostPage({
             search engines keep something to read. */}
         {/* html never reaches here — it returned above as its own document. */}
         {!isDoc && (
-          <div className="post-content">
+          <div className="post-content mc-doc">
             <PostBody markdown={post.content} />
           </div>
         )}
