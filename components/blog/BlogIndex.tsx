@@ -1,9 +1,10 @@
 "use client";
 
-import { useCallback, useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import type { Post } from "@/lib/blog/posts";
 import { readerId } from "@/lib/blog/reader-id";
 import { APP_SIGNUP_URL } from "@/components/marketing/app-url";
+import { useDebounce } from "@/hooks/useDebounce";
 
 /* ── the three sections, in the template's own vocabulary ─────────────────── */
 
@@ -26,12 +27,6 @@ const PER_PAGE = 6;
 
 function sectionOf(p: Post): Section {
   return SECTION_OF[p.type] ?? "Educational";
-}
-
-/** Words per minute is a convention, not a measurement — 200 is the usual one. */
-function readMins(content: string): number {
-  const words = content.trim() ? content.trim().split(/\s+/).length : 0;
-  return Math.max(1, Math.round(words / 200));
 }
 
 function initials(name: string): string {
@@ -70,61 +65,6 @@ const fmtTime = (iso: string) =>
 const when = (p: Post) => p.publishedAt ?? p.createdAt;
 
 /**
- * The card's blurb: the summary, extended from the article when the summary
- * alone leaves the card half empty.
- *
- * The highlight minis stretch to match the hero's height, so a one-line
- * summary produced a card that was mostly white space. Rather than shrink the
- * cards — the row reads better even — they show a little of the piece, which
- * is also what a reader deciding whether to open it actually wants.
- *
- * Markdown and HTML both arrive here, so tags and the common markdown marks
- * are stripped rather than rendered: this is plain text inside a <p>.
- */
-/**
- * Entities have to be DECODED, not dropped.
- *
- * The blurb is plain text in a <p>, so the stored "&amp;" would otherwise be
- * printed literally — but blanking every entity turned "S&amp;P 500" into
- * "S P 500", which is a real index with its name mangled. Only the handful
- * Numeric forms (&#8217;) are decoded by code point rather than listed, so
- * every curly quote and dash comes through without an entry each.
- */
-const ENTITY: Record<string, string> = {
-  "&amp;": "&", "&lt;": "<", "&gt;": ">", "&quot;": '"', "&apos;": "'",
-  "&nbsp;": " ",
-};
-
-function preview(post: Post, min: number, max: number): string {
-  const cut = (t: string) => (t.length > max ? t.slice(0, max).trimEnd() + "\u2026" : t);
-  const summary = (post.excerpt ?? "").trim();
-  if (summary.length >= min) return cut(summary);
-
-  const body = (post.content ?? "")
-    .replace(/<[^>]+>/g, " ")
-    .replace(/!?\[([^\]]*)\]\([^)]*\)/g, "$1")
-    // Entities BEFORE markdown marks: the mark stripper removes "#", which
-    // would turn "&#8217;" into "& 8217;" — the apostrophe printed as debris.
-    .replace(/&(amp|lt|gt|quot|apos|nbsp);/gi, (m) => ENTITY[m.toLowerCase()] ?? " ")
-    .replace(/&#(\d+);/g, (_m, n) => String.fromCodePoint(Number(n)))
-    .replace(/&#x([0-9a-f]+);/gi, (_m, n) => String.fromCodePoint(parseInt(n, 16)))
-    // Anything still entity-shaped is one we do not decode; a space beats
-    // printing "&copy;" at the reader.
-    .replace(/&[a-z][a-z0-9]*;/gi, " ")
-    // "#" and ">" only carry meaning at the start of a line — a heading and a
-    // blockquote. Stripping them everywhere ate a decoded ">" out of the prose
-    // and turned "C# 15" into "C 15". Emphasis marks are stripped anywhere.
-    .replace(/^[#>]+\s*/gm, " ")
-    .replace(/[*_`~]+/g, "")
-    .replace(/\s+/g, " ")
-    .trim();
-
-  // Don't read the summary back at them if the article opens with it.
-  const rest = body.startsWith(summary) ? body.slice(summary.length).trim() : body;
-  return cut([summary, rest].filter(Boolean).join(" "));
-}
-
-/**
  * A cover image, or a labelled gap where one should be.
  *
  * Drawn rather than hidden: leaving the box out would change the shape of the
@@ -153,11 +93,17 @@ function Cover({ src, className, eager }: { src: string | null; className: strin
   );
 }
 
+/** Extended post type with server-pre-computed display values. */
+export type IndexPost = Post & {
+  readMin?: number;
+  heroPreview?: string;
+};
+
 export function BlogIndex({
   posts,
   reads = {},
 }: {
-  posts: Post[];
+  posts: IndexPost[];
   /** slug → times opened this week, from blog_stats. */
   reads?: Record<string, number>;
 }) {
@@ -166,6 +112,50 @@ export function BlogIndex({
   const [query, setQuery] = useState("");
   const [page, setPage] = useState(1);
   const [view, setView] = useState<"list" | "grid">("list");
+
+  /* ── server-side search ──────────────────────────────────────────────── */
+  const debouncedQuery = useDebounce(query.trim(), 300);
+  const [serverSearch, setServerSearch] = useState<{ q: string; ids: Set<string> } | null>(null);
+  const [searching, setSearching] = useState(false);
+  const abortRef = useRef<AbortController | null>(null);
+
+  useEffect(() => {
+    // Abort any in-flight request.
+    abortRef.current?.abort();
+
+    if (!debouncedQuery || debouncedQuery.length < 2) {
+      setServerSearch(null);
+      setSearching(false);
+      return;
+    }
+
+    const ctrl = new AbortController();
+    abortRef.current = ctrl;
+    setSearching(true);
+
+    (async () => {
+      try {
+        const res = await fetch(
+          `/api/blog/search?q=${encodeURIComponent(debouncedQuery)}`,
+          { signal: ctrl.signal },
+        );
+        const data = await res.json();
+        if (!ctrl.signal.aborted && data?.ok) {
+          setServerSearch({ q: debouncedQuery.toLowerCase(), ids: new Set(data.ids as string[]) });
+          setPage(1);
+        }
+      } catch {
+        /* aborted or offline — the previous results stand */
+      } finally {
+        if (!ctrl.signal.aborted) setSearching(false);
+      }
+    })();
+
+    return () => ctrl.abort();
+  }, [debouncedQuery]);
+
+  /** Whether a content search is active (Highlights should be hidden). */
+  const isSearching = debouncedQuery.length >= 2;
 
   /* ── theme, remembered ──────────────────────────────────────────────────
      The template kept this in memory only and left a note to persist it. */
@@ -256,17 +246,24 @@ export function BlogIndex({
   }, [sorted, activeSec, reads]);
 
   /* ── section + search, applied together ─────────────────────────────────
-     The search runs inside the section on screen, which is what the pills
-     mean: "Recap" plus a query reads as "recaps about that". */
+     When a search is active (searchIds is non-null), the server has returned
+     the IDs of matching posts. The client filters its existing list by those
+     IDs — no content re-transmitted. For quick title/excerpt matches while
+     the user is still typing (before debounce fires), we do a lightweight
+     client-side pre-filter on title + excerpt only. */
   const q = query.trim().toLowerCase();
   const filtered = useMemo(
     () =>
       sorted.filter((p) => {
         if (activeSec !== "all" && sectionOf(p) !== activeSec) return false;
         if (!q) return true;
+        // If server results are available for THIS query, use them.
+        if (serverSearch && serverSearch.q === q) return serverSearch.ids.has(p.id);
+        // While waiting for the debounced server response, do a quick
+        // client-side check on title + excerpt (lightweight, no content).
         return `${p.title} ${p.excerpt} ${sectionOf(p)}`.toLowerCase().includes(q);
       }),
-    [sorted, activeSec, q],
+    [sorted, activeSec, q, serverSearch],
   );
 
   const pages = Math.max(1, Math.ceil(filtered.length / PER_PAGE));
@@ -390,47 +387,50 @@ export function BlogIndex({
           </div>
         </div>
 
-        <section id="highlights">
-          <h2 className="mc-sec">Highlights</h2>
-          <div className="mc-highlights">
-            {highlights.length === 0 ? (
-              <p className="mc-empty">Nothing published yet.</p>
-            ) : (
-              <>
-                <a
-                  className={`mc-hero-card${highlights[0].coverImageUrl ? "" : " mc-nothumb"}`}
-                  href={href(highlights[0])}
-                  onClick={() => countOpen(highlights[0])}
-                >
-                  <Cover src={highlights[0].coverImageUrl} className="mc-thumb" eager />
-                  <div className="mc-body">
-                    <span className={`mc-tag ${SEC_CLASS[sectionOf(highlights[0])]}`}>
-                      {sectionOf(highlights[0])}
-                    </span>
-                    <h3>{highlights[0].title}</h3>
-                    <p>{preview(highlights[0], 150, 260)}</p>
-                    <div className="mc-byline">
-                      <span className="mc-avatar">{initials(highlights[0].author || "Desk")}</span>
-                      {highlights[0].author || "Desk"}
-                      <span className="mc-sep" />
-                      {fmtLong(when(highlights[0]))} · {fmtTime(when(highlights[0]))}
-                      <span className="mc-sep" />
-                      {readMins(highlights[0].content)} min read
+        {/* Hide Highlights when a search is active — only matched results
+            should be on screen, not a curated hero card. */}
+        {!isSearching && (
+          <section id="highlights">
+            <h2 className="mc-sec">Highlights</h2>
+            <div className="mc-highlights">
+              {highlights.length === 0 ? (
+                <p className="mc-empty">Nothing published yet.</p>
+              ) : (
+                <>
+                  <a
+                    className={`mc-hero-card${highlights[0].coverImageUrl ? "" : " mc-nothumb"}`}
+                    href={href(highlights[0])}
+                    onClick={() => countOpen(highlights[0])}
+                  >
+                    <Cover src={highlights[0].coverImageUrl} className="mc-thumb" eager />
+                    <div className="mc-body">
+                      <span className={`mc-tag ${SEC_CLASS[sectionOf(highlights[0])]}`}>
+                        {sectionOf(highlights[0])}
+                      </span>
+                      <h3>{highlights[0].title}</h3>
+                      <p>{(highlights[0] as IndexPost).heroPreview || highlights[0].excerpt}</p>
+                      <div className="mc-byline">
+                        <span className="mc-avatar">{initials(highlights[0].author || "Desk")}</span>
+                        {highlights[0].author || "Desk"}
+                        <span className="mc-sep" />
+                        {fmtLong(when(highlights[0]))} · {fmtTime(when(highlights[0]))}
+                        <span className="mc-sep" />
+                        {(highlights[0] as IndexPost).readMin ?? 1} min read
+                      </div>
                     </div>
-                  </div>
-                </a>
-
-              </>
-            )}
-          </div>
-        </section>
+                  </a>
+                </>
+              )}
+            </div>
+          </section>
+        )}
 
         <section style={{ paddingTop: 10 }}>
           <div className="mc-cols">
             <div>
               {/* Heading, pagination and the view switch share one line. */}
               <div className="mc-sec-row">
-                <h2 className="mc-sec">Latest posts</h2>
+                <h2 className="mc-sec">{isSearching ? `Search results${searching ? "…" : ""}` : "Latest posts"}</h2>
                 <div className="mc-sec-tools">
                   <nav className="mc-pager" aria-label="Pagination">
                     <button
@@ -489,9 +489,10 @@ export function BlogIndex({
 
               <div className={`mc-feed mc-${view}`} id="feed">
                 {shown.length === 0 ? (
-                  <p className="mc-empty">No posts match that filter yet.</p>
+                  <p className="mc-empty">{isSearching ? "No posts match your search." : "No posts match that filter yet."}</p>
                 ) : (
                   shown.map((p) => {
+                    const ip = p as IndexPost;
                     const d = new Date(when(p));
                     return (
                       <a
@@ -513,7 +514,7 @@ export function BlogIndex({
                             <span className="mc-avatar">{initials(p.author || "Desk")}</span>
                             {p.author || "Desk"}
                             <span className="mc-sep" />
-                            {readMins(p.content)} min read
+                            {ip.readMin ?? 1} min read
                           </div>
                         </div>
                         <Cover src={p.coverImageUrl} className="mc-p-thumb" />
