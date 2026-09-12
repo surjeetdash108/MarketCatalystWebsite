@@ -49,15 +49,23 @@
 .mcb2 .mc-brand span{background:linear-gradient(90deg,var(--blue),var(--purple));
   -webkit-background-clip:text;background-clip:text;color:transparent}
 .mcb2 nav.mc-main{margin-left:auto;display:flex;align-items:center;gap:20px;font-size:14.5px}
-.mcb2 nav.mc-main a{color:var(--mute)}
+.mcb2 nav.mc-main a{color:var(--mute);position:relative;display:inline-flex;align-items:center;padding:4px 0;transition:color .15s ease}
 .mcb2 nav.mc-main a:hover,.mcb2 nav.mc-main a.mc-active{color:var(--ink)}
-.mcb2 nav.mc-main a.mc-active::after{content:"";display:block;height:2px;margin-top:5px;border-radius:2px;
+.mcb2 nav.mc-main a.mc-active::after{content:"";position:absolute;left:0;right:0;bottom:-4px;height:2px;border-radius:2px;
   background:linear-gradient(90deg,var(--blue),var(--purple))}
-.mcb2 .mc-btn-grad{padding:9px 18px;border-radius:9px;background:linear-gradient(90deg,var(--blue),var(--purple));
-  color:#fff!important;font-weight:600;font-size:14px}
-.mcb2 .mc-btn-grad:hover{filter:brightness(1.08)}
+.mcb2 .mc-btn-grad{display:inline-flex;align-items:center;justify-content:center;height:34px;padding:0 20px;min-width:92px;border-radius:9px;
+  background:linear-gradient(135deg,#7C6CF5 0%,#9B8BFF 45%,#34E2F0 100%);
+  background-size:200% 200%;animation:gradShift 7s ease infinite;
+  color:#fff!important;font-weight:600;font-size:13.5px;
+  line-height:1;white-space:nowrap;letter-spacing:-.01em;text-decoration:none;flex-shrink:0;
+  box-shadow:0 2px 10px rgba(124,108,245,.35),0 0 0 1px rgba(255,255,255,.16) inset;
+  transition:transform .18s ease,filter .18s ease,box-shadow .18s ease}
+.mcb2 .mc-btn-grad:hover{filter:brightness(1.08);transform:translateY(-1px);
+  box-shadow:0 4px 18px rgba(124,108,245,.52),0 0 0 1px rgba(255,255,255,.25) inset}
+.mcb2 .mc-btn-grad:active{transform:translateY(0);filter:brightness(.96)}
+@keyframes gradShift{0%{background-position:0% 50%}50%{background-position:100% 50%}100%{background-position:0% 50%}}
 .mcb2 #themeBtn{width:34px;height:34px;display:grid;place-items:center;border-radius:9px;cursor:pointer;
-  border:1px solid var(--line-2);background:transparent;color:var(--mute)}
+  border:1px solid var(--line-2);background:transparent;color:var(--mute);flex-shrink:0}
 .mcb2 #themeBtn:hover{color:var(--ink);border-color:var(--blue)}
 .mcb2[data-theme="light"] .mc-moon{display:none}
 .mcb2[data-theme="dark"] .mc-sun{display:none}
@@ -68,7 +76,7 @@
 @media(max-width:760px){
   .mcb2 .mc-top-in{padding:12px 16px;gap:10px}
   .mcb2 nav.mc-main{gap:11px;font-size:13.5px}
-  .mcb2 .mc-btn-grad{padding:8px 13px;font-size:13.5px}
+  .mcb2 .mc-btn-grad{height:34px;padding:0 14px;min-width:auto;font-size:13px}
 }
 @media(max-width:480px){
   .mcb2 .mc-top-in{flex-wrap:wrap;padding:12px 14px}
@@ -77,12 +85,14 @@
      rather than the links shrinking below a tappable size. */
   .mcb2 nav.mc-main{width:100%;justify-content:space-between;flex-wrap:wrap;gap:7px 9px;margin-top:2px}
   .mcb2 .mc-brand{margin:0 auto}
-  .mcb2 .mc-btn-grad{padding:8px 12px;font-size:12.5px}
+  .mcb2 .mc-btn-grad{height:32px;padding:0 12px;min-width:auto;font-size:12.5px}
   .mcb2 #themeBtn{width:32px;height:32px}
   .mcb2 .mc-search, .mcb2 .mc-search input{width:100%;max-width:none}
 }
 @media(max-width:380px){
   .mcb2 nav.mc-main{gap:6px 8px;font-size:12.5px}
+  .mcb2 .mc-btn-grad{height:30px;padding:0 10px;font-size:12px}
+  .mcb2 #themeBtn{width:30px;height:30px}
 }
 /* Tightened from 54/28. The eyebrow above the headline is gone, so the
    original top padding was holding space for something no longer there. */

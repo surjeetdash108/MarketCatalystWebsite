@@ -3,6 +3,7 @@
 import { useCallback, useEffect, useMemo, useState } from "react";
 import type { Post } from "@/lib/blog/posts";
 import { readerId } from "@/lib/blog/reader-id";
+import { APP_SIGNUP_URL } from "@/components/marketing/app-url";
 
 /* ── the three sections, in the template's own vocabulary ─────────────────── */
 
@@ -332,7 +333,7 @@ export function BlogIndex({
                 About us has no such rule and carries through from the marketing
                 nav (components/marketing/Nav.tsx) like the rest. */}
             <a href="/admin/login">Log in</a>
-            <a className="mc-btn-grad" href="/contact">Sign up</a>
+            <a className="mc-btn-grad" href={APP_SIGNUP_URL}>Sign up</a>
             <button
               id="themeBtn"
               type="button"
@@ -556,7 +557,7 @@ export function BlogIndex({
             <a href="/posts">Blogs</a>
             <a href="/faqs">FAQs</a>
             <a href="/admin/login">Log in</a>
-            <a href="/contact">Sign up</a>
+            <a href={APP_SIGNUP_URL}>Sign up</a>
           </div>
           <p>
             MarketCatalyst publishes for information only. Nothing here is investment advice or a

@@ -1,4 +1,7 @@
+"use client";
+
 import Link from "next/link";
+import { usePathname } from "next/navigation";
 import { LogoMark } from "./LogoMark";
 import { APP_LOGIN_URL, APP_SIGNUP_URL } from "./app-url";
 
@@ -7,6 +10,11 @@ import { APP_LOGIN_URL, APP_SIGNUP_URL } from "./app-url";
 // there is no customer-facing auth to embed — these just link out to the
 // terminal app's own login/signup pages.
 export function Nav() {
+  const pathname = usePathname();
+  const isAbout = pathname === "/about" || pathname.startsWith("/about/");
+  const isBlogs = pathname === "/posts" || pathname.startsWith("/posts/");
+  const isFaqs = pathname === "/faqs" || pathname.startsWith("/faqs/");
+
   return (
     <nav className="hw-nav">
       <Link href="/" className="hw-brand">
@@ -16,13 +24,13 @@ export function Nav() {
         MarketCatalyst
       </Link>
       <div className="hw-nav-cta">
-        <Link className="hw-ghost" href="/about">
+        <Link className={`hw-ghost${isAbout ? " active" : ""}`} href="/about">
           About us
         </Link>
-        <Link className="hw-ghost" href="/posts">
+        <Link className={`hw-ghost${isBlogs ? " active" : ""}`} href="/posts">
           Blogs
         </Link>
-        <Link className="hw-ghost" href="/faqs">
+        <Link className={`hw-ghost${isFaqs ? " active" : ""}`} href="/faqs">
           FAQs
         </Link>
         <a className="hw-ghost" href={APP_LOGIN_URL}>
