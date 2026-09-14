@@ -1,0 +1,460 @@
+/* Admin-only helpers layered on top of iq.css tokens, so the CMS pages match
+   the MarketCatalystUI look. Everything is scoped under .iq-root — the admin
+   shell and login both render inside that scope. */
+
+.iq-root .a-h1 {
+  font-size: 1.15rem;
+  font-weight: 700;
+  color: var(--text-hi);
+  margin: 0;
+  letter-spacing: -0.01em;
+}
+
+.iq-root .a-label {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  font-size: 0.78rem;
+  font-weight: 600;
+  color: var(--text-dim-solid);
+}
+
+.iq-root .a-input,
+.iq-root .a-textarea {
+  background: var(--surface-2);
+  border: 1px solid var(--border);
+  border-radius: 9px;
+  padding: 9px 12px;
+  color: var(--text-hi);
+  font-size: 0.85rem;
+  font-family: inherit;
+  outline: none;
+  width: 100%;
+  transition: border-color 0.14s;
+}
+.iq-root .a-input:focus,
+.iq-root .a-textarea:focus {
+  border-color: var(--brand);
+}
+.iq-root .a-input.mono {
+  font-family: var(--f-mono, ui-monospace, monospace);
+}
+
+.iq-root .a-muted {
+  color: var(--text-dim-solid);
+  font-size: 0.82rem;
+}
+.iq-root .a-danger {
+  color: var(--down);
+  font-size: 0.82rem;
+  margin: 0;
+}
+
+/* A raised panel, matching .card but usable as a plain wrapper. */
+.iq-root .a-panel {
+  background: var(--surface-1);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 16px 18px;
+}
+
+/* Ghost/secondary button variants built on .btn. */
+.iq-root .btn.sm {
+  font-size: 0.72rem;
+  padding: 5px 10px;
+}
+.iq-root .btn.danger:hover {
+  border-color: var(--down);
+  color: var(--down);
+}
+
+/* Tiptap editor surface. */
+.iq-root .a-editor .ProseMirror {
+  min-height: 300px;
+  border: 1px solid var(--border);
+  border-radius: 9px;
+  padding: 12px 14px;
+  background: var(--surface-2);
+  color: var(--text);
+  outline: none;
+}
+.iq-root .a-toolbar {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
+  background: var(--surface-0);
+  border: 1px solid var(--border);
+  border-radius: 9px;
+  padding: 5px;
+}
+.iq-root .a-tbtn {
+  border-radius: 6px;
+  padding: 5px 9px;
+  font-size: 0.78rem;
+  color: var(--text-dim-solid);
+}
+.iq-root .a-tbtn:hover {
+  background: var(--surface-2);
+  color: var(--text-hi);
+}
+.iq-root .a-tbtn.on {
+  background: var(--brand);
+  color: #fff;
+}
+
+/* Rendered post/markdown body. The `.iq-root *` reset zeroes every margin, so
+   re-establish readable block spacing for post content (used by the admin
+   post preview and the public /posts/view page). */
+.iq-root .post-content { color: var(--text); font-size: 0.95rem; line-height: 1.7; }
+.iq-root .post-content h1,
+.iq-root .post-content h2,
+.iq-root .post-content h3,
+.iq-root .post-content h4 { color: var(--text-hi); font-weight: 700; line-height: 1.3; }
+.iq-root .post-content h2 { font-size: 1.35rem; margin: 24px 0 8px; }
+.iq-root .post-content h3 { font-size: 1.12rem; margin: 20px 0 6px; }
+.iq-root .post-content h4 { font-size: 1rem; margin: 16px 0 6px; }
+.iq-root .post-content p { margin: 0 0 15px; }
+.iq-root .post-content ul,
+.iq-root .post-content ol { margin: 0 0 15px; padding-left: 24px; }
+.iq-root .post-content li { margin: 5px 0; }
+.iq-root .post-content li::marker { color: var(--text-dim-solid); }
+.iq-root .post-content a { color: var(--brand-2); text-decoration: underline; }
+.iq-root .post-content strong { color: var(--text-hi); font-weight: 700; }
+.iq-root .post-content img { max-width: 100%; height: auto; border-radius: 8px; margin: 12px 0; }
+.iq-root .post-content blockquote {
+  border-left: 3px solid var(--border-strong);
+  padding: 2px 0 2px 14px; margin: 0 0 15px; color: var(--text-dim-solid);
+}
+.iq-root .post-content pre {
+  background: var(--surface-0); border: 1px solid var(--border);
+  border-radius: 8px; padding: 12px 14px; overflow-x: auto; margin: 0 0 15px;
+}
+.iq-root .post-content code { font-family: var(--f-mono, ui-monospace, monospace); font-size: 0.86em; }
+.iq-root .post-content hr { border: none; border-top: 1px solid var(--border); margin: 22px 0; }
+
+/* Authored-HTML posts. The post ships its own stylesheet, so these rules exist
+   only to keep one that ships none readable against the `.iq-root *` reset —
+   they are a floor, not a look.
+
+   Every selector is wrapped in :where(), which contributes ZERO specificity, so
+   any rule the post carries wins outright: its CSS is scoped to `.post-html …`
+   (see lib/blog/scope-css.ts), which would otherwise lose to `.iq-root .post-…`
+   and the post would render in the site's styling instead of its own. */
+:where(.iq-root .post-html) { color: var(--text); font-size: 0.95rem; line-height: 1.7; }
+:where(.iq-root .post-html h1, .iq-root .post-html h2, .iq-root .post-html h3,
+       .iq-root .post-html h4, .iq-root .post-html h5, .iq-root .post-html h6) {
+  color: var(--text-hi); font-weight: 700; line-height: 1.3; margin: 22px 0 8px;
+}
+:where(.iq-root .post-html h1) { font-size: 1.5rem; }
+:where(.iq-root .post-html h2) { font-size: 1.35rem; }
+:where(.iq-root .post-html h3) { font-size: 1.12rem; }
+:where(.iq-root .post-html p) { margin: 0 0 15px; }
+:where(.iq-root .post-html ul, .iq-root .post-html ol) { margin: 0 0 15px; padding-left: 24px; }
+:where(.iq-root .post-html li) { margin: 5px 0; }
+:where(.iq-root .post-html a) { color: var(--brand-2); text-decoration: underline; }
+:where(.iq-root .post-html strong, .iq-root .post-html b) { color: var(--text-hi); font-weight: 700; }
+:where(.iq-root .post-html img) { max-width: 100%; height: auto; }
+:where(.iq-root .post-html table) { border-collapse: collapse; width: 100%; margin: 0 0 15px; }
+:where(.iq-root .post-html th, .iq-root .post-html td) {
+  border: 1px solid var(--border); padding: 7px 10px; text-align: left;
+}
+:where(.iq-root .post-html hr) { border: none; border-top: 1px solid var(--border); margin: 22px 0; }
+/* A designed page often fixes its own width; the article column is already
+   narrow, so let the post's layout use all of it and never overflow it. */
+.iq-root .post-html { max-width: 100%; overflow-x: auto; }
+
+/* ── Post cards (blog list — admin + public) ─────────────────────────────── */
+.iq-root .pcard-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(288px, 1fr));
+  gap: 20px;
+}
+.iq-root .pcard {
+  display: flex; flex-direction: column;
+  background: var(--surface-1);
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  overflow: hidden;
+  text-decoration: none;
+  transition: transform .16s ease, border-color .16s ease, box-shadow .16s ease;
+}
+.iq-root .pcard:hover {
+  transform: translateY(-4px);
+  border-color: color-mix(in srgb, var(--brand) 55%, var(--border));
+  box-shadow: 0 16px 36px -20px rgba(124, 108, 245, .65);
+}
+.iq-root .pcard-thumb {
+  position: relative; aspect-ratio: 16 / 9; width: 100%;
+  overflow: hidden; background: var(--surface-2); display: block;
+}
+.iq-root .pcard-thumb img { object-fit: cover; transition: transform .3s ease; }
+.iq-root .pcard:hover .pcard-thumb img { transform: scale(1.05); }
+.iq-root .pcard-ph {
+  position: absolute; inset: 0; display: flex; align-items: center; justify-content: center;
+  background: linear-gradient(135deg, var(--brand), var(--ai));
+  color: #fff; font-size: 2.1rem; font-weight: 800; opacity: .92;
+}
+.iq-root .pcard-body { display: flex; flex-direction: column; gap: 8px; padding: 15px 16px 16px; flex: 1; }
+.iq-root .pcard-meta {
+  display: flex; align-items: center; gap: 8px;
+  font-size: .68rem; color: var(--text-dim-solid);
+  text-transform: uppercase; letter-spacing: .05em;
+}
+.iq-root .pcard-title {
+  font-size: 1.02rem; font-weight: 700; color: var(--text-hi);
+  line-height: 1.32; text-decoration: none; transition: color .14s ease;
+}
+.iq-root a.pcard-title:hover, .iq-root .pcard:hover .pcard-title { color: var(--brand-2); }
+.iq-root .pcard-excerpt {
+  font-size: .84rem; color: var(--text-dim-solid); line-height: 1.55;
+  display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical; overflow: hidden;
+}
+.iq-root .pcard-actions {
+  display: flex; gap: 8px; padding: 0 16px 16px; margin-top: auto;
+  border-top: 1px solid var(--border-soft, var(--border)); padding-top: 14px;
+}
+
+/* ── Article (post view) — a CENTERED reading column (the view page constrains
+      the width + auto margins). The header (title/sub/meta) is centered; body
+      prose stays left-aligned for legibility. ──────────────────────────────── */
+/* The article is its own white sheet on the board's newsprint.
+   The page keeps the off-white — that tint is what makes /posts read as a
+   front page — but the thing you actually READ sits on white, which is also
+   what the article carries inside it: the document viewer paints its pages
+   #fff and an html post brings its own near-white ground, so both now meet
+   the sheet instead of sitting as a lighter rectangle on a darker one.
+   Dark theme keeps its own surface; only the light palette goes pure white. */
+.iq-root .article {
+  max-width: none; margin: 0 auto; width: 100%;
+  background: var(--surface-1);
+  border: 1px solid var(--border-soft);
+  border-radius: 14px;
+  padding: 30px 32px 40px;
+}
+.iq-root[data-theme="light"] .article { background: #fff; }
+/* No forced aspect-ratio: the hero takes its shape from the picture, capped in
+   height. The covers are designed banners with words drawn ON them (the
+   software-selloff one is 1245×456, i.e. 2.7:1), and cropping those to 16/9 cut
+   their own headline off at both ends. The EMPTY state still needs a shape —
+   .article-hero-empty below supplies it. */
+.iq-root .article-hero {
+  position: relative;
+  max-width: 820px;
+  width: 100%;
+  margin: 0 auto 24px;
+  border-radius: 14px;
+  overflow: hidden;
+  background: var(--surface-2);
+  border: 1px solid var(--border);
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
+  line-height: 0; /* kills the inline-descender gap under the image */
+}
+.iq-root .article-hero:empty {
+  display: none !important;
+}
+.iq-root .article-hero-empty {
+  aspect-ratio: 16 / 9; max-height: 320px;
+  display: flex; align-items: center; justify-content: center;
+  line-height: normal;
+  color: var(--text-dim-solid);
+  font-size: 14px; font-weight: 600; letter-spacing: .05em; text-transform: uppercase;
+}
+/* Body prose stays within a comfortable reading width, centered under the
+   full-width hero/title (line lengths of 1500px+ are unreadable). */
+/* Prose keeps a readable measure inside the wider sheet, and is centred in
+   it — left-aligned it would sit against one edge with a band of empty
+   white down the other. A document or an html post is NOT capped: those
+   are laid out to their own width and should use the whole sheet. */
+.iq-root .article .post-content { max-width: 820px; margin-inline: auto; }
+/* Medium hero: capped at 320px height with cover fit, centered with medium width */
+.iq-root .article-hero img {
+  display: block;
+  width: 100%;
+  height: auto;
+  max-height: 320px;
+  object-fit: cover;
+  object-position: center;
+}
+@media (max-width: 640px) {
+  .iq-root .article-hero {
+    max-width: 100%;
+    margin-bottom: 16px;
+    border-radius: 10px;
+  }
+  .iq-root .article-hero img {
+    max-height: 200px;
+  }
+}
+.iq-root .article-title { font-size: 2.05rem; line-height: 1.16; font-weight: 800; color: var(--text-hi); letter-spacing: -.02em; text-align: center; }
+.iq-root .article-sub { margin-top: 10px; font-size: 1.05rem; line-height: 1.5; color: var(--text-dim-solid); text-align: center; }
+.iq-root .article-meta {
+  margin-top: 14px; display: flex; align-items: center; justify-content: center; gap: 10px;
+  font-size: .72rem; text-transform: uppercase; letter-spacing: .06em; color: var(--text-dim-solid);
+}
+.iq-root .article-rule { height: 1px; background: var(--border); border: 0; margin: 22px 0 26px; }
+
+/* ── FAQ accordion (public /faqs) — native <details>, question = header ───── */
+.iq-root .faq-list { display: flex; flex-direction: column; gap: 10px; }
+.iq-root .faq-item {
+  background: var(--surface-1);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  overflow: hidden;
+  transition: border-color .16s ease;
+}
+.iq-root .faq-item[open] { border-color: color-mix(in srgb, var(--brand) 45%, var(--border)); }
+.iq-root .faq-q {
+  list-style: none;
+  cursor: pointer;
+  display: flex; align-items: center; justify-content: space-between; gap: 14px;
+  padding: 15px 18px;
+  font-size: 0.98rem; font-weight: 600; color: var(--text-hi);
+  user-select: none;
+}
+.iq-root .faq-q::-webkit-details-marker { display: none; }
+.iq-root .faq-q:hover { color: var(--brand-2); }
+.iq-root .faq-chevron { flex-shrink: 0; color: var(--text-dim-solid); transition: transform .2s ease; }
+.iq-root .faq-item[open] .faq-chevron { transform: rotate(180deg); color: var(--brand-2); }
+.iq-root .faq-a {
+  padding: 0 18px 17px;
+  color: var(--text-dim-solid);
+  font-size: 0.9rem; line-height: 1.65;
+  white-space: pre-wrap;
+}
+
+/* ── Source PDF + research-desk blocks ─────────────────────────────────────
+   The research desk designs in PDF; its tables and KPI cards live only in that
+   file, and the importer's text extraction cannot recover them (it emits one
+   paragraph per visual line). The original is embedded above the text version,
+   which stays on the page for search engines and screen readers. */
+.iq-root .post-pdf { margin: 0 0 26px; }
+/* The pages are rasterised into this stack (see components/blog/PostPdf). They
+   butt together with no gap, no border and no radius: the point is one
+   continuous document, not a run of page cards. `font-size: 0` kills the
+   whitespace line-box between block images, which would otherwise show as a
+   thin seam at every page join. */
+.iq-root .post-pdf-pages { font-size: 0; }
+.iq-root .post-pdf-page {
+  display: block; width: 100%;
+  /* Paper, so a page that has not drawn yet is not a dark hole in the article. */
+  background: #fff;
+}
+.iq-root .post-pdf-page img { display: block; width: 100%; height: auto; }
+/* Space reserved from the stored page count while pdf.js parses the file. */
+.iq-root .post-pdf-loading { width: 100%; background: #fff; }
+
+/* ---- Word source documents (components/blog/PostDocx) ----
+   docx-preview emits each page as a <section> styled like a sheet of paper on a
+   desk: fixed width, drop shadow, gaps between. That is the same page-cards
+   look the PDF path removes, so it is flattened to one continuous document.
+   The rules are !important because docx-preview writes its geometry inline
+   from the file's own page setup. */
+.iq-root .post-doc:not(#mc-post-doc) { margin: 0 0 26px; }
+.iq-root .post-doc-host { background: #fff; }
+.iq-root .post-doc .docx-wrapper { background: transparent; padding: 0; display: block; }
+.iq-root .post-doc .docx-wrapper > section.docx {
+  margin: 0 !important;
+  width: 100% !important; min-height: 0 !important;
+  box-shadow: none !important; border: 0 !important;
+}
+/* The inline padding docx-preview writes on that section IS the document's
+   page margins, read from its own page setup — zeroing it along with the rest
+   of the page-card styling is what made the text run to the edge and stop
+   looking like the document. It is left alone.
+   Those margins are absolute, though (~62px a side here), which is a third of
+   a phone screen — so only on narrow viewports are they tightened, and that
+   needs !important to reach past the inline value. */
+@media (max-width: 560px) {
+  .iq-root .post-doc .docx-wrapper > section.docx {
+    padding-left: 18px !important;
+    padding-right: 18px !important;
+  }
+}
+/* Word sizes images to the paper it was written for, which overflows a
+   narrower column. */
+.iq-root .post-doc img { max-width: 100%; height: auto; }
+/* A table wider than the column scrolls on its own rather than pushing the
+   page sideways. */
+.iq-root .post-doc table { max-width: 100%; }
+/* Sits ABOVE the document now, so the spacing is below it rather than on top. */
+.iq-root .post-pdf-foot { margin: 0 0 12px; font-size: .78rem; }
+/* The four-line summary that introduces a source document. Set apart from the
+   document itself, since it is our words about the file rather than part of it. */
+.iq-root .post-doc-summary {
+  margin: 0 0 18px;
+  padding: 14px 18px;
+  border-left: 3px solid var(--brand-2);
+  background: var(--surface-2);
+  border-radius: 0 8px 8px 0;
+  font-size: .95rem;
+  line-height: 1.6;
+  color: var(--text-hi);
+}
+.iq-root .post-pdf-foot a { color: var(--brand-2); text-decoration: none; font-weight: 600; }
+.iq-root .post-pdf-foot a:hover { text-decoration: underline; }
+.iq-root .post-pdf-fallback {
+  margin: 0; padding: 16px 0; font-size: .85rem; color: var(--text-dim-solid);
+}
+.iq-root .post-pdf-fallback a { color: var(--brand-2); }
+
+/* Data tables. These were impossible to publish until the sanitizer allowlist
+   gained the table family — marked emitted a correct <table> and the sanitize
+   pass deleted it, leaving the cells as loose text. */
+.iq-root .post-content table {
+  width: 100%; border-collapse: collapse; margin: 0 0 20px;
+  font-size: .84rem; font-variant-numeric: tabular-nums;
+  display: block; overflow-x: auto;   /* a wide scorecard scrolls itself, not the page */
+}
+.iq-root .post-content thead th {
+  text-align: left; font-size: .68rem; font-weight: 700; letter-spacing: .06em;
+  text-transform: uppercase; color: var(--text-dim-solid);
+  padding: 9px 12px; background: var(--surface-2);
+  border-bottom: 1px solid var(--border-strong); white-space: nowrap;
+}
+.iq-root .post-content tbody td {
+  padding: 9px 12px; border-bottom: 1px solid var(--border-soft);
+  color: var(--text); vertical-align: top;
+}
+.iq-root .post-content tbody tr:last-child td { border-bottom: 0; }
+.iq-root .post-content tbody tr:hover td { background: var(--surface-2); }
+.iq-root .post-content caption {
+  caption-side: bottom; padding-top: 8px; text-align: left;
+  font-size: .72rem; color: var(--text-dim-solid);
+}
+
+/* KPI row — the PDF's four-up headline figures. */
+.iq-root .post-content .post-kpis {
+  display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+  gap: 10px; margin: 0 0 22px;
+}
+.iq-root .post-content .post-kpis .kpi {
+  display: flex; flex-direction: column; gap: 3px;
+  padding: 12px 14px; border: 1px solid var(--border-soft);
+  border-radius: 10px; background: var(--surface-1);
+}
+.iq-root .post-content .post-kpis .k {
+  font-size: .64rem; font-weight: 700; letter-spacing: .08em;
+  text-transform: uppercase; color: var(--text-dim-solid);
+}
+.iq-root .post-content .post-kpis .v {
+  font-family: var(--f-mono, ui-monospace, monospace);
+  font-size: 1.32rem; font-weight: 700; color: var(--text-hi); line-height: 1.15;
+}
+.iq-root .post-content .post-kpis .s { font-size: .72rem; color: var(--text-dim-solid); }
+
+/* "Research-desk view" callout. */
+.iq-root .post-content .post-callout {
+  border-left: 3px solid var(--brand-2); background: var(--surface-2);
+  border-radius: 0 8px 8px 0; padding: 13px 16px; margin: 0 0 20px;
+}
+.iq-root .post-content .post-callout > :last-child { margin-bottom: 0; }
+
+/* Ticker / rating strip under the headline. */
+.iq-root .post-content .post-meta {
+  display: flex; flex-wrap: wrap; gap: 6px 14px; margin: 0 0 20px;
+  padding: 9px 0; border-top: 1px solid var(--border-soft);
+  border-bottom: 1px solid var(--border-soft);
+  font-size: .7rem; font-weight: 600; letter-spacing: .06em;
+  text-transform: uppercase; color: var(--text-dim-solid);
+}
+.iq-root .post-content small { font-size: .74rem; color: var(--text-dim-solid); }

@@ -19,34 +19,26 @@ export function ContactSubmissionsTable({ submissions }: { submissions: ContactS
   return (
     <div className="flex flex-col gap-3">
       {submissions.map((submission) => (
-        <div key={submission.id} className="rounded border border-neutral-200 p-4">
+        <div key={submission.id} className="a-panel">
           <div className="flex items-center justify-between">
             <div>
-              <span className="font-medium">{submission.name}</span>{" "}
-              <span className="text-sm text-neutral-500">&lt;{submission.email}&gt;</span>
+              <span style={{ fontWeight: 600, color: "var(--text-hi)" }}>{submission.name}</span>{" "}
+              <span className="a-muted">&lt;{submission.email}&gt;</span>
             </div>
-            <span className="text-xs uppercase tracking-wide text-neutral-500">{submission.status}</span>
+            <span className={`pill ${submission.status === "new" ? "opt" : "flat"}`}>{submission.status}</span>
           </div>
-          <p className="mt-2 whitespace-pre-wrap text-sm text-neutral-700">{submission.message}</p>
-          <div className="mt-3 flex gap-2 text-xs">
-            <button
-              disabled={pending}
-              onClick={() => setStatus(submission.id, "read")}
-              className="rounded border border-neutral-300 px-2 py-1 disabled:opacity-50"
-            >
+          <p className="a-muted" style={{ marginTop: 8, whiteSpace: "pre-wrap", color: "var(--text)" }}>{submission.message}</p>
+          <div className="mt-3 flex gap-2">
+            <button disabled={pending} onClick={() => setStatus(submission.id, "read")} className="btn sm" style={{ opacity: pending ? 0.5 : 1 }}>
               Mark read
             </button>
-            <button
-              disabled={pending}
-              onClick={() => setStatus(submission.id, "archived")}
-              className="rounded border border-neutral-300 px-2 py-1 disabled:opacity-50"
-            >
+            <button disabled={pending} onClick={() => setStatus(submission.id, "archived")} className="btn sm" style={{ opacity: pending ? 0.5 : 1 }}>
               Archive
             </button>
           </div>
         </div>
       ))}
-      {submissions.length === 0 && <p className="text-sm text-neutral-500">No submissions yet.</p>}
+      {submissions.length === 0 && <p className="a-muted">No submissions yet.</p>}
     </div>
   );
 }

@@ -1,8 +1,16 @@
 @import "tailwindcss";
 
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+  /* Always dark — matches the app (marketcatalyst.web.app), which forces a dark
+     theme regardless of the OS setting. This previously defaulted to white and
+     only went dark via prefers-color-scheme, so on a light-mode device the
+     marketing site rendered white behind the transparent landing root / WebGL
+     canvas. #04060b is the darkest stop of the .lp-root gradient, so the body
+     blends seamlessly even before the GL background paints. color-scheme: dark
+     also keeps scrollbars/form controls dark and prevents a white first paint. */
+  --background: #04060b;
+  --foreground: #ededed;
+  color-scheme: dark;
 }
 
 @theme inline {
@@ -10,13 +18,6 @@
   --color-foreground: var(--foreground);
   --font-sans: var(--font-geist-sans);
   --font-mono: var(--font-jetbrains-mono);
-}
-
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
 }
 
 /* ── Global typography scale ─────────────────────────────────────────────────

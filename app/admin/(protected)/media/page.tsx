@@ -6,7 +6,7 @@ export default async function MediaLibraryPage() {
 
   return (
     <div className="flex flex-col gap-4">
-      <h1 className="text-lg font-semibold">Media library</h1>
+      <h1 className="a-h1">Media library</h1>
       <MediaLibrary initialItems={items} />
     </div>
   );

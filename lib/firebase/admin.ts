@@ -46,8 +46,16 @@ const firestoreDatabaseId = (process.env.FIRESTORE_DATABASE_ID ?? "").trim();
 const useNamedDatabase = firestoreDatabaseId !== "" && firestoreDatabaseId !== "(default)";
 
 export const adminAuth = getAuth(adminApp);
-export const adminFirestore = useNamedDatabase
-  ? getFirestore(adminApp, firestoreDatabaseId)
+
+// Firestore database selection mirrors MarketCatalystBackEnd's provider: prod
+// migrated from the nam5 `(default)` DB to the regional `mc-regional` DB,
+// selected via FIRESTORE_DATABASE_ID. The blog admin API (backend, on
+// mc-regional) WRITES posts to that DB, so this public site MUST read the same
+// one or published posts never appear (the "nothing published" bug). Unset →
+// `(default)` for local dev / pre-migration.
+const firestoreDbId = (process.env.FIRESTORE_DATABASE_ID ?? "").trim();
+export const adminFirestore = firestoreDbId
+  ? getFirestore(adminApp, firestoreDbId)
   : getFirestore(adminApp);
 
 // NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET is a public-safe value (just a bucket

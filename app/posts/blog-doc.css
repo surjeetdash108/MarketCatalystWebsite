@@ -1,0 +1,1282 @@
+/* The blog article's own stylesheet.
+ *
+ * Every rule is wrapped in :where(), which contributes ZERO specificity, so
+ * anything the shared theme carries overrides it outright. This is the floor,
+ * not the look: what an article falls back to when the theme has nothing to say
+ * about an element — which is most of the time, because a pasted or rich-text
+ * post is plain <h2>/<p>/<ul>, and a stylesheet written for one document only
+ * ever names the classes THAT document used.
+ *
+ * The masthead is styled here rather than left to Tailwind on purpose. It is
+ * ours, it appears on every article, and it should not depend on a runtime
+ * compiler having loaded.
+ */
+
+.mc-doc {
+  --doc-ink: #1a1a1a;
+  --doc-body: #33425f;
+  --doc-mute: #5a6b8c;
+  --doc-line: #e5e7eb;
+  --doc-blue: #0984e3;
+  background: #ffffff;
+  color: var(--doc-ink);
+  font-family: Inter, ui-sans-serif, -apple-system, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+  -webkit-font-smoothing: antialiased;
+}
+
+/* ── the column ──────────────────────────────────────────────────────────── */
+:where(.mc-doc:not(.post-doc) > div) { max-width: 800px; margin: 0 auto; padding: 40px 20px 56px; }
+
+/* ── masthead ────────────────────────────────────────────────────────────── */
+:where(.mc-doc .mc-badge) {
+  text-transform: uppercase; letter-spacing: .14em;
+  font-size: .78rem; font-weight: 700; color: var(--doc-blue); margin-bottom: 16px;
+}
+:where(.mc-doc header) { margin-bottom: 40px; }
+:where(.mc-doc header h1) {
+  font-size: clamp(1.9rem, 4.4vw, 2.6rem); line-height: 1.14; letter-spacing: -.02em;
+  font-weight: 800; margin: 0 0 16px; color: var(--doc-ink);
+}
+:where(.mc-doc header p) { color: var(--doc-mute); font-size: 1.06rem; line-height: 1.6; margin: 0 0 12px; }
+:where(.mc-doc header p:last-child) { font-size: .87rem; color: #6b7280; }
+
+/* ── the article body: plain semantic HTML, which is what most posts are ─── */
+:where(.mc-doc h2) { font-size: 1.6rem; line-height: 1.25; letter-spacing: -.018em; font-weight: 700; margin: 40px 0 14px; }
+:where(.mc-doc h3) { font-size: 1.25rem; line-height: 1.3; letter-spacing: -.012em; font-weight: 700; margin: 32px 0 12px; }
+:where(.mc-doc h4) { font-size: 1.05rem; font-weight: 700; margin: 26px 0 10px; }
+:where(.mc-doc p) { font-size: 1.02rem; line-height: 1.75; color: var(--doc-body); margin: 0 0 20px; }
+:where(.mc-doc ul, .mc-doc ol) { margin: 0 0 20px; padding-left: 26px; color: var(--doc-body); }
+:where(.mc-doc li) { font-size: 1.02rem; line-height: 1.7; margin: 8px 0; }
+:where(.mc-doc a) { color: var(--doc-blue); text-decoration: underline; text-underline-offset: 2px; }
+:where(.mc-doc strong, .mc-doc b) { color: var(--doc-ink); font-weight: 700; }
+:where(.mc-doc blockquote) {
+  margin: 0 0 20px; padding: 4px 0 4px 18px;
+  border-left: 3px solid var(--doc-line); color: var(--doc-mute);
+}
+:where(.mc-doc img) { max-width: 100%; height: auto; display: block; border-radius: 8px; }
+:where(.mc-doc figure) { margin: 28px 0; }
+:where(.mc-doc figcaption) { font-size: .88rem; color: #666; font-style: italic; text-align: center; margin-top: 10px; }
+:where(.mc-doc hr) { border: 0; border-top: 1px solid var(--doc-line); margin: 40px 0; }
+:where(.mc-doc code) { font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; font-size: .9em;
+  background: #f3f4f6; padding: 2px 6px; border-radius: 5px; }
+:where(.mc-doc pre) { background: #0b1220; color: #e6edf7; padding: 16px 18px; border-radius: 10px;
+  overflow-x: auto; margin: 0 0 20px; }
+:where(.mc-doc pre code) { background: none; padding: 0; color: inherit; }
+:where(.mc-doc table) { width: 100%; border-collapse: collapse; margin: 0 0 20px; }
+:where(.mc-doc th) { text-align: left; font-size: .72rem; text-transform: uppercase; letter-spacing: .08em;
+  color: #6b7280; padding: 10px 12px; border-bottom: 2px solid var(--doc-line); }
+:where(.mc-doc td) { padding: 12px; border-bottom: 1px solid #f0f0f0; font-size: .95rem; }
+
+/* ── the recap template's own components ─────────────────────────────────
+   Kept here as well as in the theme so a recap still renders if the shared
+   design is empty or has been replaced by a document that does not define
+   them. These are the class names our own builder emits. */
+:where(.mc-doc .kicker) { text-transform: uppercase; letter-spacing: .12em; font-size: .7rem;
+  font-weight: 700; color: #6b7280; margin-bottom: 12px; }
+:where(.mc-doc .card) { background: #fff; border: 1px solid #ececec; border-radius: 10px; padding: 20px; }
+:where(.mc-doc .mistake-card) { border-left: 4px solid #00b894; background: #f0fff4; padding: 24px;
+  border-radius: 0 8px 8px 0; }
+:where(.mc-doc .image-container) { margin: 32px 0; }
+:where(.mc-doc .image-container svg, .mc-doc .image-container img) { width: 100%; height: auto; display: block;
+  border-radius: 8px; background: #fff; border: 1px solid #e8e8e8; }
+:where(.mc-doc .image-caption) { font-style: italic; color: #666; font-size: .9rem; text-align: center; margin-top: 10px; }
+:where(.mc-doc .tag-pill) { display: inline-block; background: #e2e8f0; color: #4a5568; padding: 4px 12px;
+  border-radius: 9999px; font-size: .8rem; font-weight: 500; margin: 0 6px 8px 0; }
+:where(.mc-doc .up) { color: #00b894; font-weight: 600; }
+:where(.mc-doc .down) { color: #d63031; font-weight: 600; }
+:where(.mc-doc .flat) { color: #4a5568; font-weight: 600; }
+:where(.mc-doc .section-rule) { border: 0; border-top: 1px solid var(--doc-line); margin: 44px 0; }
+:where(.mc-doc .num) { text-align: right; font-variant-numeric: tabular-nums; }
+:where(.mc-doc .space-y-4 > * + *) { margin-top: 16px; }
+:where(.mc-doc .space-y-6 > * + *) { margin-top: 24px; }
+:where(.mc-doc .grid) { display: grid; gap: 16px; }
+@media (min-width: 768px) {
+  :where(.mc-doc .md\:grid-cols-2) { grid-template-columns: 1fr 1fr; }
+  :where(.mc-doc .md\:grid-cols-3) { grid-template-columns: repeat(3, 1fr); }
+}
+
+/* ============================================================================
+   V2 BLOG-POST DESIGN — lifted from marketcatalyst-blog-post-v2.html.
+
+   Every selector is scoped under .mc-doc (the article container) exactly the
+   way scopeCss() confines a post's own CSS, so these rules style the blog
+   article and any post content that uses these classes — and CANNOT reach the
+   landing page, the app, or any other page. `html/body/:root/*` are mapped onto
+   .mc-doc; the theme-token blocks bind to the reader's data-theme, which the
+   posts shell sets on the .iq-root ancestor. Loaded automatically: this file is
+   already imported by app/posts/view/page.tsx.
+   ============================================================================ */
+
+/* ---- theme tokens (light default) ---- */
+.mc-doc {
+  --bg:#f5f8fd; --surface:#ffffff; --surface-2:#ffffff;
+  --line:rgba(24,52,105,.13); --line-2:rgba(24,52,105,.24);
+  --ink:#0b1430; --body:#33425f; --mute:#5a6b8c; --dim:#8291ad;
+  --accent:#0a7ea3; --blue:#3b63e8; --purple:#7c3fe4;
+  --up:#0a8f5f; --down:#c53a4e; --amber:#b06a00;
+  --hover:rgba(59,99,232,.05);
+  --input:#ffffff;
+  --shadow:0 1px 2px rgba(16,34,70,.05), 0 8px 24px rgba(16,34,70,.05);
+  --shadow-hi:0 2px 4px rgba(16,34,70,.06), 0 14px 38px rgba(16,34,70,.08);
+  --thumb-a:rgba(59,99,232,.13); --thumb-b:rgba(124,63,228,.09);
+  --thumb-grid:rgba(24,52,105,.07); --spark:rgba(10,126,163,.22);
+  --avatar-ink:#ffffff;
+  --cta-a:rgba(59,99,232,.10); --cta-b:rgba(124,63,228,.08);
+  --cell:34px;
+}
+/* dark tokens — the shell sets data-theme="dark" on the .iq-root ancestor */
+[data-theme="dark"] .mc-doc {
+  --bg:#070d20; --surface:rgba(18,29,61,.6); --surface-2:#0b1430;
+  --line:rgba(120,160,230,.16); --line-2:rgba(120,160,230,.30);
+  --ink:#eaf0fb; --body:#c6d2e8; --mute:#93a6c9; --dim:#6c7fa2;
+  --accent:#3ddcf5; --blue:#4f7cff; --purple:#a86bff;
+  --up:#3ddc9a; --down:#ff7a8a; --amber:#ffb648;
+  --hover:rgba(79,124,255,.06);
+  --input:rgba(7,13,32,.7);
+  --shadow:none; --shadow-hi:none;
+  --thumb-a:rgba(79,124,255,.20); --thumb-b:rgba(168,107,255,.12);
+  --thumb-grid:rgba(255,255,255,.045); --spark:rgba(61,220,245,.34);
+  --avatar-ink:#08101f;
+  --cta-a:rgba(79,124,255,.16); --cta-b:rgba(168,107,255,.12);
+}
+
+.mc-doc * { box-sizing:border-box }
+.mc-doc { background:transparent; color:var(--ink);
+  font:400 16px/1.6 ui-sans-serif,-apple-system,"Segoe UI",Inter,Roboto,Helvetica,Arial,sans-serif;
+  transition:background-color .2s ease,color .2s ease }
+/* One white panel, no border. The previous design was a white .article card
+   (#fff, 1px border, 14px radius) with a LIGHTER .mc-doc box (#f9f9f9) inside —
+   a border plus two shades of white. Keep the white but: (a) remove the border
+   line, (b) collapse to a SINGLE shade — .article is the one white surface and
+   .mc-doc stays transparent so the inner #f9f9f9 no longer shows through.
+   Independent of the .iq-root wrapper (the posts layout may not render it), so a
+   direct selector + !important. Scoped to /posts/view (this file) and HTML posts
+   (:has(.mc-doc)). The .mc-doc override uses the background-COLOR longhand: a
+   `background` shorthand is minified to a bare position, dropping the color. */
+.article:has(.mc-doc) {
+  background-color: #ffffff !important;
+  border: 0 !important;
+  border-radius: 14px !important;
+}
+.mc-doc { background-color: transparent !important; }
+/* Masthead headline uses the full masthead width so a short title stays on one
+   line — the base `.mc-doc h1` caps at 22ch, which wrapped ".NET Conf 2026 –
+   Save the Date". */
+.mc-doc .art-head h1 { max-width: none; }
+/* The summary runs to the same margin as the headline above it. The base
+   `.dek` caps at 64ch, a reading measure that made the summary stop short of
+   the title and look tied to it rather than to the page. */
+.mc-doc .art-head .dek { max-width: none; }
+/* More horizontal margin around the article content; the inner container's
+   inline padding is 22px, so !important is needed to widen it. clamp keeps it
+   generous on desktop and tighter on phones. */
+.mc-doc:not(.post-doc) > div { padding-left: clamp(24px, 5vw, 64px) !important; padding-right: clamp(24px, 5vw, 64px) !important; }
+.mc-doc .num { font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;font-variant-numeric:tabular-nums }
+.mc-doc .wrap { max-width:1180px;margin:0 auto;padding:0 22px }
+.mc-doc a { color:inherit;text-decoration:none }
+.mc-doc :focus-visible { outline:2px solid var(--blue);outline-offset:3px;border-radius:4px }
+
+/* nav */
+.mc-doc header.top { position:sticky;top:0;z-index:40;border-bottom:1px solid var(--line);
+  background:color-mix(in srgb,var(--bg) 82%,transparent);backdrop-filter:blur(10px) }
+.mc-doc .top-in { max-width:1180px;margin:0 auto;padding:13px 22px;display:flex;align-items:center;gap:18px }
+.mc-doc .brand { font-weight:700;font-size:17px }
+.mc-doc .brand span { background:linear-gradient(90deg,var(--blue),var(--purple));-webkit-background-clip:text;background-clip:text;color:transparent }
+.mc-doc nav.main { margin-left:auto;display:flex;align-items:center;gap:20px;font-size:14.5px }
+.mc-doc nav.main a { color:var(--mute) } .mc-doc nav.main a:hover { color:var(--ink) }
+.mc-doc .btn-grad { padding:9px 18px;border-radius:9px;background:linear-gradient(90deg,var(--blue),var(--purple));
+  color:#fff!important;font-weight:600;font-size:14px }
+.mc-doc #themeBtn { width:34px;height:34px;display:grid;place-items:center;border-radius:9px;cursor:pointer;
+  border:1px solid var(--line-2);background:transparent;color:var(--mute) }
+.mc-doc #themeBtn:hover { color:var(--ink);border-color:var(--blue) }
+[data-theme="light"] .mc-doc .moon { display:none }
+[data-theme="dark"] .mc-doc .sun { display:none }
+.mc-doc #progress { position:absolute;left:0;bottom:-1px;height:2px;width:0;
+  background:linear-gradient(90deg,var(--blue),var(--purple)) }
+@media(max-width:760px){ .mc-doc nav.main a.hide-sm { display:none } .mc-doc nav.main { gap:13px } }
+
+/* breadcrumb + head */
+.mc-doc .crumbs { padding:18px 0 0;font-size:12.5px;color:var(--dim);display:flex;gap:9px;flex-wrap:wrap }
+.mc-doc .crumbs a:hover { color:var(--blue) }
+.mc-doc .crumbs span { color:var(--line-2) }
+.mc-doc .art-head { padding:24px 0 32px;border-bottom:1px solid var(--line) }
+.mc-doc .eyebrow { font:600 12px/1 ui-monospace,monospace;letter-spacing:.22em;text-transform:uppercase;color:var(--purple) }
+.mc-doc h1 { font-size:clamp(29px,4.6vw,46px);line-height:1.1;letter-spacing:-.025em;margin:16px 0;font-weight:700;max-width:22ch }
+.mc-doc .dek { font-size:18.5px;color:var(--mute);max-width:64ch;margin:0 }
+.mc-doc .chips { display:flex;gap:8px;flex-wrap:wrap;margin:20px 0 0 }
+.mc-doc .chip { padding:6px 12px;border:1px solid var(--line-2);border-radius:999px;font-size:12.5px;color:var(--mute) }
+.mc-doc .chip:hover { border-color:var(--blue);color:var(--blue) }
+.mc-doc .meta { display:flex;align-items:center;gap:11px;margin-top:22px;font-size:13.5px;color:var(--dim);flex-wrap:wrap }
+.mc-doc .avatar { width:34px;height:34px;border-radius:50%;display:grid;place-items:center;font:700 12px/1 inherit;
+  color:var(--avatar-ink);background:linear-gradient(135deg,var(--blue),var(--purple)) }
+.mc-doc .meta b { color:var(--ink);font-weight:600 }
+.mc-doc .meta .sep { width:3px;height:3px;border-radius:50%;background:var(--line-2) }
+
+/* hero */
+.mc-doc .hero-img { height:280px;margin:28px 0 0;border:1px solid var(--line);border-radius:16px;position:relative;
+  overflow:hidden;box-shadow:var(--shadow);background:
+    linear-gradient(180deg,var(--thumb-a),var(--thumb-b)),
+    repeating-linear-gradient(0deg,var(--thumb-grid) 0 1px,transparent 1px 38px) }
+.mc-doc .hero-img .spark { position:absolute;inset:auto 0 0 0;height:72%;
+  clip-path:polygon(0 84%,8% 72%,17% 78%,26% 54%,35% 62%,45% 40%,55% 48%,66% 26%,77% 34%,88% 12%,100% 20%,100% 100%,0 100%);
+  background:linear-gradient(180deg,var(--spark),transparent 76%) }
+.mc-doc .hero-img figcaption { position:absolute;left:18px;bottom:14px;font-size:12px;color:var(--mute) }
+@media(max-width:640px){ .mc-doc .hero-img { height:170px } }
+
+/* cover + inline images */
+.mc-doc .hero-img img, .mc-doc .card-thumb img { width:100%;height:100%;object-fit:cover;display:block }
+.mc-doc .card-thumb { aspect-ratio:16/9;border-radius:10px;overflow:hidden;border:1px solid var(--line);
+  margin-bottom:14px;background:linear-gradient(140deg,var(--thumb-a),var(--thumb-b)) }
+.mc-doc .post-body figure { margin:26px 0 }
+.mc-doc .post-body figure img { margin:0 0 10px }
+.mc-doc .post-body figcaption { font-size:13px;color:var(--dim);line-height:1.5 }
+
+/* lightbox */
+.mc-doc .post-body img, .mc-doc .hero-img img { cursor:zoom-in }
+.mc-doc .lb { position:fixed;inset:0;z-index:90;display:none;place-items:center;
+  background:rgba(5,10,24,.94);backdrop-filter:blur(6px);padding:34px 22px }
+.mc-doc .lb[open], .mc-doc .lb.on { display:grid }
+.mc-doc .lb figure { margin:0;max-width:min(1180px,94vw);display:flex;flex-direction:column;align-items:center;gap:14px }
+.mc-doc .lb img { max-width:100%;max-height:80vh;width:auto;height:auto;border-radius:12px;
+  border:1px solid rgba(255,255,255,.14);background:#0b1430 }
+.mc-doc .lb figcaption { color:#c9d6ec;font-size:14.5px;line-height:1.5;text-align:center;max-width:74ch }
+.mc-doc .lb .count { color:#8093b3;font:600 12px/1 ui-monospace,monospace;letter-spacing:.16em }
+.mc-doc .lb button { position:absolute;border:1px solid rgba(255,255,255,.22);background:rgba(12,22,46,.72);
+  color:#eaf0fb;width:46px;height:46px;border-radius:50%;display:grid;place-items:center;cursor:pointer }
+.mc-doc .lb button:hover { background:rgba(30,48,92,.9) }
+.mc-doc .lb .x { top:20px;right:20px }
+.mc-doc .lb .prev { left:22px;top:50%;transform:translateY(-50%) }
+.mc-doc .lb .next { right:22px;top:50%;transform:translateY(-50%) }
+@media(max-width:640px){ .mc-doc .lb .prev { left:10px } .mc-doc .lb .next { right:10px }
+  .mc-doc .lb button { width:40px;height:40px } }
+.mc-doc.lb-open { overflow:hidden }
+
+/* layout */
+.mc-doc .layout { display:grid;grid-template-columns:52px minmax(0,1fr) 232px;gap:38px;padding:38px 0 10px;align-items:start }
+/* No "On this page" nav (a short post) → drop the right column. */
+.mc-doc .layout.no-toc { grid-template-columns:52px minmax(0,1fr) }
+@media(max-width:1040px){ .mc-doc .layout { grid-template-columns:52px minmax(0,1fr);gap:26px } .mc-doc .toc { display:none } }
+@media(max-width:960px){ .mc-doc .layout { grid-template-columns:1fr }
+  .mc-doc .share { flex-direction:row!important;position:static!important;border-bottom:1px solid var(--line);
+    padding-bottom:18px;margin-bottom:8px } }
+
+.mc-doc .share { position:sticky;top:86px;display:flex;flex-direction:column;gap:9px;align-items:center }
+.mc-doc .share .lab { font:600 10px/1 ui-monospace,monospace;letter-spacing:.16em;text-transform:uppercase;color:var(--dim);
+  writing-mode:vertical-rl;margin-bottom:6px }
+@media(max-width:960px){ .mc-doc .share .lab { writing-mode:horizontal-tb;margin:0 4px 0 0;align-self:center } }
+.mc-doc .share button, .mc-doc .share a { width:38px;height:38px;display:grid;place-items:center;border-radius:10px;cursor:pointer;
+  border:1px solid var(--line-2);background:var(--surface);color:var(--mute) }
+.mc-doc .share button:hover, .mc-doc .share a:hover { border-color:var(--blue);color:var(--blue) }
+.mc-doc #copied { font-size:11px;color:var(--up);height:14px }
+
+.mc-doc .toc { position:sticky;top:86px }
+.mc-doc .toc h4 { margin:0 0 12px;font:600 11px/1 ui-monospace,monospace;letter-spacing:.18em;text-transform:uppercase;color:var(--dim) }
+.mc-doc .toc ol { list-style:none;margin:0;padding:0;border-left:1px solid var(--line) }
+.mc-doc .toc li a { display:block;padding:8px 0 8px 15px;margin-left:-1px;border-left:2px solid transparent;
+  font-size:13.5px;line-height:1.35;color:var(--mute) }
+.mc-doc .toc li a:hover { color:var(--ink) }
+.mc-doc .toc li a.on { color:var(--blue);border-left-color:var(--blue) }
+
+/* POST BODY */
+/* A designed document sets its own widths — a 70ch prose measure squeezed it
+   into a column narrower than the page it was drawn on (the masthead wrapped,
+   the hero headline broke over eight lines). Prose keeps its measure via
+   .post-content; this class is only ever an html-format post. */
+.mc-doc .post-body { max-width:none;font-size:17px;line-height:1.75;color:var(--body) }
+.mc-doc .post-body>*:first-child { margin-top:0 }
+.mc-doc .post-body h2 { font-size:26px;line-height:1.25;letter-spacing:-.015em;color:var(--ink);margin:44px 0 14px;scroll-margin-top:96px }
+.mc-doc .post-body h3 { font-size:19.5px;line-height:1.35;color:var(--ink);margin:32px 0 10px;scroll-margin-top:96px }
+.mc-doc .post-body h2+h3 { margin-top:20px }
+.mc-doc .post-body p { margin:0 0 18px }
+.mc-doc .post-body a { color:var(--blue);text-decoration:underline;text-underline-offset:3px }
+.mc-doc .post-body strong { color:var(--ink) }
+.mc-doc .post-body ul, .mc-doc .post-body ol { margin:0 0 20px;padding-left:22px }
+.mc-doc .post-body li { margin:9px 0 }
+.mc-doc .post-body li::marker { color:var(--blue) }
+.mc-doc .post-body img { max-width:100%;height:auto;border-radius:12px;border:1px solid var(--line);margin:8px 0 20px }
+.mc-doc .post-body hr { border:0;border-top:1px solid var(--line);margin:34px 0 }
+.mc-doc .post-body blockquote { margin:26px 0;padding:2px 0 2px 20px;border-left:2px solid var(--purple);color:var(--mute);font-size:16.5px }
+.mc-doc .post-body .t-scroll { overflow-x:auto;-webkit-overflow-scrolling:touch;margin:0 0 22px }
+.mc-doc .post-body table { width:100%;border-collapse:collapse;font-size:14.5px;margin:8px 0 22px;min-width:460px }
+.mc-doc .post-body th, .mc-doc .post-body td { padding:11px 12px;border-bottom:1px solid var(--line);text-align:right }
+.mc-doc .post-body th:first-child, .mc-doc .post-body td:first-child { text-align:left;color:var(--mute);font-weight:500 }
+/* A designed document's table carries no .t-scroll wrapper (we cannot add one —
+   the body is injected as markup), so the 460px floor above became horizontal
+   overflow on the whole PAGE at phone widths. Below the layout's own 700px
+   breakpoint let the table scroll inside its own box instead. */
+@media(max-width:960px){
+  .mc-doc .post-body table { display:block;overflow-x:auto;-webkit-overflow-scrolling:touch;
+    min-width:0;max-width:100% }
+}
+.mc-doc .post-body thead th { font:600 11px/1 ui-monospace,monospace;letter-spacing:.13em;text-transform:uppercase;
+  color:var(--mute);border-bottom:1px solid var(--line-2) }
+.mc-doc .post-body tbody tr:hover { background:var(--hover) }
+.mc-doc .up { color:var(--up) } .mc-doc .down { color:var(--down) }
+
+.mc-doc .figs { display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:1px;background:var(--line);
+  border:1px solid var(--line);border-radius:13px;overflow:hidden;margin:8px 0 26px;box-shadow:var(--shadow) }
+.mc-doc .figs div { background:var(--surface-2);padding:16px 16px 14px }
+.mc-doc .figs .l { font:600 10.5px/1 ui-monospace,monospace;letter-spacing:.15em;text-transform:uppercase;color:var(--mute) }
+.mc-doc .figs .v { font-size:24px;font-weight:700;color:var(--ink);margin:8px 0 4px }
+.mc-doc .figs .s { font-size:12.5px;color:var(--dim) }
+
+.mc-doc .callout { border:1px solid var(--line);border-left:2px solid var(--blue);border-radius:0 12px 12px 0;
+  background:var(--surface);padding:18px 20px;margin:26px 0;font-size:15.5px;color:var(--mute);box-shadow:var(--shadow) }
+.mc-doc .callout b { color:var(--ink) }
+.mc-doc .disclaimer { margin:40px 0 0;padding:18px 20px;border:1px dashed var(--line-2);border-radius:12px;
+  font-size:13px;line-height:1.6;color:var(--dim) }
+.mc-doc .disclaimer b { color:var(--mute) }
+
+/* FAQ */
+.mc-doc .faq { margin:46px 0 0;max-width:70ch }
+.mc-doc .faq h2 { font-size:24px;margin:0 0 16px;letter-spacing:-.015em }
+.mc-doc details { border-top:1px solid var(--line) }
+.mc-doc details:last-of-type { border-bottom:1px solid var(--line) }
+.mc-doc summary { cursor:pointer;list-style:none;padding:16px 34px 16px 0;position:relative;font-weight:600;font-size:16px;color:var(--ink) }
+.mc-doc summary::-webkit-details-marker { display:none }
+.mc-doc summary::after { content:"+";position:absolute;right:6px;top:14px;font:400 22px/1 inherit;color:var(--blue) }
+.mc-doc details[open] summary::after { content:"–" }
+.mc-doc details p { margin:0 0 18px;color:var(--mute);font-size:15.5px;max-width:66ch }
+
+.mc-doc .cta-card { margin:52px 0 0;border:1px solid var(--line);border-radius:16px;padding:30px;box-shadow:var(--shadow);
+  background:linear-gradient(120deg,var(--cta-a),var(--cta-b)) }
+.mc-doc .cta-card h3 { margin:0 0 8px;font-size:23px;letter-spacing:-.015em }
+.mc-doc .cta-card p { margin:0 0 18px;color:var(--mute);max-width:56ch }
+.mc-doc .cta-row { display:flex;gap:10px;flex-wrap:wrap }
+.mc-doc .cta-row input { flex:1;min-width:210px;padding:12px 14px;border-radius:10px;border:1px solid var(--line-2);
+  background:var(--input);color:var(--ink);font:400 15px inherit }
+.mc-doc .cta-row button { padding:12px 24px;border:0;border-radius:10px;cursor:pointer;
+  background:linear-gradient(90deg,var(--blue),var(--purple));color:#fff;font:600 15px inherit }
+.mc-doc .cta-row button:hover { filter:brightness(1.08) }
+
+.mc-doc .latest { padding:56px 0 0;border-top:1px solid var(--line);margin-top:56px }
+.mc-doc .latest h2 { font:600 12px/1 ui-monospace,monospace;letter-spacing:.2em;text-transform:uppercase;color:var(--accent);
+  margin:0 0 20px;display:flex;align-items:center;gap:14px }
+.mc-doc .latest h2::after { content:"";flex:1;height:1px;background:var(--line) }
+.mc-doc .grid3 { display:grid;grid-template-columns:repeat(auto-fit,minmax(258px,1fr));gap:18px }
+.mc-doc .card { border:1px solid var(--line);border-radius:14px;background:var(--surface);padding:20px;box-shadow:var(--shadow) }
+.mc-doc .card:hover { border-color:var(--line-2);box-shadow:var(--shadow-hi) }
+.mc-doc .card .tag { font:600 11px/1 ui-monospace,monospace;letter-spacing:.14em;text-transform:uppercase;color:var(--purple) }
+.mc-doc .card .tag.recap { color:var(--amber) } .mc-doc .card .tag.edu { color:var(--accent) }
+.mc-doc .card h3 { font-size:17.5px;line-height:1.32;margin:11px 0 8px;letter-spacing:-.01em }
+.mc-doc .card p { color:var(--mute);font-size:14px;margin:0 0 12px }
+.mc-doc .card .when { font-size:12.5px;color:var(--dim) }
+
+.mc-doc footer.site { border-top:1px solid var(--line);margin-top:52px;padding:32px 0 60px;color:var(--dim);font-size:13px }
+.mc-doc footer.site .fnav { display:flex;gap:20px;flex-wrap:wrap;margin-bottom:12px }
+.mc-doc footer.site a:hover { color:var(--blue) }
+@media(prefers-reduced-motion:reduce){ .mc-doc * { scroll-behavior:auto!important } }
+
+/* ─── AUTHORED-HTML POSTS (.post-doc) ──────────────────────────────────────
+   A designed document owns the page: it is NOT wrapped in .article, NOT given
+   .mc-doc's masthead, and NOT laid into the share-rail/TOC grid. Those three
+   are why an uploaded page arrived squeezed into ~390px with its nav stacked
+   one item per line. Everything here is site chrome around the document — the
+   document's own stylesheet (scoped to .post-doc) draws the rest. */
+
+/* The one strip of site UI on the page. Matches the document's own centring so
+   the link lines up with the content below it rather than floating at the edge. */
+.post-doc-back {
+  max-width: 1180px;
+  margin: 0 auto;
+  padding: 18px clamp(16px, 4vw, 32px) 6px;
+}
+
+/* The lead image, balanced medium size with graceful optional handling */
+.post-doc-hero {
+  max-width: 1180px;
+  margin: 0 auto;
+  padding: 10px clamp(16px, 4vw, 32px) 0;
+  display: flex;
+  justify-content: center;
+}
+.post-doc-hero:empty {
+  display: none !important;
+}
+.post-doc-hero .article-hero {
+  max-width: 820px;
+  width: 100%;
+  margin: 0 auto 24px;
+  border-radius: 14px;
+  overflow: hidden;
+  background: var(--surface-2, #f4f4f5);
+  border: 1px solid var(--border, rgba(0, 0, 0, 0.08));
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
+  line-height: 0;
+}
+.post-doc-hero .article-hero:empty {
+  display: none !important;
+}
+.post-doc-hero .article-hero img {
+  display: block;
+  width: 100%;
+  height: auto;
+  max-height: 320px;
+  object-fit: cover;
+  object-position: center;
+}
+@media (max-width: 640px) {
+  .post-doc-hero .article-hero {
+    max-width: 100%;
+    margin-bottom: 16px;
+    border-radius: 10px;
+  }
+  .post-doc-hero .article-hero img {
+    max-height: 200px;
+  }
+}
+
+/* The stand-in headline, for a document that prints none of its own. Left
+   aligned rather than centred like .article-title's default: it sits above a
+   designed page, not on top of the site's own centred article card. */
+.post-doc-headline {
+  padding-top: 0;
+  padding-bottom: 18px;
+}
+.post-doc-headline .article-title,
+.post-doc-headline .article-sub {
+  text-align: left;
+  max-width: 900px;
+}
+
+/* The document ground. White by default so a page whose own stylesheet sets no
+   background does not inherit the board's cream; a document that DOES set one
+   overrides this, because its rules are real selectors and this is :where(). */
+.post-doc, #mc-post-doc { background: #ffffff !important; }
+[data-theme="dark"] .post-doc, [data-theme="dark"] #mc-post-doc { background: #070d20 !important; }
+
+/* The horizontal-overflow backstop.
+   Confined to the document container, so it cannot clip the site's own sticky
+   header, and applied at every width rather than under a breakpoint: an
+   absolutely-positioned decoration inside an uploaded page (a glow, a bleed,
+   a rotated card) can stick out past the viewport at ANY size, and one such
+   element puts a horizontal scrollbar on the whole site. */
+.post-doc { overflow-x: clip; }
+@supports not (overflow: clip) { .post-doc { overflow-x: hidden; } }
+
+/* ─── "ON THIS PAGE" OVERVIEW (.post-toc) ──────────────────────────────────
+   An overlay, never a column. The previous version was a 232px grid track that,
+   with the share rail and gaps, took 360px off the article and squeezed a
+   1180px design into under 400px. This one is position:fixed: it occupies no
+   space, so the document keeps the full width of the page and a post lays out
+   identically whether the overview is shown or not.
+
+   Hidden by default and revealed only above 1460px. Both presets cap their
+   content at 1180px, which leaves (1460-1180)/2 = 140px of empty gutter each
+   side — exactly enough for a 130px rail with a 10px margin. Below that width
+   there is nowhere for it to go that is not on top of the article, and covering
+   the article to show a contents list is a bad trade.
+
+   It sits IN the margin rather than on top of it: no panel, no border box, no
+   shadow. A white card floating over the article read as a separate widget
+   pasted onto the page — the opposite of what a marginal aid should do. What is
+   left is text in the gutter, at low contrast, that firms up only for the
+   section being read. */
+.post-toc { display: none; }
+
+@media (min-width: 1460px) {
+  .post-toc {
+    display: block;
+    position: fixed;
+    right: 10px;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 130px;
+    /* Under the site header (z-index 10), above the article. */
+    z-index: 5;
+    padding-left: 9px;
+    /* The only mark it makes: a hairline in its own (inherited) colour. */
+    border-left: 1px solid currentColor;
+    /* Ink, not a surface. The colour is set below from the DOCUMENT's own
+       background, not from the site's, because this floats over the post and a
+       fixed grey would vanish on half of them. */
+    color: rgba(17, 17, 17, .38);
+    /* Never scrolls: a scrollbar in the margin is more furniture than the
+       overview is worth. A list long enough to reach this cap is clipped
+       silently instead — see the entry cap in PostHtmlDoc, which is what
+       actually keeps it short. */
+    max-height: 74vh;
+    overflow: hidden;
+  }
+  /* Set by TocSpy from the post's measured background luminance. */
+  .post-toc.on-dark { color: rgba(255, 255, 255, .40); }
+
+  .post-toc h4 {
+    margin: 0 0 8px;
+    font-size: 8.5px;
+    letter-spacing: .11em;
+    text-transform: uppercase;
+    font-weight: 600;
+    color: inherit;
+    opacity: .75;
+  }
+  .post-toc ol {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+  }
+  .post-toc a {
+    display: block;
+    /* Full heading, wrapped. No line clamp: a clamped entry ended mid-phrase,
+       and an ellipsis in a 130px column tells the reader a section exists
+       without telling them what it is — which is the one job this has. Long
+       words break rather than push the rail wider. */
+    font-size: 10.5px;
+    line-height: 1.35;
+    color: inherit;
+    text-decoration: none;
+    overflow-wrap: break-word;
+    transition: color .15s, opacity .15s;
+  }
+  .post-toc a:hover { color: rgba(17, 17, 17, .78); }
+  .post-toc.on-dark a:hover { color: rgba(255, 255, 255, .82); }
+
+  /* The section being read: the one place contrast is spent. */
+  .post-toc a.on { color: rgba(17, 17, 17, .92); font-weight: 600; }
+  .post-toc.on-dark a.on { color: rgba(255, 255, 255, .95); }
+}
+
+/* No motion for readers who asked for none. */
+@media (prefers-reduced-motion: reduce) {
+  .post-toc a { transition: none; }
+}
+
+/* A design may ship its own "On this page" and fill it with JavaScript — both
+   presets do, as <ol id="tocList"></ol>. Scripts never run here, so that block
+   publishes as a heading with nothing under it, and alongside the site's own
+   overview it reads as a second, broken one. Hide a nav or aside whose list was
+   meant to be filled and never was.
+
+   Deliberately narrow: only <aside>/<nav> (not <div>, which holds real content),
+   and only when the EMPTY list is a direct child. An aside whose own list is
+   empty has nothing to say either way, so hiding it loses nothing. */
+.post-doc :where(aside, nav):has(> ol:empty),
+.post-doc :where(aside, nav):has(> ul:empty) { display: none; }
+
+/* ============================================================================
+   MARKETCATALYST BLOG COMPONENTS & TEMPLATES
+   Styles for the rich elements present in published research, recap & educational posts.
+   Applied across .mc-doc and .post-doc to ensure consistent premium design.
+   ============================================================================ */
+
+/* ── Container Card & Header Elements ─────────────────────────────────────── */
+:where(.mc-doc, .post-doc) main {
+  max-width: 100%;
+  margin: 0 auto;
+  padding: 0 0 80px;
+}
+:where(.mc-doc, .post-doc) main > .card,
+:where(.mc-doc, .post-doc) .card {
+  background: var(--surface, #ffffff);
+  border: 1px solid var(--line, rgba(24,52,105,.13));
+  border-radius: 16px;
+  box-shadow: 0 1px 3px rgba(16,34,70,.04), 0 8px 24px rgba(16,34,70,.04);
+  margin: 0 auto 36px;
+  padding: 0;
+  max-width: 1180px;
+  width: 100%;
+  overflow: hidden;
+}
+:where(.mc-doc, .post-doc) .card-body {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  padding: clamp(24px, 4vw, 48px) clamp(20px, 4vw, 56px) 0;
+}
+@media (max-width: 640px) {
+  :where(.mc-doc, .post-doc) .card-body {
+    padding: 24px 16px 0;
+  }
+}
+:where(.mc-doc, .post-doc) .eyebrow {
+  font: 700 11px/1.2 ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--purple, #7c3fe4);
+  margin-bottom: 12px;
+}
+:where(.mc-doc, .post-doc) .subtitle {
+  font-size: 1.12rem;
+  line-height: 1.6;
+  color: var(--mute, #5a6b8c);
+  margin: 12px 0 18px;
+  font-weight: 400;
+}
+:where(.mc-doc, .post-doc) .tag,
+:where(.mc-doc, .post-doc) .tags-line {
+  display: inline-flex;
+  align-items: center;
+  background: rgba(59,99,232,0.08);
+  color: var(--blue, #3b63e8);
+  font-size: 12px;
+  font-weight: 600;
+  padding: 4px 12px;
+  border-radius: 999px;
+  margin-bottom: 16px;
+  letter-spacing: 0.04em;
+  width: fit-content;
+}
+
+/* ── Byline, Authors & Meta ────────────────────────────────────────────────── */
+:where(.mc-doc, .post-doc) .byline {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  margin: 16px 0 14px;
+  flex-wrap: wrap;
+}
+:where(.mc-doc, .post-doc) .byline .avatar {
+  width: 38px;
+  height: 38px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, var(--blue, #3b63e8), var(--purple, #7c3fe4));
+  color: #ffffff;
+  font-weight: 700;
+  font-size: 13px;
+  display: grid;
+  place-items: center;
+  flex-shrink: 0;
+}
+:where(.mc-doc, .post-doc) .byline .who {
+  display: flex;
+  flex-direction: column;
+}
+:where(.mc-doc, .post-doc) .byline .name {
+  font-weight: 700;
+  font-size: 14px;
+  color: var(--ink, #0b1430);
+}
+:where(.mc-doc, .post-doc) .byline .role {
+  font-size: 12px;
+  color: var(--mute, #5a6b8c);
+}
+:where(.mc-doc, .post-doc) .byline .verified {
+  margin-left: auto;
+  font-size: 12px;
+  font-weight: 500;
+  color: #0a8f5f;
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  background: rgba(10,143,95,0.08);
+  padding: 4px 10px;
+  border-radius: 6px;
+}
+:where(.mc-doc, .post-doc) .meta {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 12.5px;
+  color: var(--dim, #8291ad);
+  margin-top: 10px;
+  flex-wrap: wrap;
+}
+:where(.mc-doc, .post-doc) hr.rule {
+  border: 0;
+  border-top: 1px solid var(--line, rgba(24,52,105,.13));
+  margin: 24px 0 28px;
+}
+
+/* ── Inline Table of Contents ─────────────────────────────────────────────── */
+:where(.mc-doc, .post-doc) .toc {
+  background: var(--surface-2, #f8fafc);
+  border: 1px solid var(--line, rgba(24,52,105,.13));
+  border-radius: 12px;
+  padding: 18px 22px;
+  margin: 22px 0 28px;
+}
+:where(.mc-doc, .post-doc) .toc .toc-title {
+  font-size: 11.5px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.14em;
+  color: var(--dim, #8291ad);
+  margin-bottom: 12px;
+}
+:where(.mc-doc, .post-doc) .toc ol {
+  margin: 0;
+  padding-left: 20px;
+  color: var(--blue, #3b63e8);
+  font-size: 14px;
+  line-height: 1.8;
+}
+:where(.mc-doc, .post-doc) .toc ol li a {
+  color: var(--blue, #3b63e8);
+  text-decoration: none;
+  font-weight: 500;
+}
+:where(.mc-doc, .post-doc) .toc ol li a:hover {
+  text-decoration: underline;
+}
+
+/* ── Key Stats & Figures Strip ─────────────────────────────────────────────── */
+:where(.mc-doc, .post-doc) .stat-strip {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  gap: 14px;
+  margin: 28px 0;
+}
+@media (max-width: 640px) {
+  :where(.mc-doc, .post-doc) .stat-strip {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 10px;
+  }
+}
+@media (max-width: 440px) {
+  :where(.mc-doc, .post-doc) .stat-strip {
+    grid-template-columns: 1fr;
+  }
+}
+:where(.mc-doc, .post-doc) .stat-box {
+  background: var(--surface-2, #f8fafc);
+  border: 1px solid var(--line, rgba(24,52,105,.13));
+  border-radius: 12px;
+  padding: 18px 20px;
+  text-align: left;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  box-shadow: 0 1px 2px rgba(16,34,70,.03);
+}
+:where(.mc-doc, .post-doc) .stat-box .num {
+  font-size: 26px;
+  font-weight: 800;
+  color: var(--ink, #0b1430);
+  letter-spacing: -0.02em;
+  font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+  font-variant-numeric: tabular-nums;
+  line-height: 1.2;
+}
+:where(.mc-doc, .post-doc) .stat-box .label {
+  font-size: 12.5px;
+  color: var(--mute, #5a6b8c);
+  margin-top: 6px;
+  line-height: 1.4;
+  font-weight: 500;
+}
+
+/* ── Contract & Financial Metric Boxes ─────────────────────────────────────── */
+:where(.mc-doc, .post-doc) .contract-box {
+  background: var(--surface-2, #f8fafc);
+  border: 1px solid var(--line, rgba(24,52,105,.13));
+  border-radius: 12px;
+  padding: 22px 24px;
+  margin: 28px 0;
+}
+:where(.mc-doc, .post-doc) .contract-title {
+  font-size: 16px;
+  font-weight: 700;
+  color: var(--ink, #0b1430);
+  margin-bottom: 16px;
+  letter-spacing: -0.01em;
+}
+:where(.mc-doc, .post-doc) .contract-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+  gap: 14px;
+  margin-bottom: 18px;
+}
+:where(.mc-doc, .post-doc) .contract-item {
+  background: var(--surface, #ffffff);
+  border: 1px solid var(--line, rgba(24,52,105,.13));
+  border-radius: 8px;
+  padding: 12px 14px;
+}
+:where(.mc-doc, .post-doc) .contract-item .val {
+  font-size: 17px;
+  font-weight: 700;
+  color: var(--ink, #0b1430);
+  line-height: 1.2;
+}
+:where(.mc-doc, .post-doc) .contract-item .lbl {
+  font-size: 11.5px;
+  color: var(--mute, #5a6b8c);
+  margin-top: 4px;
+}
+
+/* ── Bull vs. Bear Case Grid ──────────────────────────────────────────────── */
+:where(.mc-doc, .post-doc) .bullbear-wrap {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 18px;
+  margin: 32px 0;
+}
+@media (max-width: 768px) {
+  :where(.mc-doc, .post-doc) .bullbear-wrap {
+    grid-template-columns: 1fr;
+    gap: 14px;
+  }
+}
+:where(.mc-doc, .post-doc) .bb-col {
+  border-radius: 12px;
+  padding: 20px 22px;
+}
+:where(.mc-doc, .post-doc) .bb-col.bull {
+  background: rgba(10, 143, 95, 0.05);
+  border: 1px solid rgba(10, 143, 95, 0.25);
+}
+:where(.mc-doc, .post-doc) .bb-col.bull .bb-title {
+  color: #0a8f5f;
+  font-weight: 700;
+  font-size: 15px;
+  margin-bottom: 12px;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+:where(.mc-doc, .post-doc) .bb-col.bear {
+  background: rgba(197, 58, 78, 0.05);
+  border: 1px solid rgba(197, 58, 78, 0.25);
+}
+:where(.mc-doc, .post-doc) .bb-col.bear .bb-title {
+  color: #c53a4e;
+  font-weight: 700;
+  font-size: 15px;
+  margin-bottom: 12px;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+:where(.mc-doc, .post-doc) .bb-col ul {
+  margin: 0;
+  padding-left: 20px;
+  font-size: 14px;
+  line-height: 1.65;
+  color: var(--body, #33425f);
+}
+:where(.mc-doc, .post-doc) .bb-col li {
+  margin-bottom: 8px;
+}
+
+/* ── Interactive Timeline ─────────────────────────────────────────────────── */
+:where(.mc-doc, .post-doc) .timeline {
+  position: relative;
+  margin: 26px 0 32px;
+  padding-left: 24px;
+  border-left: 2px solid var(--line, rgba(24,52,105,.13));
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+:where(.mc-doc, .post-doc) .timeline-item {
+  position: relative;
+}
+:where(.mc-doc, .post-doc) .timeline-item::before {
+  content: "";
+  position: absolute;
+  left: -31px;
+  top: 4px;
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  background: var(--surface, #ffffff);
+  border: 2px solid var(--blue, #3b63e8);
+}
+:where(.mc-doc, .post-doc) .timeline-item.good::before {
+  border-color: #0a8f5f;
+  background: #0a8f5f;
+}
+:where(.mc-doc, .post-doc) .timeline-item.flag::before {
+  border-color: #c53a4e;
+  background: #c53a4e;
+}
+:where(.mc-doc, .post-doc) .timeline-date {
+  font-size: 11.5px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  color: var(--dim, #8291ad);
+  margin-bottom: 4px;
+}
+:where(.mc-doc, .post-doc) .timeline-text {
+  font-size: 14.5px;
+  line-height: 1.55;
+  color: var(--body, #33425f);
+}
+
+/* ── Bar Chart Visuals ─────────────────────────────────────────────────────── */
+:where(.mc-doc, .post-doc) .bar-chart {
+  background: var(--surface-2, #f8fafc);
+  border: 1px solid var(--line, rgba(24,52,105,.13));
+  border-radius: 12px;
+  padding: 20px;
+  margin: 28px 0;
+}
+:where(.mc-doc, .post-doc) .bar-chart-title {
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--ink, #0b1430);
+  margin-bottom: 16px;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+}
+:where(.mc-doc, .post-doc) .bar-row {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  margin-bottom: 10px;
+  font-size: 13.5px;
+}
+:where(.mc-doc, .post-doc) .bar-row .ticker {
+  width: 50px;
+  font-weight: 700;
+  font-family: ui-monospace, monospace;
+  color: var(--ink, #0b1430);
+}
+:where(.mc-doc, .post-doc) .bar-row .bar-track {
+  flex: 1;
+  height: 12px;
+  background: rgba(0,0,0,0.06);
+  border-radius: 6px;
+  overflow: hidden;
+}
+:where(.mc-doc, .post-doc) .bar-row .bar-fill {
+  height: 100%;
+  border-radius: 6px;
+  background: linear-gradient(90deg, #f2555f, #c53a4e);
+}
+:where(.mc-doc, .post-doc) .bar-row .val {
+  width: 58px;
+  text-align: right;
+  font-weight: 600;
+  font-family: ui-monospace, monospace;
+  color: var(--down, #c53a4e);
+}
+
+/* ── Reason / Stock Analysis Breakdown Cards ──────────────────────────────── */
+:where(.mc-doc, .post-doc) .reason-card {
+  background: var(--surface, #ffffff);
+  border: 1px solid var(--line, rgba(24,52,105,.13));
+  border-radius: 10px;
+  padding: 16px 18px;
+  margin: 14px 0;
+  box-shadow: 0 1px 2px rgba(16,34,70,.02);
+}
+:where(.mc-doc, .post-doc) .reason-card .head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 8px;
+}
+:where(.mc-doc, .post-doc) .reason-card .name {
+  font-size: 15px;
+  font-weight: 700;
+  color: var(--ink, #0b1430);
+}
+:where(.mc-doc, .post-doc) .reason-card .pct {
+  font-size: 13.5px;
+  font-weight: 700;
+  color: #c53a4e;
+  font-family: ui-monospace, monospace;
+}
+:where(.mc-doc, .post-doc) .reason-card .why {
+  font-size: 14px;
+  line-height: 1.6;
+  color: var(--body, #33425f);
+  margin: 0;
+}
+
+/* ── Risk, Reminder, Warning & Note Boxes ──────────────────────────────────── */
+:where(.mc-doc, .post-doc) .risk-box {
+  background: rgba(197, 58, 78, 0.03);
+  border: 1px solid rgba(197, 58, 78, 0.18);
+  border-left: 4px solid #c53a4e;
+  border-radius: 0 10px 10px 0;
+  padding: 18px 20px;
+  margin: 22px 0;
+}
+:where(.mc-doc, .post-doc) .risk-title {
+  font-weight: 700;
+  font-size: 15px;
+  color: #c53a4e;
+  margin-bottom: 8px;
+}
+:where(.mc-doc, .post-doc) .reminder-box {
+  background: rgba(59, 99, 232, 0.03);
+  border: 1px solid rgba(59, 99, 232, 0.18);
+  border-left: 4px solid var(--blue, #3b63e8);
+  border-radius: 0 10px 10px 0;
+  padding: 18px 20px;
+  margin: 22px 0;
+}
+:where(.mc-doc, .post-doc) .reminder-title {
+  font-weight: 700;
+  font-size: 15px;
+  color: var(--blue, #3b63e8);
+  margin-bottom: 8px;
+}
+:where(.mc-doc, .post-doc) .takeaway-list {
+  background: var(--surface-2, #f8fafc);
+  border: 1px solid var(--line, rgba(24,52,105,.13));
+  border-radius: 12px;
+  padding: 20px 24px 20px 42px;
+  margin: 24px 0;
+  font-size: 15px;
+  line-height: 1.7;
+}
+:where(.mc-doc, .post-doc) .takeaway-list li {
+  margin-bottom: 12px;
+  color: var(--body, #33425f);
+}
+:where(.mc-doc, .post-doc) .warning {
+  background: rgba(176, 106, 0, 0.06);
+  border: 1px solid rgba(176, 106, 0, 0.22);
+  border-left: 4px solid #b06a00;
+  border-radius: 0 10px 10px 0;
+  padding: 16px 20px;
+  margin: 24px 0;
+  font-size: 14.5px;
+  line-height: 1.6;
+  color: var(--ink, #0b1430);
+}
+:where(.mc-doc, .post-doc) .quote {
+  font-style: italic;
+  border-left: 3px solid var(--blue, #3b63e8);
+  padding-left: 16px;
+  margin: 18px 0;
+  color: var(--mute, #5a6b8c);
+  font-size: 15.5px;
+}
+:where(.mc-doc, .post-doc) .highlight {
+  background: rgba(10, 126, 163, 0.08);
+  padding: 2px 6px;
+  border-radius: 4px;
+}
+:where(.mc-doc, .post-doc) .ai-note {
+  font-size: 11.5px;
+  color: var(--dim, #8291ad);
+  margin-top: 10px;
+  font-style: italic;
+}
+:where(.mc-doc, .post-doc) .disclaimer {
+  margin: 32px 0 0;
+  padding: 16px 18px;
+  border: 1px dashed var(--line, rgba(24,52,105,.13));
+  border-radius: 10px;
+  font-size: 12.5px;
+  line-height: 1.6;
+  color: var(--dim, #8291ad);
+}
+
+/* ── Educational & Framework Lists (Mistakes, VSA, Retests) ────────────────── */
+:where(.mc-doc, .post-doc) .mistake-list,
+:where(.mc-doc, .post-doc) .vsa-list {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  margin: 24px 0;
+}
+:where(.mc-doc, .post-doc) .mistake-item {
+  background: var(--surface, #ffffff);
+  border: 1px solid var(--line, rgba(24,52,105,.13));
+  border-radius: 10px;
+  padding: 16px 18px;
+  border-left: 4px solid #f2555f;
+}
+:where(.mc-doc, .post-doc) .m-title {
+  font-weight: 700;
+  font-size: 15px;
+  color: var(--ink, #0b1430);
+  margin-bottom: 6px;
+}
+:where(.mc-doc, .post-doc) .m-fix {
+  margin: 0;
+  font-size: 14px;
+  line-height: 1.6;
+  color: var(--body, #33425f);
+}
+:where(.mc-doc, .post-doc) .vsa-item {
+  background: var(--surface-2, #f8fafc);
+  border: 1px solid var(--line, rgba(24,52,105,.13));
+  border-radius: 10px;
+  padding: 16px 18px;
+}
+:where(.mc-doc, .post-doc) .vsa-term {
+  font-weight: 700;
+  font-size: 15px;
+  color: var(--blue, #3b63e8);
+  margin-bottom: 6px;
+}
+:where(.mc-doc, .post-doc) .vsa-def {
+  margin: 0;
+  font-size: 14px;
+  line-height: 1.6;
+  color: var(--body, #33425f);
+}
+:where(.mc-doc, .post-doc) .retest-steps {
+  margin: 20px 0;
+  padding-left: 22px;
+  font-size: 14.5px;
+  line-height: 1.7;
+  color: var(--body, #33425f);
+}
+
+/* ── FAQ Items ─────────────────────────────────────────────────────────────── */
+:where(.mc-doc, .post-doc) .faq-item {
+  background: var(--surface-2, #f8fafc);
+  border: 1px solid var(--line, rgba(24,52,105,.13));
+  border-radius: 10px;
+  padding: 16px 18px;
+  margin: 12px 0;
+}
+:where(.mc-doc, .post-doc) .faq-q {
+  font-weight: 700;
+  font-size: 15px;
+  color: var(--ink, #0b1430);
+  margin: 0 0 8px;
+}
+:where(.mc-doc, .post-doc) .faq-a {
+  font-size: 14px;
+  line-height: 1.65;
+  color: var(--body, #33425f);
+  margin: 0;
+}
+
+/* ── Tables & Metric Values ────────────────────────────────────────────────── */
+:where(.mc-doc, .post-doc) table {
+  width: 100%;
+  border-collapse: collapse;
+  margin: 24px 0;
+  font-size: 14px;
+}
+:where(.mc-doc, .post-doc) th {
+  text-align: left;
+  font-size: 12px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--mute, #5a6b8c);
+  padding: 10px 14px;
+  border-bottom: 2px solid var(--line, rgba(24,52,105,.13));
+  background: var(--surface-2, #f8fafc);
+}
+:where(.mc-doc, .post-doc) td {
+  padding: 12px 14px;
+  border-bottom: 1px solid var(--line, rgba(24,52,105,.13));
+  color: var(--body, #33425f);
+}
+:where(.mc-doc, .post-doc) td.metric {
+  font-weight: 600;
+  color: var(--ink, #0b1430);
+}
+:where(.mc-doc, .post-doc) td.pos,
+:where(.mc-doc, .post-doc) .pos,
+:where(.mc-doc, .post-doc) .good {
+  color: #0a8f5f !important;
+  font-weight: 600;
+}
+:where(.mc-doc, .post-doc) td.neg,
+:where(.mc-doc, .post-doc) td.negative,
+:where(.mc-doc, .post-doc) .neg,
+:where(.mc-doc, .post-doc) .negative {
+  color: #c53a4e !important;
+  font-weight: 600;
+}
+:where(.mc-doc, .post-doc) .amber {
+  color: #b06a00 !important;
+  font-weight: 600;
+}
+:where(.mc-doc, .post-doc) .table-scroll {
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+  margin: 20px 0;
+}
+
+/* ── Charts, Diagrams & Image Descriptions ─────────────────────────────────── */
+:where(.mc-doc, .post-doc) .example-chart {
+  background: #0b1220;
+  border-radius: 12px;
+  padding: 16px;
+  margin: 24px 0;
+  overflow-x: auto;
+}
+:where(.mc-doc, .post-doc) .example-chart svg {
+  max-width: 100%;
+  height: auto;
+  display: block;
+}
+:where(.mc-doc, .post-doc) .example-caption,
+:where(.mc-doc, .post-doc) .imgcap {
+  font-size: 13px;
+  color: var(--mute, #5a6b8c);
+  font-style: italic;
+  margin-top: 8px;
+  text-align: center;
+}
+:where(.mc-doc, .post-doc) .faq-last {
+  margin-bottom: 0;
+}
+:where(.mc-doc, .post-doc) .return,
+:where(.mc-doc, .post-doc) td.return {
+  font-weight: 700;
+  font-family: ui-monospace, monospace;
+}
+:where(.mc-doc, .post-doc) .year,
+:where(.mc-doc, .post-doc) .baseline {
+  font-weight: 600;
+  color: var(--dim, #8291ad);
+  font-size: 13px;
+}
+:where(.mc-doc, .post-doc) .img-block,
+:where(.mc-doc, .post-doc) .image-plan {
+  background: var(--surface-2, #f8fafc);
+  border: 1px dashed var(--line, rgba(24,52,105,.13));
+  border-radius: 10px;
+  padding: 16px 18px;
+  margin: 20px 0;
+  font-size: 13.5px;
+  color: var(--mute, #5a6b8c);
+}
+:where(.mc-doc, .post-doc) .img-label {
+  font-weight: 700;
+  color: var(--ink, #0b1430);
+}
+
+/* ── Dark Theme Overrides ──────────────────────────────────────────────────── */
+[data-theme="dark"] :where(.mc-doc, .post-doc) main > .card,
+[data-theme="dark"] :where(.mc-doc, .post-doc) .card {
+  background: rgba(18, 29, 61, 0.6) !important;
+  border-color: rgba(120, 160, 230, 0.16) !important;
+}
+[data-theme="dark"] :where(.mc-doc, .post-doc) .stat-box,
+[data-theme="dark"] :where(.mc-doc, .post-doc) .toc,
+[data-theme="dark"] :where(.mc-doc, .post-doc) .contract-box,
+[data-theme="dark"] :where(.mc-doc, .post-doc) .takeaway-list,
+[data-theme="dark"] :where(.mc-doc, .post-doc) .faq-item,
+[data-theme="dark"] :where(.mc-doc, .post-doc) .bar-chart,
+[data-theme="dark"] :where(.mc-doc, .post-doc) .vsa-item,
+[data-theme="dark"] :where(.mc-doc, .post-doc) .img-block,
+[data-theme="dark"] :where(.mc-doc, .post-doc) .image-plan {
+  background: rgba(11, 20, 48, 0.6) !important;
+  border-color: rgba(120, 160, 230, 0.16) !important;
+}
+[data-theme="dark"] :where(.mc-doc, .post-doc) .stat-box .num,
+[data-theme="dark"] :where(.mc-doc, .post-doc) .contract-title,
+[data-theme="dark"] :where(.mc-doc, .post-doc) .contract-item .val,
+[data-theme="dark"] :where(.mc-doc, .post-doc) .reason-card .name,
+[data-theme="dark"] :where(.mc-doc, .post-doc) .m-title,
+[data-theme="dark"] :where(.mc-doc, .post-doc) .faq-q,
+[data-theme="dark"] :where(.mc-doc, .post-doc) .img-label,
+[data-theme="dark"] :where(.mc-doc, .post-doc) td.metric {
+  color: #eaf0fb !important;
+}
+[data-theme="dark"] :where(.mc-doc, .post-doc) .reason-card,
+[data-theme="dark"] :where(.mc-doc, .post-doc) .contract-item,
+[data-theme="dark"] :where(.mc-doc, .post-doc) .mistake-item {
+  background: rgba(18, 29, 61, 0.7) !important;
+  border-color: rgba(120, 160, 230, 0.16) !important;
+}
+[data-theme="dark"] :where(.mc-doc, .post-doc) th {
+  background: rgba(11, 20, 48, 0.8) !important;
+  border-color: rgba(120, 160, 230, 0.16) !important;
+}
+[data-theme="dark"] :where(.mc-doc, .post-doc) td {
+  border-color: rgba(120, 160, 230, 0.16) !important;
+}
+[data-theme="dark"] :where(.mc-doc, .post-doc) .bar-row .bar-track {
+  background: rgba(255, 255, 255, 0.08) !important;
+}
+

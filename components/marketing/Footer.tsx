@@ -29,8 +29,10 @@ export function Footer() {
         </div>
         <div className="hw-footer-col">
           <div className="hw-footer-h">Company</div>
+          <Link href="/about">About us</Link>
           <Link href="/contact">Contact us</Link>
-          <Link href="/blog">Blog</Link>
+          <Link href="/posts">Blogs</Link>
+          <Link href="/faqs">FAQs</Link>
         </div>
         <div className="hw-footer-col">
           <div className="hw-footer-h">Legal</div>

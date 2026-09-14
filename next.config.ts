@@ -1,5 +1,4 @@
 import type { NextConfig } from "next";
-import { withSentryConfig } from "@sentry/nextjs";
 
 const siteUrl = process.env.NEXT_PUBLIC_SITE_URL;
 const siteHost = siteUrl ? new URL(siteUrl).host : undefined;
@@ -12,14 +11,25 @@ const nextConfig: NextConfig = {
   // bundled for the server by Turbopack/webpack (`ERR_REQUIRE_ESM`). Keeping
   // it as a real external `require()` at runtime — rather than bundled —
   // avoids that; this only affects server-side bundling, never the client.
-  serverExternalPackages: ["firebase-admin"],
+  // mammoth (.docx) and pdf-parse (.pdf, via pdfjs-dist) are heavy Node-only
+  // parsers used by the blog document-import server action. Keep them as real
+  // runtime `require()`s rather than bundling them for the server — pdfjs-dist
+  // in particular pulls in worker/canvas code that breaks when bundled.
+  serverExternalPackages: ["firebase-admin", "mammoth", "pdf-parse"],
 
   // Blog hero/cover images and media-library uploads are served from Cloud
   // Storage (made public per-object via file.makePublic() at upload time —
   // see lib/media/library.ts), not next/image's default same-origin
   // assumption.
   images: {
-    remotePatterns: [{ protocol: "https", hostname: "storage.googleapis.com" }],
+    remotePatterns: [
+      { protocol: "https", hostname: "storage.googleapis.com" },
+      // The blogs admin uploads through the Firebase Storage download API and
+      // stores THAT url (see storeSourceDoc / externalizeImages in the backend).
+      // Without this host an uploaded hero image renders as a broken image, and
+      // next/image throws rather than falling back.
+      { protocol: "https", hostname: "firebasestorage.googleapis.com" },
+    ],
   },
 
   experimental: {
