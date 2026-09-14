@@ -38,8 +38,17 @@ function createAdminApp(): App {
 
 const adminApp = createAdminApp();
 
+// Firestore database selection mirrors MarketCatalystBackEnd's
+// firebase-admin.provider.ts: this project's real data lives in the named
+// "mc-regional" database, not "(default)". Set FIRESTORE_DATABASE_ID to
+// switch; getFirestore caches per (app, databaseId), so this is cheap.
+const firestoreDatabaseId = (process.env.FIRESTORE_DATABASE_ID ?? "").trim();
+const useNamedDatabase = firestoreDatabaseId !== "" && firestoreDatabaseId !== "(default)";
+
 export const adminAuth = getAuth(adminApp);
-export const adminFirestore = getFirestore(adminApp);
+export const adminFirestore = useNamedDatabase
+  ? getFirestore(adminApp, firestoreDatabaseId)
+  : getFirestore(adminApp);
 
 // NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET is a public-safe value (just a bucket
 // name, not a credential) already declared for the client SDK's config —

@@ -28,6 +28,13 @@ env:
   - variable: FIREBASE_PROJECT_ID
     value: "market-catalyst-502415"
 
+  # The project's real Firestore data lives in this named database, not
+  # "(default)" — mirrors MarketCatalystBackEnd's apphosting/Cloud Run config.
+  # Was already set directly on the deployed service (config drift); now
+  # checked in so a fresh deploy from this file doesn't silently regress it.
+  - variable: FIRESTORE_DATABASE_ID
+    value: "mc-regional"
+
   # Public client-side Firebase config, used only by the admin/editor login
   # screen (see lib/firebase/client.ts) — the public marketing site and blog
   # never touch the client Firebase SDK. These values are inherently
