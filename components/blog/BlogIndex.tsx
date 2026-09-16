@@ -1,7 +1,6 @@
 "use client";
 
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
-import Link from "next/link";
 import type { Post } from "@/lib/blog/posts";
 import { readerId } from "@/lib/blog/reader-id";
 import { APP_SIGNUP_URL } from "@/components/marketing/app-url";
@@ -319,12 +318,12 @@ export function BlogIndex({
     <div className="mcb2" data-theme={theme}>
       <header className="mc-top">
         <div className="mc-top-in">
-          <Link className="mc-brand" href="/">
+          <a className="mc-brand" href="/">
             Market<span>Catalyst</span>
-          </Link>
+          </a>
           <nav className="mc-main">
             <a href="/about">About us</a>
-            <Link className="mc-active" href="/posts">Blogs</Link>
+            <a className="mc-active" href="/posts">Blogs</a>
             {/* FAQs only is left out here — it was the first item dropped on a
                 narrow screen, so the nav changed shape between widths. The
                 board's own footer still links to /faqs for anyone who wants it.
@@ -556,7 +555,7 @@ export function BlogIndex({
 
         <footer className="mc-site">
           <div className="mc-fnav">
-            <Link href="/posts">Blogs</Link>
+            <a href="/posts">Blogs</a>
             <a href="/faqs">FAQs</a>
             <a href="/admin/login">Log in</a>
             <a href={APP_SIGNUP_URL}>Sign up</a>
@@ -570,6 +569,12 @@ export function BlogIndex({
     </div>
   );
 }
+
+const SECTION_BLURB: Record<Section, string> = {
+  Recap: "every close, every day",
+  "Research desk": "company and theme work",
+  Educational: "how the plumbing works",
+};
 
 /**
  * Page numbers with the middle elided, so a long archive does not push the
