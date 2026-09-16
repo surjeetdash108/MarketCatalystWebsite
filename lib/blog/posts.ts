@@ -76,7 +76,7 @@ export type Post = {
   updatedAt: string;
 };
 
-const POSTS = "blogs";
+const POSTS = "posts";
 
 function toIso(value: Timestamp | undefined | null): string | null {
   return value ? value.toDate().toISOString() : null;
