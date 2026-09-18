@@ -1,5 +1,4 @@
 import { APP_SIGNUP_URL } from "@/components/marketing/app-url";
-import { DashboardMock } from "./DashboardMock";
 import { HeroHud } from "./HeroHud";
 
 export function Hero() {
@@ -9,9 +8,21 @@ export function Hero() {
           follows the cursor on a laptop and the finger on a touch screen
           (see HomeMotion.tsx). It used to be duplicated below as a static
           framed strip on touch devices, which read as a screenshot pasted
-          into the page rather than as the hero's own backdrop. */}
+          into the page rather than as the hero's own backdrop.
+
+          A photograph rather than the DOM mock it replaced: the mock had to be
+          transform-fitted to the stage by JS, where `object-fit: cover` does
+          the same job in CSS at every viewport. Served AVIF first and WebP
+          second, with the JPEG as the floor - 149KB / 234KB / 369KB against a
+          25MB original, which nothing under a 1px blur can tell apart. */}
       <div className="mc-dash" id="mc-dash" aria-hidden="true">
-        <DashboardMock />
+        <picture>
+          <source srcSet="/hero-desk.avif" type="image/avif" />
+          <source srcSet="/hero-desk.webp" type="image/webp" />
+          {/* Decorative, and the parent is aria-hidden - so no alt text. It is
+              the largest paint in the hero, hence the high fetch priority. */}
+          <img src="/hero-desk.jpg" alt="" fetchPriority="high" decoding="async" />
+        </picture>
       </div>
       <div className="mc-veil" id="mc-veil" aria-hidden="true" />
 
@@ -37,8 +48,9 @@ export function Hero() {
           <div className="mc-hero-row">
             <p className="mc-lede mc-fade" data-fade="320">
               The entire market, narrated. Movers, earnings, analyst actions, insider and institutional flows, heatmaps,
-              screeners, themes, IPOs, options and your own book — fourteen research workspaces, each with an AI read that
-              tells you <em>what</em> moved and <em>why</em>. No reconstructing the story from ten scattered sources.{" "}
+              screeners, themes, IPOs, options and your own book — fourteen research workspaces, each with an{" "}
+              <em className="mc-serif">AI read</em> that tells you <em className="mc-serif">what</em> moved and{" "}
+              <em className="mc-serif">why</em>. No reconstructing the story from ten scattered sources.{" "}
               <b>And plenty more waiting inside.</b>
             </p>
             <div className="mc-actions mc-fade" data-fade="420">

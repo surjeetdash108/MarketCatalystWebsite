@@ -23,30 +23,84 @@
   position: fixed;
   inset: 0;
   z-index: 200;
-  display: flex;
-  align-items: flex-end;
-  justify-content: space-between;
-  gap: 20px;
-  padding: clamp(20px, 4vw, 54px);
   background: var(--mc-bg);
   clip-path: inset(0 0 0 0);
   transition: clip-path 1.05s cubic-bezier(.76, 0, .24, 1), opacity .4s ease .7s;
 }
 .mc-loader.is-out { clip-path: inset(0 0 100% 0); opacity: 0; }
-.mc-loader-meta {
+
+/* The wordmark sits dead centre and resolves out of a blur while the counter
+   in the corner fills; HomeMotion.tsx drives every custom property below once
+   per frame. The values here are the state at 000 — the first paint, and the
+   state the loader keeps if scripting never runs. */
+.mc-loader-centre {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: clamp(12px, 2vh, 22px);
+  padding: 0 var(--mc-gutter);
+  text-align: center;
+  /* Set here rather than on the wordmark so the tagline under it inherits the
+     same fade. HomeMotion.tsx steps all four once per frame. */
+  --mc-word-blur: 16px;
+  --mc-word-fade: .25;
+  --mc-tag-fade: 0;
+}
+.mc-loader-word {
+  font-family: var(--mc-font-display);
+  font-weight: 500;
+  font-size: clamp(42px, 9.5vw, 148px);
+  line-height: .92;
+  letter-spacing: -.035em;
+  color: var(--mc-text-2);
+  opacity: var(--mc-word-fade);
+  filter: blur(var(--mc-word-blur));
+  /* No CSS transition: the properties are stepped per frame in JS, and a
+     transition on top of that would lag the counter it is meant to match. */
+  will-change: filter, opacity;
+}
+.mc-loader-word b { font-weight: 500; color: var(--mc-up); }
+.mc-loader-tag {
+  margin: 0;
+  font-family: var(--mc-font-mono);
+  font-size: clamp(10px, 1.4vw, 17px);
+  letter-spacing: .16em;
+  color: var(--mc-text-muted);
+  /* Fades up on its own ramp and is never blurred — the blur belongs to the
+     wordmark alone. */
+  opacity: var(--mc-tag-fade);
+}
+.mc-loader-tag em {
+  font-family: var(--mc-font-serif);
+  font-style: italic;
+  letter-spacing: 0;
+  color: var(--mc-up);
+}
+.mc-loader-status {
+  position: absolute;
+  left: clamp(20px, 4vw, 54px);
+  bottom: clamp(20px, 4vw, 54px);
   font-family: var(--mc-font-mono);
   font-size: 11px;
   letter-spacing: .2em;
   text-transform: uppercase;
-  color: var(--mc-text-faint);
+  color: var(--mc-up);
 }
-.mc-loader-meta span { display: block; margin-top: 6px; color: var(--mc-up); }
 .mc-loader-count {
-  font-family: var(--mc-font-mono);
-  font-size: clamp(48px, 12vw, 144px);
+  position: absolute;
+  right: clamp(16px, 3vw, 44px);
+  bottom: clamp(8px, 2vw, 28px);
+  font-family: var(--mc-font-display);
+  font-weight: 400;
+  font-size: clamp(52px, 11vw, 132px);
   line-height: .82;
-  letter-spacing: -.05em;
-  color: var(--mc-text);
+  letter-spacing: -.04em;
+  /* Overwritten per frame with a red -> green interpolation of the market
+     direction tokens; this is only the 000 end of that ramp. */
+  color: var(--mc-down);
 }
 
 /* ---- Hero -------------------------------------------------------- */
@@ -72,23 +126,42 @@
   pointer-events: none;
   opacity: 0;
   overflow: hidden;
-  /* Blurred behind the copy. CSS blur takes a length, not a percentage, so
-     "30%" is mapped onto a 10px reference: 3px. Enough that the headline and
-     lede stay readable over it and the shot reads as depth rather than
-     detail, while the layout of the terminal is still recognisable under the
-     spotlight. One number to change if it wants to be softer or sharper. */
-  filter: brightness(1.45) saturate(1.12) blur(3px);
+  /* Blurred behind the copy — 2px, enough that the headline and lede stay
+     readable over it while the terminal under the spotlight still reads as a
+     real screenshot rather than a smear. One number to change if it wants to
+     be softer or sharper.
+
+     The photograph is darker and flatter than the DOM mock it replaced, and
+     the lit core of the spotlight now clears the veil entirely, so it is
+     graded harder here: without the extra brightness and contrast the reveal
+     came through dull. */
+  filter: brightness(1.12) contrast(1.12) saturate(1.18) blur(2px);
   transition: opacity .4s ease;
+}
+/* Fills the hero stage at any aspect ratio, cropping from the centre. This is
+   what replaced the JS transform-fit the DOM mock needed. */
+.mc-dash picture,
+.mc-dash img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center;
 }
 .mc-veil {
   position: absolute;
   inset: 0;
   pointer-events: none;
   transition: opacity .5s ease;
-  background: radial-gradient(ellipse 78% 74% at 14% 42%,
+  /* Wider than the stage and carrying five stops, so the wash thins out over
+     the whole width instead of landing its last stop at 88% and holding flat
+     from there - that step was the other half of the "sudden stop". */
+  background: radial-gradient(ellipse 104% 96% at 14% 42%,
     rgb(var(--mc-bg-rgb) / .94),
-    rgb(var(--mc-bg-rgb) / .55) 58%,
-    rgb(var(--mc-bg-rgb) / .1) 88%);
+    rgb(var(--mc-bg-rgb) / .8) 32%,
+    rgb(var(--mc-bg-rgb) / .55) 54%,
+    rgb(var(--mc-bg-rgb) / .28) 74%,
+    rgb(var(--mc-bg-rgb) / .06) 100%);
 }
 .mc-hero-grid {
   position: relative;
@@ -168,6 +241,9 @@
   font-style: italic;
   color: var(--mc-text);
 }
+/* An em carrying .mc-serif asks for the accent — but .mc-lede em (0-1-1)
+   would out-specify the class, so restate it here. */
+.mc-lede em.mc-serif { color: var(--mc-up); }
 .mc-lede b { font-weight: 400; color: var(--mc-text); }
 .mc-actions { display: flex; flex-wrap: wrap; gap: 12px; }
 .mc-cta {
@@ -984,6 +1060,14 @@
    RESPONSIVE — tablet + mobile
    ============================================================ */
 
+/* A viewport too short to show a pinned card under the one sliding over it —
+   a phone in landscape, mostly. Matches STACK_MIN_HEIGHT in HomeMotion.tsx,
+   which drops the scale choreography at the same point. */
+@media (max-height: 420px) {
+  .mc-panel { position: relative; top: auto; margin-bottom: 16px; }
+  .mc-panel-card { box-shadow: none; }
+}
+
 /* Tablet / small laptop */
 @media (max-width: 1024px) {
   .mc-panel { top: 10vh; }
@@ -998,17 +1082,18 @@
    it, the same reveal, driven by the one gesture a touch screen has.
    See HomeMotion.tsx. */
 @media (max-width: 860px) {
-  /* Sticky stacking needs viewport headroom the phone doesn't have — the
-     panels become an ordinary vertical list (HomeMotion skips the scale
-     choreography at this width too). */
-  .mc-panel { position: relative; top: auto; margin-bottom: 16px; }
-  .mc-panel-card { box-shadow: none; }
+  /* The panels stay sticky here and stack the way they do on a laptop.
+     HomeMotion measures each card and sets its own `top` — cards taller than
+     the phone's viewport pin by their bottom edge, so one is fully read before
+     the next slides over it. Only the gap tightens at this width; the card
+     keeps its shadow, which is what makes the stack read as depth. */
+  .mc-panel { margin-bottom: 14px; }
   .mc-hero { min-height: auto; padding-top: 120px; }
   .mc-hero-grid { align-items: flex-start; }
   .mc-hero-row { align-items: flex-start; }
   .mc-metrics { grid-template-columns: repeat(auto-fit, minmax(min(100%, 96px), 1fr)); }
   .mc-final h2 { max-width: 14ch; }
-  .mc-loader-meta { font-size: 10px; }
+  .mc-loader-status { font-size: 10px; }
 }
 
 @media (max-width: 560px) {

@@ -117,14 +117,18 @@
   justify-content: space-between;
   gap: 22px;
   padding: 20px var(--mc-gutter);
-  background: rgb(var(--mc-bg-rgb) / 0);
+  /* Frosted from the first pixel of scroll rather than only once stuck: a
+     faint wash of the page colour is what gives the blur something to read
+     against — at zero alpha the backdrop-filter is invisible and the bar
+     looks unstyled over the hero. */
+  background: rgb(var(--mc-bg-rgb) / .34);
   border-bottom: 1px solid transparent;
-  backdrop-filter: blur(14px);
-  -webkit-backdrop-filter: blur(14px);
+  backdrop-filter: blur(16px) saturate(140%);
+  -webkit-backdrop-filter: blur(16px) saturate(140%);
   transition: background .4s ease, border-color .4s ease, padding .4s ease;
 }
 .mc-nav.is-stuck {
-  background: rgb(var(--mc-bg-rgb) / .8);
+  background: rgb(var(--mc-bg-rgb) / .78);
   border-bottom-color: var(--mc-line-nav);
   padding-top: 13px;
   padding-bottom: 13px;
@@ -337,3 +341,28 @@
     transition-duration: .001ms !important;
   }
 }
+
+/* ---- Back link ---------------------------------------------------
+   Used by article pages, which previously borrowed `.btn.sm` from the admin
+   console's stylesheet — the last thing pulling admin.css onto a public
+   page. */
+.mc-back {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 9px 16px;
+  border: 1px solid var(--mc-line);
+  border-radius: var(--mc-r-pill);
+  background: var(--mc-bg-card);
+  font-family: var(--mc-font-mono);
+  font-size: 11px;
+  letter-spacing: .1em;
+  text-transform: uppercase;
+  color: var(--mc-text-muted);
+  transition: border-color .3s ease, color .3s ease, gap .2s ease;
+}
+.mc-back:hover { border-color: var(--mc-up); color: var(--mc-up); gap: 12px; }
+
+/* Article region: clears the fixed nav. The old article header sat in flow and
+   reserved this space itself. */
+.mc-article { width: 100%; padding-top: clamp(84px, 10vh, 104px); }

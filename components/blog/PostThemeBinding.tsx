@@ -1,7 +1,6 @@
 "use client";
 
 import { useEffect } from "react";
-import { useBlogTheme } from "@/app/posts/theme-context";
 
 /**
  * Keeps an authored post's `data-theme` in step with the reader's own choice.
@@ -23,7 +22,12 @@ import { useBlogTheme } from "@/app/posts/theme-context";
  * change nothing, or worse, match a half-finished one.
  */
 export function PostThemeBinding({ targetId }: { targetId: string }) {
-  const { theme } = useBlogTheme();
+  /* Always light. The shell's article region is a light scope (see
+     article-shell.tsx): these designs are drawn on white and most carry no
+     usable dark block, so pointing them at the site's dark theme leaves
+     `var(--...)` references resolving to nothing. The previous shell reached
+     the same result by hardcoding light and never rendering a toggle here. */
+  const theme = "light";
   useEffect(() => {
     const el = document.getElementById(targetId);
     if (el) el.dataset.theme = theme;

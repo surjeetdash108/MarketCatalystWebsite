@@ -581,3 +581,208 @@
   white-space: pre-line;
   text-wrap: pretty;
 }
+
+/* ============================================================
+   CONTACT
+   ============================================================
+   Shares the hero, section, card and CTA furniture above — this
+   block is only the two things /contact adds: the routing list
+   beneath the lede, and the form window on the right.
+
+   Same rules as the rest of the file: not one hex, sizes in px
+   against the design's 16px root.
+   ============================================================ */
+
+/* ---- Where a message goes ---------------------------------------- */
+.mcp-channels {
+  display: grid;
+  gap: 1px;
+  margin-top: 34px;
+  background: var(--mc-line);
+  border: 1px solid var(--mc-line);
+  border-radius: var(--mc-r-md);
+  overflow: hidden;
+  list-style: none;
+}
+.mcp-channel {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr) auto;
+  align-items: start;
+  gap: 6px 16px;
+  background: var(--mc-bg);
+  padding: clamp(15px, 1.9vw, 20px) clamp(16px, 2vw, 22px);
+  transition: background .3s ease;
+}
+.mcp-channel:hover { background: var(--mc-bg-hover); }
+.mcp-channel-n {
+  font-family: var(--mc-font-mono);
+  font-size: 11px;
+  line-height: 1.5;
+  letter-spacing: .16em;
+  color: var(--mc-up);
+}
+.mcp-channel-b { min-width: 0; }
+.mcp-channel-b b {
+  display: block;
+  font-size: 15px;
+  font-weight: 500;
+  letter-spacing: -.015em;
+  color: var(--mc-text);
+}
+.mcp-channel-b > span {
+  display: block;
+  margin-top: 5px;
+  font-size: 13.5px;
+  line-height: 1.55;
+  color: var(--mc-text-muted);
+}
+.mcp-channel-d {
+  font-family: var(--mc-font-mono);
+  font-size: 10px;
+  line-height: 1.6;
+  letter-spacing: .12em;
+  text-transform: uppercase;
+  white-space: nowrap;
+  color: var(--mc-text-faint);
+}
+
+/* ---- The form window ---------------------------------------------
+   Deliberately the same object as .mcp-chart on /about: a titled
+   terminal window, so the page reads as one product rather than a
+   marketing page with a form bolted to it. */
+.mcp-formcard {
+  border: 1px solid var(--mc-line-strong);
+  border-radius: var(--mc-r-md);
+  background: linear-gradient(180deg, var(--mc-bg-card), var(--mc-bg-deep));
+  overflow: hidden;
+  box-shadow: var(--mc-shadow-window);
+}
+.mcp-form-bar {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 14px;
+  border-bottom: 1px solid var(--mc-line);
+  background: var(--mc-bg-raised);
+  font-family: var(--mc-font-mono);
+  font-size: 10px;
+  letter-spacing: .14em;
+  color: var(--mc-text-faint);
+}
+.mcp-form-bar .mcp-chart-live { margin-left: auto; }
+.mcp-form-body {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  padding: clamp(20px, 2.6vw, 28px);
+}
+.mcp-row {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 170px), 1fr));
+  gap: 16px;
+}
+
+.mcp-field { position: relative; display: flex; flex-direction: column; gap: 8px; min-width: 0; }
+.mcp-field label {
+  font-family: var(--mc-font-mono);
+  font-size: 10.5px;
+  letter-spacing: .16em;
+  text-transform: uppercase;
+  color: var(--mc-text-muted);
+}
+.mcp-opt { text-transform: none; letter-spacing: .04em; color: var(--mc-text-faint); }
+.mcp-field input,
+.mcp-field textarea {
+  width: 100%;
+  min-width: 0;
+  padding: 12px 14px;
+  border: 1px solid var(--mc-line);
+  border-radius: var(--mc-r-sm);
+  background: var(--mc-bg);
+  color: var(--mc-text);
+  font-family: inherit;
+  font-size: 14.5px;
+  line-height: 1.5;
+  outline: none;
+  transition: border-color .25s ease, box-shadow .25s ease, background .25s ease;
+}
+.mcp-field textarea { resize: vertical; min-height: 128px; }
+.mcp-field input::placeholder,
+.mcp-field textarea::placeholder { color: var(--mc-text-faint); }
+.mcp-field input:hover,
+.mcp-field textarea:hover { border-color: var(--mc-line-strong); }
+.mcp-field input:focus,
+.mcp-field textarea:focus {
+  border-color: var(--mc-up);
+  background: var(--mc-bg-hover);
+  box-shadow: 0 0 0 3px rgb(var(--mc-up-rgb) / .14);
+}
+/* Only after the browser has something to judge — :invalid alone would paint
+   every required field red before anyone has typed. */
+.mcp-field input:not(:placeholder-shown):invalid,
+.mcp-field textarea:not(:placeholder-shown):invalid { border-color: var(--mc-down); }
+
+.mcp-count-in {
+  position: absolute;
+  right: 12px;
+  bottom: 10px;
+  font-family: var(--mc-font-mono);
+  font-size: 10px;
+  letter-spacing: .08em;
+  color: var(--mc-text-faint);
+  pointer-events: none;
+}
+
+.mcp-submit { justify-content: center; width: 100%; margin-top: 2px; border: none; cursor: pointer; font-family: inherit; }
+.mcp-submit:disabled { opacity: .55; cursor: not-allowed; transform: none; }
+.mcp-form-err {
+  display: flex;
+  gap: 9px;
+  padding: 11px 14px;
+  border: 1px solid rgb(var(--mc-down-rgb) / .4);
+  border-radius: var(--mc-r-sm);
+  background: rgb(var(--mc-down-rgb) / .08);
+  font-size: 13px;
+  line-height: 1.5;
+  color: var(--mc-down);
+}
+.mcp-form-fine {
+  font-family: var(--mc-font-mono);
+  font-size: 10.5px;
+  line-height: 1.6;
+  color: var(--mc-text-faint);
+}
+
+/* ---- Sent ---------------------------------------------------------- */
+.mcp-sent {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 14px;
+  padding: clamp(30px, 4vw, 46px);
+  background: linear-gradient(180deg, rgb(var(--mc-up-rgb) / .1), var(--mc-bg-card) 60%);
+}
+.mcp-sent-mark {
+  display: grid;
+  place-items: center;
+  width: 42px;
+  height: 42px;
+  border: 1px solid rgb(var(--mc-up-rgb) / .45);
+  border-radius: var(--mc-r-pill);
+  background: rgb(var(--mc-up-rgb) / .12);
+  color: var(--mc-up);
+}
+.mcp-sent h2 {
+  font-size: clamp(22px, 2.2vw, 28px);
+  line-height: 1.15;
+  letter-spacing: -.03em;
+  font-weight: 600;
+}
+.mcp-sent p { max-width: 42ch; font-size: 14.5px; line-height: 1.65; color: var(--mc-text-muted); }
+.mcp-sent .mcp-cta-ghost { margin-top: 6px; background: transparent; cursor: pointer; font-family: inherit; }
+
+@media (max-width: 560px) {
+  .mcp-channel { grid-template-columns: auto minmax(0, 1fr); }
+  .mcp-channel-d { grid-column: 2; }
+  .mcp-sent .mcp-cta-ghost { width: 100%; }
+}

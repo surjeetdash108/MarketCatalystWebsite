@@ -11,7 +11,7 @@ export const dynamic = "force-dynamic";
 
 export const metadata: Metadata = {
   title: "Blog · MarketCatalyst",
-  description: "Daily recaps, single-stock research and guides to how the market actually works.",
+  description: "Daily recaps, research and guides to how the market actually works.",
   alternates: { canonical: "/posts" },
 };
 

@@ -18,11 +18,10 @@ import { useEffect, useRef } from "react";
 // It renders only the loader + progress chrome; everything else is
 // driven through the DOM by id/data-attribute.
 
-const DASH_W = 1440;
-const DASH_H = 900;
-/* Below this width the panels stop being sticky (see app/home.css), so the
-   stacking transforms are skipped too. */
-const STACK_MIN_WIDTH = 861;
+/* Stacking needs a viewport tall enough to see a card pinned against the one
+   sliding over it. Below this — a phone held in landscape, essentially — the
+   panels stay an ordinary vertical list. app/home.css matches this number. */
+const STACK_MIN_HEIGHT = 420;
 
 export function HomeMotion() {
   // Driven straight through the DOM rather than React state: the intro counter
@@ -30,6 +29,7 @@ export function HomeMotion() {
   // be pure waste.
   const loaderRef = useRef<HTMLDivElement | null>(null);
   const countRef = useRef<HTMLDivElement | null>(null);
+  const wordRef = useRef<HTMLDivElement | null>(null);
   const raf = useRef<number | null>(null);
 
   useEffect(() => {
@@ -66,52 +66,63 @@ export function HomeMotion() {
     if (reduce) {
       finish();
     } else {
+      /* The two colours the counter travels between are theme tokens, not
+         literals — read the `*-rgb` triples off :root once and interpolate
+         between them, so a re-brand in app/theme.css carries the loader with
+         it. If a triple is missing for any reason the ramp is simply skipped
+         and the counter keeps the colour the stylesheet gave it. */
+      const readTriple = (name: string) => {
+        const raw = getComputedStyle(d.documentElement).getPropertyValue(name).trim();
+        const parts = raw.split(/[\s,]+/).map(Number);
+        return parts.length === 3 && parts.every((n) => Number.isFinite(n)) ? parts : null;
+      };
+      const from = readTriple("--mc-down-rgb");
+      const to = readTriple("--mc-up-rgb");
+
       const t0 = performance.now();
-      const dur = 1500;
+      const dur = 2200;
       const tick = (t: number) => {
         const p = clamp01((t - t0) / dur);
         const e = 1 - Math.pow(1 - p, 2);
-        if (countRef.current) countRef.current.textContent = String(Math.round(e * 100)).padStart(3, "0");
+        if (countRef.current) {
+          countRef.current.textContent = String(Math.round(e * 100)).padStart(3, "0");
+          // Red at 000, green at 100: the counter reads like a ticker coming
+          // back up rather than a neutral progress number.
+          if (from && to) {
+            const mix = from.map((c, i) => Math.round(c + (to[i] - c) * e));
+            countRef.current.style.color = `rgb(${mix.join(" ")})`;
+          }
+        }
+        // The wordmark resolves out of a blur as the count fills, so the two
+        // read as one gesture. Blur and opacity only — the type never moves.
+        // An earlier pass also eased letter-spacing and scale, which made the
+        // word converge inwards from the sides; the letters are meant to sit
+        // still and simply come into focus.
+        if (wordRef.current) {
+          const s2 = wordRef.current.style;
+          s2.setProperty("--mc-word-blur", `${(1 - e) * 16}px`);
+          s2.setProperty("--mc-word-fade", String(0.25 + e * 0.75));
+          // The tagline shares the timing but never blurs — it only fades up,
+          // a beat behind the wordmark so it lands last.
+          s2.setProperty("--mc-tag-fade", String(clamp01((e - 0.15) / 0.85)));
+        }
         if (p < 1) raf.current = requestAnimationFrame(tick);
-        else timers.push(setTimeout(finish, 180));
+        else timers.push(setTimeout(finish, 320));
       };
       raf.current = requestAnimationFrame(tick);
       // Never trap the page behind the loader if a frame never lands.
-      timers.push(setTimeout(finish, 4200));
+      timers.push(setTimeout(finish, 5200));
     }
 
-    // ── 2. product shot: scale to fit ───────────────────────
+    // ── 2. hero spotlight (cursor, or finger on touch) ─────────────
+    // The backdrop used to be a DOM mock that had to be measured and
+    // transform-fitted to the stage on every resize. It is a photograph now,
+    // so `object-fit: cover` in app/home.css does that job and the fit pass is
+    // gone — this block only drives the reveal.
     const hero = d.querySelector<HTMLElement>(".mc-hero");
     const dash = d.getElementById("mc-dash");
     const veil = d.getElementById("mc-veil");
-    const dashInner = dash?.querySelector<HTMLElement>(".mcd") ?? null;
 
-    const fit = () => {
-      if (hero && dashInner) {
-        const r = hero.getBoundingClientRect();
-        /* Two fits, because the hero is a different shape on each.
-           On a laptop it is a wide 100vh stage and the mock is CONTAINED in
-           it, whole, sitting below the nav. On a phone the hero is a tall
-           column — containing a 16:10 mock there leaves a small panel adrift
-           in the middle of a very tall box, which is exactly the "separate
-           image" look this is meant to stop. So on touch it COVERS instead,
-           cropped and centred like any background image. */
-        const cover = !window.matchMedia("(pointer: fine)").matches;
-        const s = cover
-          ? Math.max(r.width / DASH_W, r.height / DASH_H)
-          : Math.min(r.width / DASH_W, (r.height - 110) / DASH_H);
-        const ox = (r.width - DASH_W * s) / 2;
-        const oy = cover
-          ? (r.height - DASH_H * s) / 2
-          : Math.max(96, (r.height - DASH_H * s) / 2 + 52);
-        dashInner.style.transform = `translate(${ox.toFixed(1)}px, ${oy.toFixed(1)}px) scale(${s.toFixed(4)})`;
-      }
-    };
-    fit();
-    window.addEventListener("resize", fit);
-    cleanups.push(() => window.removeEventListener("resize", fit));
-
-    // ── 2b. hero spotlight (cursor, or finger on touch) ─────────────
     if (dash && hero) {
       /* A cursor hovers; a finger does not. So on a touch screen the reveal is
          bound to the one gesture that exists there - press and drag - and
@@ -119,7 +130,7 @@ export function HomeMotion() {
          differs. The radius is smaller because it is a fraction of a phone,
          not of a laptop. */
       const fine = window.matchMedia("(pointer: fine)").matches;
-      const RADIUS = fine ? 430 : 300;
+      const RADIUS = fine ? 680 : 430;
       let pressed = false;
       let hx = 0;
       let hy = 0;
@@ -130,10 +141,22 @@ export function HomeMotion() {
       let target = 0;
       let spotRaf = 0;
 
+      /* Two separate things, easy to confuse: how MUCH is revealed, and how
+         far the reveal takes to die out.
+
+         The lit core is deliberately small - opacity is already halved by a
+         quarter of the radius - so only a modest patch of the photograph
+         reads clearly. Everything beyond it is tail: five more stops carrying
+         a faint wash out to the full radius, so the reveal dissolves instead
+         of ending. An earlier version held full opacity to 52% and stopped at
+         88%, which lit far more and still showed a rim.
+
+         Shrink the core by moving the 10%/22% stops down; lengthen the spread
+         by raising RADIUS. They are independent. */
       const paint = () => {
         const g = `radial-gradient(circle ${r2.toFixed(0)}px at ${hx.toFixed(0)}px ${hy.toFixed(
           0,
-        )}px, #000 52%, rgba(0,0,0,0.6) 72%, transparent 88%)`;
+        )}px, #000 0%, #000 12%, rgba(0,0,0,0.82) 24%, rgba(0,0,0,0.5) 40%, rgba(0,0,0,0.26) 58%, rgba(0,0,0,0.08) 80%, transparent 100%)`;
         dash.style.maskImage = g;
         dash.style.setProperty("-webkit-mask-image", g);
       };
@@ -147,7 +170,7 @@ export function HomeMotion() {
           hx = tx;
           hy = ty;
           dash.style.opacity = "1";
-          if (veil) veil.style.opacity = "0.45";
+          if (veil) veil.style.opacity = "0.22";
         }
         target = RADIUS;
       };
@@ -335,7 +358,7 @@ export function HomeMotion() {
       }
       if (nav) nav.classList.toggle("is-stuck", y > 40);
 
-      const stacking = window.innerWidth >= STACK_MIN_WIDTH;
+      const stacking = vh >= STACK_MIN_HEIGHT;
       if (panels.length && stacking) {
         // Sticky panels report their stuck position, so measure them once per
         // layout with position:static to get their true document offsets.
@@ -352,6 +375,25 @@ export function HomeMotion() {
             p.style.position = saved[i][0] || "sticky";
             p.style.transform = saved[i][1];
           });
+
+          /* Where each card pins, decided per card rather than by breakpoint.
+
+             A card SHORTER than the viewport pins near the top, which is the
+             desktop look. A card TALLER than the viewport cannot: pinning its
+             top would freeze it with its own bottom still below the fold, so
+             the reader never reaches the end of it before the next card slides
+             over. Those pin by their BOTTOM instead - a negative offset - so
+             the whole card has been read by the time it locks.
+
+             This is what lets the effect run on a phone at all; it used to be
+             switched off under 861px because a single `top` could not serve
+             both cases. */
+          const stickTop = vh * 0.12;
+          panels.forEach((p, i) => {
+            const h = geo?.[i].h ?? 0;
+            const fits = h <= vh - stickTop;
+            p.style.top = `${Math.round(fits ? stickTop : Math.min(stickTop, vh - h - 12))}px`;
+          });
         }
         panels.forEach((p, i) => {
           const next = geo?.[i + 1];
@@ -366,13 +408,14 @@ export function HomeMotion() {
           p.style.filter = `brightness(${(1 - overlap * 0.3).toFixed(3)})`;
         });
       } else if (panels.length) {
-        // Below the sticky breakpoint: drop every inline override so the
-        // stylesheet's plain vertical list takes over cleanly.
+        // Too short to stack: drop every inline override so the stylesheet's
+        // plain vertical list takes over cleanly.
         geo = null;
         panels.forEach((p) => {
           p.style.transform = "";
           p.style.filter = "";
           p.style.position = "";
+          p.style.top = "";
         });
       }
 
@@ -418,10 +461,16 @@ export function HomeMotion() {
   return (
     <>
       <div className="mc-loader" ref={loaderRef} aria-hidden="true">
-        <div className="mc-loader-meta">
-          <div>MarketCatalyst</div>
-          <span>Establishing session</span>
+        <div className="mc-loader-centre" ref={wordRef}>
+          <div className="mc-loader-word">
+            <span>Market</span>
+            <b>Catalyst</b>
+          </div>
+          <p className="mc-loader-tag">
+            Stock Market Research Platform, <em>powered by AI</em>
+          </p>
         </div>
+        <div className="mc-loader-status">Establishing session.</div>
         <div className="mc-loader-count" ref={countRef}>
           000
         </div>

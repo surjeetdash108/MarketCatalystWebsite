@@ -1,100 +1,72 @@
 "use client";
 
-import Link from "next/link";
-import { BrandLogo } from "@/components/admin/BrandLogo";
-import { BlogThemeProvider, useBlogTheme } from "./theme-context";
-// Scoped to an ARTICLE page, not to /posts. The index page carries its own template
-// (header, masthead, footer) and would have rendered inside a second header
-// otherwise; the ARTICLE page is what wants this shell.
-//
-// Reuse the app's dark surface + the admin table/panel classes so the public
-// blog matches the /admin/posts look. admin.css is scoped under .iq-root, so
-// importing it here only affects this subtree.
-import "../admin/admin.css";
+import { SiteNav } from "@/components/chrome/SiteNav";
+import { SiteFooter } from "@/components/chrome/SiteFooter";
+import { useEtClock, useScrollChrome } from "@/components/chrome/chrome-hooks";
 
-/* Neutral WHITE light palette for the article page.
-   Was the board's warm off-white (#f4f0e8). That cream is right for the board,
-   which is a designed index of cards — but an article page is a ground for
-   someone else's document, and a warm tint behind a design drawn on white read
-   as a mistake, not a choice. Applies to the ARTICLE routes only
-   (/posts/[slug], /posts/view); the board keeps its own palette. */
-const LIGHT_VARS: React.CSSProperties = {
-  colorScheme: "light",
-  ["--bg" as string]: "#ffffff",
-  ["--surface-0" as string]: "#f7f7f8",
-  ["--surface-1" as string]: "#ffffff",
-  ["--surface-2" as string]: "#f4f4f5",
-  ["--border" as string]: "#e6e6e9",
-  ["--border-soft" as string]: "#efeff1",
-  ["--border-strong" as string]: "#d4d4d8",
-  ["--text-hi" as string]: "#18181b",
-  ["--text" as string]: "#3f3f46",
-  ["--text-dim-solid" as string]: "#71717a",
-};
-
-// Warm DARK palette mirroring the blog board's dark theme (blog-board.css
-// `.mcb` defaults), mapped onto admin.css var names — so the whole page
-// (header + background below the board) matches the board when dark.
-const DARK_VARS: React.CSSProperties = {
-  colorScheme: "dark",
-  ["--bg" as string]: "#14110e",
-  ["--surface-0" as string]: "#181310",
-  ["--surface-1" as string]: "#1d1815",
-  ["--surface-2" as string]: "#181310",
-  ["--border" as string]: "#2c2520",
-  ["--border-soft" as string]: "#2c2520",
-  ["--border-strong" as string]: "#3e332b",
-  ["--text-hi" as string]: "#fdf8f1",
-  ["--text" as string]: "#ede5da",
-  ["--text-dim-solid" as string]: "#a3958a",
-};
-
+/**
+ * The chrome an article page sits in: the site's own surface, nav and footer.
+ *
+ * It used to carry a private header built from the ADMIN console's stylesheet,
+ * with two hand-written palettes (a neutral white, and a warm #14110e dark
+ * from the old blog board) mapped onto admin.css variable names. That made the
+ * public article the only page on the site not drawn from app/theme.css, and
+ * it drifted every time the palette moved. Now it is the same shell as
+ * everywhere else, so the background, the nav and the light/dark toggle are
+ * the landing page's, by construction rather than by copying values across.
+ *
+ * What is deliberately NOT touched is the article itself. The document keeps
+ * its own structure and its own stylesheet (blog-doc.css, plus whatever CSS
+ * the uploaded post carries), which is entirely self-contained: every token it
+ * uses is declared on `.mc-doc` and switched by a `[data-theme="dark"]`
+ * ancestor. `.mc-page` below is that ancestor, so the post follows the
+ * reader's choice exactly as it did before — the chrome changed, the
+ * typesetting did not.
+ */
 function PostsShell({ children }: { children: React.ReactNode }) {
-  const { theme } = useBlogTheme();
-  const light = theme === "light";
+  // The nav's scrolled state and the footer's ET clock; the same two hooks the
+  // board and the reading pages use.
+  useScrollChrome();
+  useEtClock();
+
   return (
-    <div
-      className="iq-root"
-      data-theme={theme}
-      style={{
-        minHeight: "100vh", height: "auto", overflow: "visible",
-        background: "var(--bg)", color: "var(--text)",
-        ...(light ? LIGHT_VARS : DARK_VARS),
-      } as React.CSSProperties}
-    >
-      <header
-        style={{
-          display: "flex", alignItems: "center", gap: 16,
-          padding: "16px 26px", borderBottom: "1px solid var(--border)",
-          position: "sticky", top: 0, zIndex: 10,
-          background: "color-mix(in srgb, var(--bg) 92%, transparent)",
-          backdropFilter: "blur(8px)",
-          flexWrap: "wrap",
-        }}
-      >
-        <Link href="/" style={{ display: "inline-flex" }} aria-label="MarketCatalyst home">
-          <BrandLogo height={24} />
-        </Link>
-        {/* "Blogs" omitted — we're already on the blog page. Theme toggle lives
-            in the blog board's masthead (shared via BlogThemeProvider). */}
-        <nav style={{ marginLeft: "auto", display: "flex", gap: 18, alignItems: "center" }}>
-          <Link href="/" className="hw-ghost">Home</Link>
-          <Link href="/about" className="hw-ghost">About us</Link>
-        </nav>
-      </header>
-      {/* No padding here: the /posts board is full-bleed (owns its own padding);
-          content pages like /posts/view add their own via .posts-page-pad. */}
-      <main style={{ width: "100%" }}>
-        {children}
-      </main>
+    /* Locked to the light palette, deliberately.
+
+       An article page is a ground for someone else's document, and those
+       documents are light by construction: blog-doc.css gives .mc-doc a white
+       surface and a near-black --doc-ink with no dark counterpart, and the
+       uploaded post designs are drawn on white. The shell this replaces
+       hardcoded `light` too and never rendered a toggle on this route, so light
+       is the only state these documents have ever been rendered in.
+
+       It cannot be solved by nesting a light scope inside a dark page either:
+       `[data-theme="dark"] .something` matches on ANY ancestor, so a post's own
+       dark rules still fire from the page wrapper however close a light scope
+       sits — and with arbitrary uploaded CSS there is no reliable way to
+       out-specify that. Locking the route is the honest fix; supporting dark
+       means giving the documents real dark blocks, which is a separate job.
+
+       What DOES come from the site's design is everything around the document:
+       this is .mc-page on app/theme.css tokens with the landing page's nav and
+       footer, instead of the old private header built from the admin console's
+       stylesheet. */
+    <div className="mc-page" data-theme="light">
+      <div className="mc-prog" aria-hidden="true">
+        <i id="mc-prog-bar" />
+      </div>
+
+      {/* No toggle: it would promise a dark article the documents cannot honour. */}
+      <SiteNav active="blogs" />
+
+      {/* Padded because the site nav is position:fixed, where the old article
+          header sat in flow and reserved the space itself. */}
+      <main className="mc-article">{children}</main>
+
+      <SiteFooter />
     </div>
   );
 }
 
 export default function ArticleShellLayout({ children }: { children: React.ReactNode }) {
-  return (
-    <BlogThemeProvider>
-      <PostsShell>{children}</PostsShell>
-    </BlogThemeProvider>
-  );
+  return <PostsShell>{children}</PostsShell>;
 }

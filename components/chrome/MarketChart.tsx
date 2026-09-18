@@ -166,7 +166,7 @@ export function MarketChart({
       {/* The same strip the product puts under every view: what moved, and
           why, over the figures that are already on screen. */}
       <figcaption className="mcp-read">
-        <b>ai read</b>
+        <b>AI read</b>
         <span>{read}</span>
       </figcaption>
     </figure>

@@ -77,7 +77,7 @@ export function WorkspacePanel({ w }: { w: Workspace }) {
             {/* aria-live so a screen reader hears the read change when the
                 tab does — otherwise the whole demonstration is silent. */}
             <div className="mc-read" aria-live="polite">
-              <b>◆ ai read · </b>
+              <b>◆ AI read · </b>
               {tab.read}
               <i />
             </div>

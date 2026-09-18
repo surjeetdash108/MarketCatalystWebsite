@@ -179,7 +179,7 @@ export const workspaces: Workspace[] = [
     num: "02",
     name: "Earnings",
     tag: "10 qtrs",
-    title: "Surprise history, kept in context.",
+    title: "Earnings surprises, kept in context.",
     body: "Ten quarters of reported history per name, with surprise and revision series computed in-house from the normalised record.",
     metrics: [
       { k: "EPS SURP", v: "+8.4%", tone: "up" },
@@ -235,7 +235,7 @@ export const workspaces: Workspace[] = [
   },
   {
     num: "03",
-    name: "Analysts",
+    name: "Analyst Rating",
     tag: "clustered",
     title: "Conviction, not a rating average.",
     body: "Ratings and targets clustered by conviction and recency, so a crowded consensus reads differently from a contested one.",
@@ -246,7 +246,7 @@ export const workspaces: Workspace[] = [
     ],
     spark: spark(9, 1),
     win: {
-      title: "analysts",
+      title: "analyst rating",
       stamp: "30d window",
       tabs: [
         {

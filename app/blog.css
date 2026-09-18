@@ -24,11 +24,13 @@
 }
 .mcb-inner { max-width: var(--mc-maxw); margin: 0 auto; }
 .mcb-h1 {
-  /* Two lines by default. This is a 79-character sentence: measured, it runs
-     34.25x its own font-size wide, so putting it on one line inside the
-     1320px measure caps the type at ~37px. That is the trade — a single line
-     costs roughly half the size. Below 1000px one line would fall under 26px,
-     smaller than the standfirst beneath it, so there it wraps. */
+  /* Two lines by default; one line from 1000px up (below that it would fall
+     under ~30px, smaller than the standfirst beneath it).
+
+     Measured: this sentence runs 28.54x its own font-size wide, so one line
+     inside the 1320px measure caps the type at ~45px. Re-measure if the
+     wording changes — dropping "single-stock" from it moved the ratio from
+     34.25 to 28.54, which is 8px of headline. */
   max-width: 30ch;
   font-size: clamp(33.6px, 5.4vw, 70.4px);
   line-height: .98;
@@ -41,7 +43,7 @@
     /* 0.92vw is the measure below 1428px; past that it is a flat 1320px and
        the cap takes over. Both leave ~4% for the fallback stack. */
     max-width: none;
-    font-size: min(2.55vw, 37px);
+    font-size: min(3.05vw, 44px);
     white-space: nowrap;
     text-wrap: nowrap;
   }

@@ -335,7 +335,7 @@ export function BlogIndex({
       <section className="mcb-head">
         <div className="mcb-inner">
           <h1 className="mcb-h1 mc-rev">
-            Daily recaps, single-stock research and guides to how the market{" "}
+            Daily recaps, research and guides to how the market{" "}
             <span className="mc-serif">actually works.</span>
           </h1>
 
