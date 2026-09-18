@@ -46,7 +46,7 @@ const FAQS: Array<{ question: string; answer: string }> = [
   {
     question: "How current is the data?",
     answer:
-      'The top-line index strip and most panels reflect live or end-of-day market data, and the "What Matters Now" digest refreshes on a rolling basis throughout the trading day. Some panels display a data-source label (for example "live · Polygon") indicating where the numbers come from.',
+      'The top-line index strip and most panels reflect live or end-of-day market data, and the "What Matters Now" digest refreshes on a rolling basis throughout the trading day. Each panel indicates whether the figures it is showing are live or end-of-day.',
   },
   {
     question: "Can I switch between light and dark mode?",
