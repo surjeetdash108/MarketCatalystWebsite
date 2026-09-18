@@ -2,6 +2,9 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound, redirect } from "next/navigation";
 import { getFaqById } from "@/lib/faq/faqs";
+import { ReaderShell } from "@/components/chrome/ReaderShell";
+import { APP_SIGNUP_URL } from "@/components/marketing/app-url";
+import "../../pages.css";
 
 function firstParam(v: string | string[] | undefined): string | undefined {
   return Array.isArray(v) ? v[0] : v;
@@ -23,6 +26,9 @@ export async function generateMetadata({
   };
 }
 
+// A single answer, deep-linkable. Same chrome as the board it came from —
+// this used to sit on the admin console's surface, which made a public page
+// look like someone's back office.
 export default async function FaqViewPage({
   searchParams,
 }: {
@@ -35,17 +41,33 @@ export default async function FaqViewPage({
   if (!faq) notFound();
 
   return (
-    <div className="flex flex-col gap-4">
-      <div>
-        <Link href="/faqs" className="btn sm">← All FAQs</Link>
-      </div>
+    <ReaderShell active="faqs">
+      <main>
+        <section className="mcp-hero">
+          <div className="mcp-glow" aria-hidden="true">
+            <i />
+            <i />
+            <i />
+          </div>
 
-      <article className="a-panel" style={{ padding: 24 }}>
-        <h1 className="a-h1" style={{ fontSize: "1.5rem", lineHeight: 1.3 }}>{faq.question}</h1>
-        <div style={{ marginTop: 16, whiteSpace: "pre-wrap", lineHeight: 1.7, color: "var(--text)" }}>
-          {faq.answer}
-        </div>
-      </article>
-    </div>
+          <div className="mcp-inner" style={{ maxWidth: 820 }}>
+            <Link className="mcp-back mc-rev" href="/faqs">
+              <i>←</i> All FAQs
+            </Link>
+            <h1 className="mcp-h1 mcp-h1-sm mc-rev">{faq.question}</h1>
+            <div className="mcp-answer mc-rev mc-rev-sm">{faq.answer}</div>
+
+            <div className="mcp-actions mc-rev mc-rev-sm">
+              <a className="mcp-cta" href={APP_SIGNUP_URL}>
+                Open the terminal <i>→</i>
+              </a>
+              <Link className="mcp-cta-ghost" href="/contact">
+                Ask something else
+              </Link>
+            </div>
+          </div>
+        </section>
+      </main>
+    </ReaderShell>
   );
 }

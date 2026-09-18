@@ -1,0 +1,179 @@
+/* ============================================================
+   MARKETCATALYST — GLOBAL THEME TOKENS
+   ============================================================
+   THE single source of truth for the marketing site's colour,
+   type and shape palette. Nothing below this file should ever
+   hard-code a hex value: every stylesheet and component reads
+   these variables instead, so a re-brand is a one-file edit.
+
+   Naming
+     --mc-bg-*      surfaces, darkest -> lightest
+     --mc-line-*    borders / hairlines
+     --mc-text-*    foreground ramp, brightest -> faintest
+     --mc-up/down   market direction (green / red)
+     --mc-accent    the brand green used for CTAs + highlights
+
+   Tints
+     Accent colours also ship an `*-rgb` triple so transparent
+     washes can be composed as `rgb(var(--mc-up-rgb) / .06)`.
+     Change the triple once and every tint follows it.
+   ============================================================ */
+
+:root {
+  /* ---- Surfaces ---------------------------------------------------- */
+  --mc-bg: #07080A;          /* page base */
+  --mc-bg-rgb: 7 8 10;
+  --mc-bg-raised: #090A0C;   /* tape strip, footer */
+  --mc-bg-panel: #0A0C0F;    /* hud cells, dashboard shell */
+  --mc-bg-card: #0B0D10;     /* cards, window mocks */
+  --mc-bg-card-alt: #0B0E12; /* dashboard tiles */
+  --mc-bg-hover: #0E1013;    /* row + cell hover, panel top stop */
+  --mc-bg-deep: #08090B;     /* panel bottom stop */
+  --mc-bg-sidebar: #090A0C;  /* dashboard rail */
+  --mc-bg-track: #161B1F;    /* meter tracks */
+
+  /* ---- Lines ------------------------------------------------------- */
+  --mc-line: #1C2127;        /* default hairline */
+  --mc-line-strong: #2A3037; /* raised window chrome */
+  --mc-line-soft: #14181B;   /* table row separators */
+  --mc-line-nav: #141719;    /* nav border once stuck */
+  --mc-line-idx: #3E4DB8;    /* highlighted index tile */
+
+  /* ---- Foreground -------------------------------------------------- */
+  --mc-text: #F4F6F5;        /* headings / primary */
+  --mc-text-1: #E4E9E6;      /* table primary cells */
+  --mc-text-2: #C6CDC9;      /* feature list */
+  --mc-text-3: #B9C2BD;      /* ai read copy */
+  --mc-text-4: #A6AEB5;      /* dashboard body copy */
+  --mc-text-muted: #8B939C;  /* secondary / labels */
+  --mc-text-faint: #6C747C;  /* meta, legal, column heads */
+
+  /* ---- Market direction + accents ---------------------------------- */
+  --mc-up: #4ADE80;
+  --mc-up-rgb: 74 222 128;
+  --mc-up-soft: #A7F3C0;     /* hover state of the green CTA */
+  --mc-down: #F87171;
+  --mc-down-rgb: 248 113 113;
+  --mc-amber: #F5B544;
+  --mc-amber-rgb: 245 181 68;
+  --mc-info: #8FB8F5;        /* editorial 'Educational' tag */
+  --mc-info-rgb: 143 184 245;
+  --mc-on-accent: #07080A;   /* text sitting on --mc-up */
+  --mc-spark-idle: #223027;  /* unhighlighted spark bars */
+
+  /* ---- Heatmap ramp (dashboard mock) ------------------------------- */
+  --mc-heat-up-1: #3FBF6E;
+  --mc-heat-up-2: #4CC377;
+  --mc-heat-up-3: #57C882;
+  --mc-heat-up-4: #5FCB87;
+  --mc-heat-up-5: #6FCF91;
+  --mc-heat-up-6: #78D398;
+  --mc-heat-up-7: #7BD59B;
+  --mc-heat-dn-1: #E86A6A;
+  --mc-heat-dn-2: #E86E6E;
+  --mc-heat-dn-3: #E97676;
+  --mc-heat-dn-4: #E97878;
+  --mc-heat-dn-5: #EB8080;
+  --mc-heat-dn-6: #EC8585;
+  --mc-heat-dn-7: #EE9090;
+
+  /* ---- Brand tile gradients (dashboard mock avatars) ---------------- */
+  --mc-logo-grad: linear-gradient(135deg, var(--mc-up), #1F7A46);
+  --mc-tile-1: linear-gradient(135deg, #76B900, #3C6000);
+  --mc-tile-2: linear-gradient(135deg, #2E8FD6, #1B5680);
+  --mc-tile-3: linear-gradient(135deg, #F0A33C, #8A5A15);
+  --mc-tile-4: linear-gradient(135deg, #4285F4, #1E4FA8);
+  --mc-tile-5: linear-gradient(135deg, #0866FF, #003C9E);
+  --mc-tile-6: linear-gradient(135deg, #F0663C, #8A2E15);
+  --mc-tile-7: linear-gradient(135deg, #C9A227, #7A5F10);
+  --mc-tile-8: linear-gradient(135deg, #F07B3C, #8A3E15);
+  --mc-tile-9: linear-gradient(135deg, #2FB6A8, #155F58);
+
+  /* ---- Type -------------------------------------------------------- */
+  --mc-font-display: var(--font-space-grotesk, 'Space Grotesk', system-ui, sans-serif);
+  --mc-font-mono: var(--font-ibm-plex-mono, 'IBM Plex Mono', ui-monospace, monospace);
+  --mc-font-serif: var(--font-newsreader, 'Newsreader', Georgia, serif);
+
+  /* ---- Shape + depth ----------------------------------------------- */
+  --mc-r-xs: 5px;
+  --mc-r-sm: 7px;
+  --mc-r: 10px;
+  --mc-r-md: 14px;
+  --mc-r-lg: 18px;
+  --mc-r-xl: 20px;
+  --mc-r-pill: 99px;
+  --mc-shadow-panel: 0 -20px 70px rgb(0 0 0 / .5);
+  --mc-shadow-window: 0 18px 50px rgb(0 0 0 / .45);
+  --mc-shadow-modal: 0 40px 120px rgb(0 0 0 / .7);
+
+  /* ---- Layout ------------------------------------------------------ */
+  --mc-gutter: clamp(18px, 4vw, 54px);
+  --mc-maxw: 1320px;
+}
+
+/* ============================================================
+   LIGHT THEME
+   ============================================================
+   Every token above, re-stated for a light surface. Nothing
+   else in the codebase changes: the palette IS the theme, so a
+   component written against the tokens themes itself.
+
+   Applied by ATTRIBUTE, so it works wherever it is set:
+     <html data-theme="light">     -> the whole site
+     <div class="mcb-page" data-theme="light">  -> one page
+
+   The blog sets it on its own page wrapper rather than on
+   <html>, so the reader's choice can't repaint the landing
+   page's dark terminal mock behind their back.
+   ============================================================ */
+
+[data-theme="light"] {
+  /* ---- Surfaces ---------------------------------------------------- */
+  --mc-bg: #FAFAF8;
+  --mc-bg-rgb: 250 250 248;
+  --mc-bg-raised: #F2F3F0;
+  --mc-bg-panel: #FFFFFF;
+  --mc-bg-card: #FFFFFF;
+  --mc-bg-card-alt: #F4F6F3;
+  --mc-bg-hover: #F4F6F3;
+  --mc-bg-deep: #FFFFFF;
+  --mc-bg-sidebar: #F2F3F0;
+  --mc-bg-track: #E4E7E1;
+
+  /* ---- Lines ------------------------------------------------------- */
+  --mc-line: #DFE2DC;
+  --mc-line-strong: #CBD1C6;
+  --mc-line-soft: #EBEDE8;
+  --mc-line-nav: #E3E6E0;
+
+  /* ---- Foreground -------------------------------------------------- */
+  --mc-text: #12151A;
+  --mc-text-1: #1C2127;
+  --mc-text-2: #2F363D;
+  --mc-text-3: #2F363D;
+  --mc-text-4: #454C54;
+  --mc-text-muted: #5C646C;
+  --mc-text-faint: #78818A;
+
+  /* ---- Market direction + accents ----------------------------------
+     The green darkens rather than brightens: #4ADE80 on paper is
+     unreadable, and -soft is the HOVER state, so on light it has to
+     go further from the background, not closer. */
+  --mc-up: #15803D;
+  --mc-up-rgb: 21 128 61;
+  --mc-up-soft: #166534;
+  --mc-down: #B91C1C;
+  --mc-down-rgb: 185 28 28;
+  --mc-amber: #A9760A;
+  --mc-amber-rgb: 169 118 10;
+  --mc-info: #2563EB;
+  --mc-info-rgb: 37 99 235;
+  --mc-on-accent: #FFFFFF;
+  --mc-spark-idle: #D9E4DC;
+
+  /* ---- Depth ------------------------------------------------------
+     Near-black shadows read as dirt on a light surface. */
+  --mc-shadow-panel: 0 -20px 70px rgb(18 21 26 / .08);
+  --mc-shadow-window: 0 18px 50px rgb(18 21 26 / .1);
+  --mc-shadow-modal: 0 40px 120px rgb(18 21 26 / .18);
+}
