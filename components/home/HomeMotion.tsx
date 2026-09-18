@@ -85,8 +85,6 @@ export function HomeMotion() {
     const dash = d.getElementById("mc-dash");
     const veil = d.getElementById("mc-veil");
     const dashInner = dash?.querySelector<HTMLElement>(".mcd") ?? null;
-    const shotFrame = d.getElementById("mc-shot-frame");
-    const shotInner = shotFrame?.querySelector<HTMLElement>(".mcd") ?? null;
 
     const fit = () => {
       if (hero && dashInner) {
@@ -96,24 +94,21 @@ export function HomeMotion() {
         const oy = Math.max(96, (r.height - DASH_H * s) / 2 + 52);
         dashInner.style.transform = `translate(${ox.toFixed(1)}px, ${oy.toFixed(1)}px) scale(${s.toFixed(4)})`;
       }
-      if (shotFrame && shotInner) {
-        const w = shotFrame.clientWidth;
-        if (w > 0) {
-          const s = w / DASH_W;
-          // offsetHeight is the pre-transform layout height, so it reports the
-          // mock's natural height (height:auto in the strip) rather than 900.
-          const natural = shotInner.offsetHeight || DASH_H;
-          shotInner.style.transform = `scale(${s.toFixed(4)})`;
-          shotFrame.style.height = `${Math.round(natural * s)}px`;
-        }
-      }
     };
     fit();
     window.addEventListener("resize", fit);
     cleanups.push(() => window.removeEventListener("resize", fit));
 
-    // ── 2b. hero spotlight (fine pointers only) ─────────────
-    if (dash && hero && window.matchMedia("(pointer: fine)").matches) {
+    // ── 2b. hero spotlight (cursor, or finger on touch) ─────────────
+    if (dash && hero) {
+      /* A cursor hovers; a finger does not. So on a touch screen the reveal is
+         bound to the one gesture that exists there - press and drag - and
+         released on lift. Same mask, same easing, same blur; only the trigger
+         differs. The radius is smaller because it is a fraction of a phone,
+         not of a laptop. */
+      const fine = window.matchMedia("(pointer: fine)").matches;
+      const RADIUS = fine ? 430 : 300;
+      let pressed = false;
       let hx = 0;
       let hy = 0;
       let tx = 0;
@@ -142,7 +137,7 @@ export function HomeMotion() {
           dash.style.opacity = "1";
           if (veil) veil.style.opacity = "0.45";
         }
-        target = 430;
+        target = RADIUS;
       };
       const onLeave = () => {
         target = 0;
@@ -151,8 +146,38 @@ export function HomeMotion() {
         if (veil) veil.style.opacity = "1";
       };
 
-      hero.addEventListener("pointermove", onMove, { passive: true });
-      hero.addEventListener("pointerleave", onLeave);
+      /* All passive: the spotlight never calls preventDefault, so dragging
+         across the hero still scrolls the page as it should.
+
+         That scroll is also why the reveal LINGERS on touch instead of
+         releasing on lift. The moment the browser decides a drag is a scroll
+         it fires pointercancel and stops sending moves, so a release-on-lift
+         reveal blinks out the instant you try to look at it. Holding it for a
+         beat afterwards also makes a plain tap worth something, which is the
+         gesture most people will try first. */
+      const LINGER_MS = 1600;
+      let hideTimer: ReturnType<typeof setTimeout> | null = null;
+      const cancelHide = () => {
+        if (hideTimer) clearTimeout(hideTimer);
+        hideTimer = null;
+      };
+      const onDown = (e: PointerEvent) => { pressed = true; cancelHide(); onMove(e); };
+      const onUp = () => {
+        pressed = false;
+        cancelHide();
+        hideTimer = setTimeout(onLeave, LINGER_MS);
+      };
+      const onDrag = (e: PointerEvent) => { if (pressed) onMove(e); };
+
+      if (fine) {
+        hero.addEventListener("pointermove", onMove, { passive: true });
+        hero.addEventListener("pointerleave", onLeave);
+      } else {
+        hero.addEventListener("pointerdown", onDown, { passive: true });
+        hero.addEventListener("pointermove", onDrag, { passive: true });
+        hero.addEventListener("pointerup", onUp, { passive: true });
+        hero.addEventListener("pointercancel", onUp, { passive: true });
+      }
 
       const loop = () => {
         hx += (tx - hx) * 0.16;
@@ -165,8 +190,13 @@ export function HomeMotion() {
 
       cleanups.push(() => {
         cancelAnimationFrame(spotRaf);
+        cancelHide();
         hero.removeEventListener("pointermove", onMove);
         hero.removeEventListener("pointerleave", onLeave);
+        hero.removeEventListener("pointerdown", onDown);
+        hero.removeEventListener("pointermove", onDrag);
+        hero.removeEventListener("pointerup", onUp);
+        hero.removeEventListener("pointercancel", onUp);
       });
     }
 

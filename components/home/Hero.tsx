@@ -5,8 +5,11 @@ import { HeroHud } from "./HeroHud";
 export function Hero() {
   return (
     <section className="mc-hero" id="mc-top">
-      {/* Desktop: the product shot sits behind the copy and is revealed under a
-          spotlight that tracks the cursor (see HomeMotion.tsx). */}
+      {/* The product shot behind the copy, revealed under a spotlight that
+          follows the cursor on a laptop and the finger on a touch screen
+          (see HomeMotion.tsx). It used to be duplicated below as a static
+          framed strip on touch devices, which read as a screenshot pasted
+          into the page rather than as the hero's own backdrop. */}
       <div className="mc-dash" id="mc-dash" aria-hidden="true">
         <DashboardMock />
       </div>
@@ -42,18 +45,6 @@ export function Hero() {
               <a className="mc-cta" href={APP_SIGNUP_URL}>
                 Get me inside <i>→</i>
               </a>
-            </div>
-          </div>
-
-          {/* Touch devices can't hover a spotlight, so the same shot is shown
-              here as a static strip instead (CSS swaps the two). */}
-          <div className="mc-shot" aria-hidden="true">
-            <div className="mc-shot-frame" id="mc-shot-frame">
-              <DashboardMock />
-            </div>
-            <div className="mc-shot-cap">
-              <i />
-              <span>Live terminal · 14 workspaces</span>
             </div>
           </div>
         </div>

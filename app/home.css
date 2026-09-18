@@ -992,48 +992,11 @@
   .mc-stack-meta { align-items: flex-start; }
 }
 
-/* Coarse pointers (tablet + phone) can't hover a spotlight, so the product
-   shot is shown as a static, scroll-revealed strip under the hero copy
-   instead of being hidden behind a cursor mask. */
-@media (hover: none), (pointer: coarse) {
-  .mc-dash, .mc-veil { display: none; }
-}
-.mc-shot {
-  display: none;
-  position: relative;
-  margin-top: clamp(26px, 5vh, 44px);
-  border: 1px solid var(--mc-line-strong);
-  border-radius: var(--mc-r-md);
-  background: var(--mc-bg-panel);
-  overflow: hidden;
-  box-shadow: var(--mc-shadow-window);
-}
-.mc-shot-frame { position: relative; width: 100%; overflow: hidden; }
-.mc-shot-frame .mcd {
-  /* The hero spotlight needs the full 900px stage; the static strip should hug
-     its content instead, or it trails ~200px of dead black. HomeMotion reads
-     this natural height back and sizes the frame to it. */
-  height: auto;
-  filter: brightness(1.12) saturate(1.05);
-}
-.mc-shot-cap {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  padding: 10px 14px;
-  border-top: 1px solid var(--mc-line);
-  font-family: var(--mc-font-mono);
-  font-size: 9.5px;
-  letter-spacing: .14em;
-  text-transform: uppercase;
-  color: var(--mc-text-faint);
-  background: var(--mc-bg-raised);
-}
-.mc-shot-cap i { display: block; width: 6px; height: 6px; border-radius: var(--mc-r-pill); background: var(--mc-up); }
-@media (hover: none), (pointer: coarse) {
-  .mc-shot { display: block; }
-}
-
+/* The product shot is a backdrop on every device. Coarse pointers cannot
+   hover, so on phone and tablet the spotlight follows a FINGER instead of a
+   cursor — press and drag over the hero and the terminal is revealed under
+   it, the same reveal, driven by the one gesture a touch screen has.
+   See HomeMotion.tsx. */
 @media (max-width: 860px) {
   /* Sticky stacking needs viewport headroom the phone doesn't have — the
      panels become an ordinary vertical list (HomeMotion skips the scale
