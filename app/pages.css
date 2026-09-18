@@ -1,0 +1,583 @@
+/* ============================================================
+   MARKETCATALYST — ABOUT + FAQs
+   ============================================================
+   Namespaced mcp-* so it can never collide with the landing
+   page's mc-*, the blog's mcb-*, or the older hw-* / mq-*
+   rules in landing.css. Shell, nav, footer and the reveal /
+   highlight / theme-switch primitives come from chrome.css —
+   this file is only what these two pages add.
+
+   COLOUR RULE: not one hex lives in this file. Every colour is
+   a token from app/theme.css — re-brand there, once, and the
+   light theme follows automatically.
+
+   SIZE RULE: sizes in px against the design's 16px root, since
+   globals.css runs the site at 112.5% for readability.
+   ============================================================ */
+
+/* ---- Keyframes --------------------------------------------------- */
+@keyframes mcpDrift {
+  0%   { transform: translate3d(0, 0, 0) scale(1); }
+  50%  { transform: translate3d(3%, -4%, 0) scale(1.08); }
+  100% { transform: translate3d(0, 0, 0) scale(1); }
+}
+
+/* ---- Layout ------------------------------------------------------ */
+.mcp-inner { position: relative; z-index: 1; max-width: var(--mc-maxw); margin: 0 auto; }
+.mcp-sec { position: relative; padding: clamp(46px, 8vh, 96px) var(--mc-gutter); }
+.mcp-sec + .mcp-sec { border-top: 1px solid var(--mc-line); }
+
+/* ---- Blurred gradient field --------------------------------------
+   Three soft blooms behind the hero. Purely decorative, so they are
+   pointer-transparent and sit under everything; `overflow: clip` on
+   .mc-page keeps them from widening the document. */
+.mcp-glow {
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+  pointer-events: none;
+  z-index: 0;
+}
+.mcp-glow i {
+  position: absolute;
+  display: block;
+  border-radius: var(--mc-r-pill);
+  filter: blur(90px);
+  will-change: transform;
+}
+.mcp-glow i:nth-child(1) {
+  width: 620px; height: 620px; top: -230px; left: -140px;
+  background: radial-gradient(circle, rgb(var(--mc-up-rgb) / .3), transparent 70%);
+  animation: mcpDrift 22s ease-in-out infinite;
+}
+.mcp-glow i:nth-child(2) {
+  width: 520px; height: 520px; top: -120px; right: -120px;
+  background: radial-gradient(circle, rgb(var(--mc-info-rgb) / .22), transparent 70%);
+  animation: mcpDrift 28s ease-in-out infinite reverse;
+}
+.mcp-glow i:nth-child(3) {
+  width: 460px; height: 460px; bottom: -220px; left: 42%;
+  background: radial-gradient(circle, rgb(var(--mc-amber-rgb) / .16), transparent 70%);
+  animation: mcpDrift 34s ease-in-out infinite;
+}
+/* On paper the same blooms read as stains rather than light. */
+[data-theme="light"] .mcp-glow i { filter: blur(110px); opacity: .5; }
+
+/* ---- Hero -------------------------------------------------------- */
+.mcp-hero {
+  position: relative;
+  padding: clamp(112px, 16vh, 168px) var(--mc-gutter) clamp(40px, 7vh, 86px);
+  overflow: hidden;
+}
+.mcp-hero-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 340px), 1fr));
+  gap: clamp(30px, 5vw, 72px);
+  align-items: center;
+}
+.mcp-kicker {
+  display: inline-flex;
+  align-items: center;
+  gap: 9px;
+  font-family: var(--mc-font-mono);
+  font-size: 11px;
+  font-weight: 500;
+  letter-spacing: .22em;
+  text-transform: uppercase;
+  color: var(--mc-up);
+}
+.mcp-kicker i {
+  display: block;
+  width: 5px;
+  height: 5px;
+  border-radius: var(--mc-r-pill);
+  background: var(--mc-up);
+  animation: mcBlink 2s infinite;
+}
+.mcp-h1 {
+  margin-top: 22px;
+  max-width: 18ch;
+  font-size: clamp(40px, 5vw, 76px);
+  line-height: .98;
+  letter-spacing: -.045em;
+  font-weight: 600;
+  text-wrap: balance;
+}
+.mcp-lede {
+  margin-top: 24px;
+  max-width: 62ch;
+  font-size: clamp(15.5px, 1.2vw, 17.5px);
+  line-height: 1.62;
+  color: var(--mc-text-muted);
+  text-wrap: pretty;
+}
+.mcp-actions { display: flex; flex-wrap: wrap; gap: 12px; margin-top: 30px; }
+.mcp-cta {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  padding: 15px 26px;
+  border-radius: var(--mc-r-pill);
+  background: var(--mc-up);
+  color: var(--mc-on-accent);
+  font-size: 15px;
+  font-weight: 600;
+  transition: background .25s ease, transform .25s ease;
+}
+.mcp-cta:hover { background: var(--mc-up-soft); color: var(--mc-on-accent); transform: translateY(-2px); }
+.mcp-cta i { font-family: var(--mc-font-mono); font-style: normal; }
+.mcp-cta-ghost {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  padding: 15px 26px;
+  border-radius: var(--mc-r-pill);
+  border: 1px solid var(--mc-line-strong);
+  color: var(--mc-text);
+  font-size: 15px;
+  transition: border-color .25s ease, color .25s ease, transform .25s ease;
+}
+.mcp-cta-ghost:hover { border-color: var(--mc-up); color: var(--mc-up); transform: translateY(-2px); }
+
+/* ---- The chart illustration -------------------------------------- */
+.mcp-chart {
+  position: relative;
+  margin: 0;
+  border: 1px solid var(--mc-line-strong);
+  border-radius: var(--mc-r-md);
+  background: linear-gradient(180deg, var(--mc-bg-card), var(--mc-bg-deep));
+  overflow: hidden;
+  box-shadow: var(--mc-shadow-window);
+}
+.mcp-chart-bar {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 14px;
+  border-bottom: 1px solid var(--mc-line);
+  background: var(--mc-bg-raised);
+  font-family: var(--mc-font-mono);
+  font-size: 10px;
+  letter-spacing: .14em;
+  color: var(--mc-text-faint);
+}
+.mcp-chart-dots { display: flex; gap: 4px; }
+.mcp-chart-dots i {
+  display: block;
+  width: 6px;
+  height: 6px;
+  border-radius: var(--mc-r-pill);
+  background: var(--mc-line-strong);
+}
+.mcp-chart-dots i:last-child { background: var(--mc-up); animation: mcBlink 2.2s infinite; }
+.mcp-chart-live { margin-left: auto; color: var(--mc-up); }
+.mcp-ch { display: block; width: 100%; height: auto; padding: 8px 10px 0; }
+
+.mcp-ch-grid { stroke: var(--mc-line-soft); stroke-width: 1; }
+.mcp-ch-lbl { fill: var(--mc-text-faint); font-family: var(--mc-font-mono); font-size: 9px; }
+.mcp-ch-band { fill: rgb(var(--mc-up-rgb) / .07); }
+.mcp-ch-ma { fill: none; stroke: var(--mc-amber); stroke-width: 1.4; opacity: .6; }
+.mcp-ch-wick { stroke-width: 1.2; }
+.mcp-ch-body { opacity: .9; }
+.mcp-ch-up .mcp-ch-wick { stroke: var(--mc-up); }
+.mcp-ch-up .mcp-ch-body { fill: var(--mc-up); }
+.mcp-ch-up .mcp-ch-vol { fill: rgb(var(--mc-up-rgb) / .3); }
+.mcp-ch-dn .mcp-ch-wick { stroke: var(--mc-down); }
+.mcp-ch-dn .mcp-ch-body { fill: var(--mc-down); }
+.mcp-ch-dn .mcp-ch-vol { fill: rgb(var(--mc-down-rgb) / .3); }
+/* The bar the read is about, lifted out of the session around it. */
+.mcp-ch .is-mark .mcp-ch-body { opacity: 1; filter: drop-shadow(0 0 7px rgb(var(--mc-up-rgb) / .65)); }
+.mcp-ch .is-mark .mcp-ch-vol { fill: rgb(var(--mc-up-rgb) / .6); }
+.mcp-ch-pin { stroke: var(--mc-up); stroke-width: 1; stroke-dasharray: 2 3; opacity: .55; }
+.mcp-ch-pip { fill: var(--mc-up); }
+
+.mcp-read {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 4px 9px;
+  padding: 13px 16px;
+  border-top: 1px solid var(--mc-line);
+  background: rgb(var(--mc-up-rgb) / .05);
+  font-family: var(--mc-font-mono);
+  font-size: 11.5px;
+  line-height: 1.6;
+  color: var(--mc-text-3);
+}
+.mcp-read b { flex: none; font-weight: 400; color: var(--mc-up); }
+.mcp-read b::before { content: "\25c6"; margin-right: 7px; }
+.mcp-read span { flex: 1 1 260px; min-width: 0; }
+
+/* ---- Figures ----------------------------------------------------- */
+.mcp-figs {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 210px), 1fr));
+  gap: 1px;
+  background: var(--mc-line);
+  border: 1px solid var(--mc-line);
+  border-radius: var(--mc-r-md);
+  overflow: hidden;
+}
+.mcp-fig { background: var(--mc-bg); padding: clamp(20px, 2.4vw, 30px); transition: background .3s ease; }
+.mcp-fig:hover { background: var(--mc-bg-hover); }
+.mcp-fig-v {
+  font-size: clamp(34px, 3.6vw, 50px);
+  line-height: 1;
+  letter-spacing: -.04em;
+  font-weight: 600;
+  color: var(--mc-text);
+}
+.mcp-fig-k {
+  margin-top: 12px;
+  font-family: var(--mc-font-mono);
+  font-size: 10.5px;
+  letter-spacing: .16em;
+  text-transform: uppercase;
+  color: var(--mc-up);
+}
+.mcp-fig p { margin-top: 9px; font-size: 13.5px; line-height: 1.55; color: var(--mc-text-muted); }
+
+/* ---- Section furniture ------------------------------------------- */
+.mcp-sec-head {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-end;
+  gap: 14px clamp(14px, 2vw, 26px);
+  margin-bottom: clamp(24px, 4vh, 42px);
+}
+.mcp-sec-n {
+  flex: none;
+  font-family: var(--mc-font-mono);
+  font-size: 11.5px;
+  letter-spacing: .22em;
+  text-transform: uppercase;
+  color: var(--mc-up);
+}
+.mcp-h2 {
+  font-size: clamp(28px, 3.6vw, 48px);
+  line-height: 1.02;
+  letter-spacing: -.035em;
+  font-weight: 600;
+  max-width: 20ch;
+}
+.mcp-rule { flex: 1 1 60px; min-width: 40px; height: 1px; background: var(--mc-line); margin-bottom: 10px; }
+
+/* ---- Prose ------------------------------------------------------- */
+.mcp-prose {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 320px), 1fr));
+  gap: clamp(18px, 3vw, 44px);
+}
+.mcp-prose p {
+  max-width: 64ch;
+  font-size: clamp(15px, 1.1vw, 16.5px);
+  line-height: 1.7;
+  color: var(--mc-text-muted);
+  text-wrap: pretty;
+}
+.mcp-prose p + p { margin-top: 18px; }
+.mcp-prose b { font-weight: 400; color: var(--mc-text); }
+
+/* ---- Pipeline ---------------------------------------------------- */
+.mcp-steps {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 250px), 1fr));
+  gap: 1px;
+  background: var(--mc-line);
+  border: 1px solid var(--mc-line);
+  border-radius: var(--mc-r-md);
+  overflow: hidden;
+  list-style: none;
+}
+.mcp-step {
+  position: relative;
+  background: var(--mc-bg);
+  padding: clamp(22px, 2.6vw, 32px);
+  transition: background .3s ease;
+}
+.mcp-step:hover { background: var(--mc-bg-hover); }
+.mcp-step-n {
+  font-family: var(--mc-font-mono);
+  font-size: 11px;
+  letter-spacing: .16em;
+  color: var(--mc-up);
+}
+.mcp-step h3 {
+  margin-top: 16px;
+  font-size: clamp(18px, 1.6vw, 22px);
+  line-height: 1.2;
+  letter-spacing: -.02em;
+  font-weight: 600;
+}
+.mcp-step p { margin-top: 11px; font-size: 14px; line-height: 1.6; color: var(--mc-text-muted); }
+
+/* ---- Standards cards --------------------------------------------- */
+.mcp-cards {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 280px), 1fr));
+  gap: clamp(14px, 1.8vw, 20px);
+}
+.mcp-card {
+  border: 1px solid var(--mc-line);
+  border-radius: var(--mc-r-md);
+  background: linear-gradient(180deg, var(--mc-bg-card), var(--mc-bg-deep));
+  padding: clamp(22px, 2.6vw, 30px);
+  transition: border-color .3s ease, transform .3s ease;
+}
+.mcp-card:hover { border-color: var(--mc-up); transform: translateY(-4px); }
+.mcp-card h3 {
+  font-size: clamp(17px, 1.5vw, 20px);
+  line-height: 1.22;
+  letter-spacing: -.02em;
+  font-weight: 600;
+}
+.mcp-card p { margin-top: 11px; font-size: 14px; line-height: 1.6; color: var(--mc-text-muted); }
+
+/* ---- Scope list -------------------------------------------------- */
+.mcp-line { display: grid; gap: 1px; background: var(--mc-line); border: 1px solid var(--mc-line); border-radius: var(--mc-r-md); overflow: hidden; list-style: none; }
+.mcp-line li {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr);
+  gap: 14px;
+  background: var(--mc-bg);
+  padding: clamp(16px, 2vw, 22px) clamp(18px, 2.2vw, 26px);
+  font-size: 14.5px;
+  line-height: 1.6;
+  color: var(--mc-text-muted);
+}
+.mcp-line li::before {
+  content: "\2715";
+  font-family: var(--mc-font-mono);
+  font-size: 12px;
+  line-height: 1.7;
+  color: var(--mc-down);
+}
+.mcp-line b { display: block; font-weight: 400; color: var(--mc-text); }
+
+/* ---- Close ------------------------------------------------------- */
+.mcp-close {
+  position: relative;
+  padding: clamp(60px, 11vh, 130px) var(--mc-gutter);
+  border-top: 1px solid var(--mc-line);
+  text-align: center;
+  overflow: hidden;
+}
+.mcp-close h2 {
+  position: relative;
+  z-index: 1;
+  margin: 0 auto;
+  max-width: 16ch;
+  font-size: clamp(32px, 5vw, 66px);
+  line-height: 1;
+  letter-spacing: -.045em;
+  font-weight: 600;
+}
+.mcp-close p {
+  position: relative;
+  z-index: 1;
+  margin: 22px auto 0;
+  max-width: 56ch;
+  font-size: clamp(15px, 1.1vw, 16.5px);
+  line-height: 1.62;
+  color: var(--mc-text-muted);
+}
+.mcp-close .mcp-actions { position: relative; z-index: 1; justify-content: center; }
+.mcp-fine {
+  position: relative;
+  z-index: 1;
+  margin-top: 28px;
+  font-family: var(--mc-font-mono);
+  font-size: 11px;
+  color: var(--mc-text-faint);
+}
+
+/* ============================================================
+   FAQs
+   ============================================================ */
+
+.mcp-cols {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 290px), 1fr));
+  gap: clamp(26px, 4vw, 64px);
+  align-items: start;
+  max-width: var(--mc-maxw);
+  margin: 0 auto;
+}
+.mcp-main { min-width: 0; grid-column: span 2; }
+
+.mcp-search {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  flex: 1 1 260px;
+  min-width: 0;
+  max-width: 420px;
+  margin-top: 28px;
+  padding: 10px 16px;
+  border: 1px solid var(--mc-line);
+  border-radius: var(--mc-r-pill);
+  background: var(--mc-bg-card);
+  transition: border-color .3s ease;
+}
+.mcp-search:focus-within, .mcp-search:hover { border-color: var(--mc-up); }
+.mcp-search > svg { flex: none; color: var(--mc-up); }
+.mcp-search input {
+  flex: 1;
+  min-width: 0;
+  border: none;
+  background: transparent;
+  color: var(--mc-text);
+  font-family: var(--mc-font-mono);
+  font-size: 12px;
+  outline: none;
+}
+.mcp-search input::placeholder { color: var(--mc-text-faint); }
+.mcp-clear {
+  flex: none;
+  width: 21px;
+  height: 21px;
+  padding: 0;
+  border: 1px solid var(--mc-line);
+  border-radius: var(--mc-r-pill);
+  background: transparent;
+  color: var(--mc-text-muted);
+  font-family: var(--mc-font-mono);
+  font-size: 10.5px;
+  line-height: 1;
+  cursor: pointer;
+  transition: border-color .25s ease, color .25s ease;
+}
+.mcp-clear:hover { border-color: var(--mc-up); color: var(--mc-up); }
+.mcp-count {
+  margin-top: 14px;
+  font-family: var(--mc-font-mono);
+  font-size: 11px;
+  letter-spacing: .1em;
+  color: var(--mc-text-faint);
+}
+
+.mcp-faqs {
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+  background: var(--mc-line);
+  border: 1px solid var(--mc-line);
+  border-radius: var(--mc-r-md);
+  overflow: hidden;
+}
+.mcp-faq { background: var(--mc-bg); transition: background .3s ease; }
+.mcp-faq[open] { background: var(--mc-bg-card-alt); }
+.mcp-faq-q {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  padding: clamp(16px, 2vw, 22px) clamp(18px, 2.2vw, 26px);
+  cursor: pointer;
+  font-size: clamp(15px, 1.3vw, 17px);
+  line-height: 1.4;
+  font-weight: 500;
+  letter-spacing: -.01em;
+  color: var(--mc-text);
+  /* The native disclosure triangle, gone in both engines. */
+  list-style: none;
+}
+.mcp-faq-q::-webkit-details-marker { display: none; }
+.mcp-faq-q:hover { color: var(--mc-up); }
+.mcp-faq[open] .mcp-faq-q { color: var(--mc-up); }
+.mcp-faq-n {
+  flex: none;
+  font-family: var(--mc-font-mono);
+  font-size: 11px;
+  color: var(--mc-text-faint);
+}
+.mcp-faq-chev {
+  flex: none;
+  margin-left: auto;
+  color: var(--mc-text-muted);
+  transition: transform .3s ease, color .3s ease;
+}
+.mcp-faq[open] .mcp-faq-chev { transform: rotate(180deg); color: var(--mc-up); }
+.mcp-faq-a {
+  padding: 0 clamp(18px, 2.2vw, 26px) clamp(20px, 2.4vw, 26px);
+  max-width: 78ch;
+  font-size: 14.5px;
+  line-height: 1.7;
+  color: var(--mc-text-muted);
+  white-space: pre-line;
+  text-wrap: pretty;
+}
+
+.mcp-box {
+  border: 1px solid var(--mc-line);
+  border-radius: var(--mc-r-md);
+  background: linear-gradient(180deg, rgb(var(--mc-up-rgb) / .1), var(--mc-bg-card) 58%);
+  padding: clamp(20px, 2.4vw, 26px);
+}
+.mcp-box h3 {
+  margin-top: 14px;
+  font-size: clamp(18px, 1.6vw, 21px);
+  line-height: 1.18;
+  letter-spacing: -.025em;
+  font-weight: 600;
+}
+.mcp-box p { margin-top: 10px; font-size: 13.5px; line-height: 1.55; color: var(--mc-text-muted); }
+.mcp-box-plain { background: var(--mc-bg-card); }
+.mcp-box .mcp-actions { margin-top: 18px; }
+.mcp-box .mcp-cta, .mcp-box .mcp-cta-ghost { width: 100%; justify-content: center; padding: 12px 18px; font-size: 14px; }
+
+.mcp-rail { min-width: 0; display: flex; flex-direction: column; gap: clamp(14px, 2.4vh, 22px); position: sticky; top: 108px; }
+
+/* ============================================================
+   RESPONSIVE
+   ============================================================ */
+
+@media (max-width: 860px) {
+  .mcp-cols { grid-template-columns: minmax(0, 1fr); }
+  .mcp-main { grid-column: auto; }
+  .mcp-rail { position: static; }
+  .mcp-h1 { max-width: none; }
+}
+
+@media (max-width: 560px) {
+  .mcp-cta, .mcp-cta-ghost { width: 100%; justify-content: center; }
+  .mcp-search { max-width: none; }
+  .mcp-faq-q { gap: 12px; }
+}
+
+/* ── Single answer (/faqs/view) ────────────────────────────────────────────
+   A deep-linked FAQ. One question, one answer, one way back — the same
+   surface the board is on, because a link someone shared should not land the
+   reader somewhere that looks like a different product.                    */
+.mcp-back {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  font-family: var(--mc-font-mono);
+  font-size: 11.5px;
+  letter-spacing: .1em;
+  text-transform: uppercase;
+  color: var(--mc-text-muted);
+  transition: color .2s ease, gap .2s ease;
+}
+.mcp-back:hover { color: var(--mc-up); gap: 12px; }
+.mcp-back i { font-style: normal; }
+
+/* The question carries a real headline's weight, but an answer title runs
+   long — so it sits a size below the marketing h1 and wraps wider. */
+.mcp-h1-sm {
+  max-width: 26ch;
+  font-size: clamp(30px, 3.4vw, 46px);
+  line-height: 1.08;
+  letter-spacing: -.03em;
+}
+.mcp-answer {
+  margin-top: 26px;
+  max-width: 72ch;
+  font-size: clamp(15px, 1.15vw, 16.5px);
+  line-height: 1.75;
+  color: var(--mc-text-muted);
+  /* Answers are authored as plain text with real line breaks — honour them
+     rather than collapsing an intentional list into one paragraph. */
+  white-space: pre-line;
+  text-wrap: pretty;
+}

@@ -27,7 +27,9 @@ import { buildArticleJsonLd } from "@/lib/seo/jsonld";
  * caching it from then on.
  */
 // Rendered on demand so updates and deletions made in the admin console
-// reflect immediately on the site without waiting for a revalidation cache window.
+// reflect immediately on the site without waiting for a revalidation cache
+// window. (Touched to bust any build-time static-params cache during
+// investigation of the "new posts invisible" issue - 2026-09-14.)
 export const dynamic = "force-dynamic";
 
 export async function generateStaticParams() {

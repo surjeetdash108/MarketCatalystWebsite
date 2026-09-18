@@ -1,0 +1,339 @@
+/* ============================================================
+   MARKETCATALYST — SHARED PAGE CHROME
+   ============================================================
+   The furniture every mc-* page wears: the page shell, the
+   scroll-progress hairline, the fixed nav (with its mobile
+   drawer) and the site footer. Extracted from home.css when
+   the blog was rebuilt in the same design language, so the two
+   pages cannot drift apart — one nav, one footer, one file.
+
+   Imported by app/layout.tsx, so it is available on every
+   route; the rules are namespaced to .mc-page and only bite
+   where that class is present.
+
+   COLOUR RULE: not one hex lives in this file. Every colour is
+   a token from app/theme.css — re-brand there, once.
+   ============================================================ */
+
+/* ---- Keyframes --------------------------------------------------- */
+@keyframes mcBlink { 0%, 45% { opacity: 1; } 50%, 95% { opacity: .12; } 100% { opacity: 1; } }
+
+/* ---- Page shell --------------------------------------------------
+   `.mcb-page` (the blog) also carries `.mc-page`, so it inherits the
+   shell, the nav and the footer and only adds what is its own. */
+.mc-page {
+  position: relative;
+  width: 100%;
+  background: var(--mc-bg);
+  color: var(--mc-text);
+  font-family: var(--mc-font-display);
+  overflow: clip;
+  -webkit-font-smoothing: antialiased;
+  /* The transition is what makes the light/dark switch read as a dissolve
+     rather than a flash. Inert on pages that never change theme. */
+  transition: background .35s ease, color .35s ease;
+}
+.mc-page *,
+.mc-page *::before,
+.mc-page *::after { box-sizing: border-box; }
+.mc-page :where(h1, h2, h3, p, ul, li, figure) { margin: 0; padding: 0; }
+/* Wrapped in :where() so the base link colour carries ZERO specificity —
+   otherwise `.mc-page a` (0-1-1) would beat every single-class rule below
+   (.mc-navlink, .mc-brand, .mc-navlink-solid ...) and paint them all green. */
+:where(.mc-page a) { color: var(--mc-up); text-decoration: none; }
+:where(.mc-page a:hover) { color: var(--mc-up-soft); }
+.mc-page ::selection { background: var(--mc-up); color: var(--mc-on-accent); }
+.mc-serif {
+  font-family: var(--mc-font-serif);
+  font-style: italic;
+  font-weight: 400;
+  color: var(--mc-up);
+}
+
+/* ---- Search highlight --------------------------------------------
+   The one rule the whole search experience hangs on: every occurrence
+   of the query, wherever it appears — headline, standfirst, or the
+   quoted line from the article body — is painted the same way. */
+.mc-hit {
+  background: var(--mc-up);
+  color: var(--mc-on-accent);
+  border-radius: 3px;
+  padding: 1px 3px;
+}
+
+/* ---- Reveal-on-scroll -------------------------------------------- */
+.mc-rev {
+  opacity: 0;
+  transform: translateY(26px);
+  transition: opacity .9s ease, transform .9s cubic-bezier(.2, .8, .2, 1);
+}
+.mc-rev.is-in { opacity: 1; transform: none; }
+.mc-rev-sm { transform: translateY(20px); transition-duration: .7s; }
+
+/* ---- Theme toggle ------------------------------------------------ */
+.mc-theme {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex: none;
+  width: 34px;
+  height: 34px;
+  padding: 0;
+  border: 1px solid var(--mc-line);
+  border-radius: var(--mc-r-pill);
+  background: transparent;
+  color: var(--mc-text-muted);
+  cursor: pointer;
+  transition: border-color .3s ease, color .3s ease;
+}
+.mc-theme:hover { border-color: var(--mc-up); color: var(--mc-up); }
+/* Icon only on desktop; the drawer adds the word (see the 860px block). */
+.mc-theme-t { display: none; }
+
+/* ---- Scroll progress --------------------------------------------- */
+.mc-prog {
+  position: fixed;
+  inset: 0 0 auto;
+  height: 2px;
+  z-index: 140;
+  /* Tokenised rather than a white wash: on the light theme a 5% white
+     track is invisible against the paper background. */
+  background: var(--mc-bg-track);
+}
+.mc-prog i {
+  display: block;
+  height: 100%;
+  width: 0;
+  background: linear-gradient(90deg, var(--mc-up), var(--mc-amber));
+}
+
+/* ---- Nav --------------------------------------------------------- */
+.mc-nav {
+  position: fixed;
+  inset: 0 0 auto;
+  z-index: 130;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 22px;
+  padding: 20px var(--mc-gutter);
+  background: rgb(var(--mc-bg-rgb) / 0);
+  border-bottom: 1px solid transparent;
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
+  transition: background .4s ease, border-color .4s ease, padding .4s ease;
+}
+.mc-nav.is-stuck {
+  background: rgb(var(--mc-bg-rgb) / .8);
+  border-bottom-color: var(--mc-line-nav);
+  padding-top: 13px;
+  padding-bottom: 13px;
+}
+.mc-brand {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  color: var(--mc-text);
+  font-size: 17px;
+  font-weight: 600;
+  letter-spacing: -.02em;
+  flex-shrink: 0;
+}
+.mc-brand:hover { color: var(--mc-text); }
+.mc-brand, .mc-burger { position: relative; z-index: 2; }
+.mc-brand i {
+  display: block;
+  width: 9px;
+  height: 9px;
+  border-radius: 2px;
+  background: var(--mc-up);
+  animation: mcBlink 2s infinite;
+}
+.mc-nav-links {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: flex-end;
+  gap: clamp(10px, 1.5vw, 22px);
+  font-family: var(--mc-font-mono);
+  font-size: 11px;
+  letter-spacing: .09em;
+  text-transform: uppercase;
+}
+.mc-navlink { color: var(--mc-text-muted); transition: color .25s ease; }
+.mc-navlink:hover,
+.mc-navlink.is-active { color: var(--mc-text); }
+.mc-navlink-ghost {
+  color: var(--mc-text);
+  border: 1px solid var(--mc-line);
+  padding: 9px 16px;
+  border-radius: var(--mc-r-pill);
+  letter-spacing: .06em;
+  transition: color .25s ease, border-color .25s ease;
+}
+.mc-navlink-ghost:hover { color: var(--mc-up); border-color: var(--mc-up); }
+.mc-navlink-solid {
+  color: var(--mc-on-accent);
+  background: var(--mc-up);
+  padding: 10px 18px;
+  border-radius: var(--mc-r-pill);
+  font-weight: 600;
+  letter-spacing: .06em;
+  transition: background .25s ease;
+}
+.mc-navlink-solid:hover { color: var(--mc-on-accent); background: var(--mc-up-soft); }
+
+/* Mobile drawer toggle — hidden on desktop, where every link fits inline. */
+.mc-burger {
+  display: none;
+  align-items: center;
+  justify-content: center;
+  width: 38px;
+  height: 38px;
+  padding: 0;
+  border: 1px solid var(--mc-line);
+  border-radius: var(--mc-r-pill);
+  background: transparent;
+  color: var(--mc-text);
+  cursor: pointer;
+}
+.mc-burger span {
+  position: relative;
+  display: block;
+  width: 15px;
+  height: 1.5px;
+  background: currentColor;
+  transition: transform .3s ease, background-color .3s ease;
+}
+.mc-burger span::before,
+.mc-burger span::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  width: 15px;
+  height: 1.5px;
+  background: currentColor;
+  transition: transform .3s ease;
+}
+.mc-burger span::before { top: -5px; }
+.mc-burger span::after { top: 5px; }
+.mc-burger.is-open { color: var(--mc-up); border-color: var(--mc-up); }
+.mc-burger.is-open span { background: transparent; }
+.mc-burger.is-open span::before { transform: translateY(5px) rotate(45deg); }
+.mc-burger.is-open span::after { transform: translateY(-5px) rotate(-45deg); }
+
+/* ---- Footer ------------------------------------------------------ */
+.mc-footer {
+  position: relative;
+  border-top: 1px solid var(--mc-line);
+  background: var(--mc-bg-raised);
+  padding: clamp(44px, 8vh, 78px) var(--mc-gutter) 26px;
+}
+.mc-footer-grid {
+  max-width: var(--mc-maxw);
+  margin: 0 auto;
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 190px), 1fr));
+  gap: clamp(24px, 4vw, 58px);
+}
+.mc-footer .mc-brand i { animation: none; }
+.mc-footer-tag {
+  margin-top: 14px;
+  max-width: 30ch;
+  font-size: 14px;
+  line-height: 1.6;
+  color: var(--mc-text-muted);
+}
+.mc-clock {
+  margin-top: 16px;
+  font-family: var(--mc-font-mono);
+  font-size: 11px;
+  letter-spacing: .14em;
+  color: var(--mc-up);
+}
+.mc-footer-h {
+  font-family: var(--mc-font-mono);
+  font-size: 10.5px;
+  letter-spacing: .16em;
+  text-transform: uppercase;
+  color: var(--mc-text-faint);
+}
+.mc-footer-links { display: flex; flex-direction: column; gap: 10px; margin-top: 15px; }
+.mc-footer-links a { font-size: 14px; color: var(--mc-text-4); transition: color .25s ease; }
+.mc-footer-links a:hover { color: var(--mc-up); }
+.mc-footer-note { margin: 15px 0 12px; font-size: 14px; line-height: 1.6; color: var(--mc-text-muted); }
+.mc-footer-bottom {
+  max-width: var(--mc-maxw);
+  margin: clamp(34px, 6vh, 56px) auto 0;
+  padding-top: 18px;
+  border-top: 1px solid var(--mc-line);
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  justify-content: space-between;
+  font-family: var(--mc-font-mono);
+  font-size: 11px;
+  color: var(--mc-text-faint);
+}
+
+/* ============================================================
+   RESPONSIVE — the drawer
+   ============================================================ */
+
+@media (max-width: 860px) {
+  .mc-nav { gap: 12px; }
+  .mc-nav-links {
+    position: fixed;
+    top: 0;
+    right: 0;
+    left: 0;
+    flex-direction: column;
+    align-items: stretch;
+    justify-content: flex-start;
+    gap: 2px;
+    padding: 74px 18px 20px;
+    /* Fully opaque: at 97% the huge hero headline still ghosted through. */
+    background: var(--mc-bg);
+    border-bottom: 1px solid var(--mc-line);
+    transform: translateY(-101%);
+    transition: transform .42s cubic-bezier(.2, .8, .2, 1);
+    font-size: 12px;
+    z-index: 1;
+  }
+  .mc-nav-links.is-open { transform: translateY(0); }
+  .mc-nav-links a { padding: 13px 4px; border-bottom: 1px solid var(--mc-line-soft); }
+  .mc-navlink-ghost,
+  .mc-navlink-solid {
+    text-align: center;
+    padding: 13px 16px;
+    margin-top: 10px;
+    border-bottom: 0;
+  }
+  .mc-navlink-solid { margin-top: 6px; }
+  .mc-burger { display: inline-flex; }
+  /* In the drawer the switch becomes a labelled row like the links it sits
+     among, rather than a 34px puck floating in a full-width column. */
+  .mc-theme {
+    width: 100%;
+    height: 44px;
+    gap: 9px;
+    margin-top: 10px;
+    font-family: var(--mc-font-mono);
+    font-size: 12px;
+    letter-spacing: .09em;
+    text-transform: uppercase;
+  }
+  .mc-theme-t { display: inline; }
+}
+
+@media (max-width: 560px) {
+  .mc-footer-bottom { font-size: 10px; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .mc-page * {
+    animation-duration: .001ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: .001ms !important;
+  }
+}
