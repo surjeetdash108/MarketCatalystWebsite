@@ -89,9 +89,21 @@ export function HomeMotion() {
     const fit = () => {
       if (hero && dashInner) {
         const r = hero.getBoundingClientRect();
-        const s = Math.min(r.width / DASH_W, (r.height - 110) / DASH_H);
+        /* Two fits, because the hero is a different shape on each.
+           On a laptop it is a wide 100vh stage and the mock is CONTAINED in
+           it, whole, sitting below the nav. On a phone the hero is a tall
+           column — containing a 16:10 mock there leaves a small panel adrift
+           in the middle of a very tall box, which is exactly the "separate
+           image" look this is meant to stop. So on touch it COVERS instead,
+           cropped and centred like any background image. */
+        const cover = !window.matchMedia("(pointer: fine)").matches;
+        const s = cover
+          ? Math.max(r.width / DASH_W, r.height / DASH_H)
+          : Math.min(r.width / DASH_W, (r.height - 110) / DASH_H);
         const ox = (r.width - DASH_W * s) / 2;
-        const oy = Math.max(96, (r.height - DASH_H * s) / 2 + 52);
+        const oy = cover
+          ? (r.height - DASH_H * s) / 2
+          : Math.max(96, (r.height - DASH_H * s) / 2 + 52);
         dashInner.style.transform = `translate(${ox.toFixed(1)}px, ${oy.toFixed(1)}px) scale(${s.toFixed(4)})`;
       }
     };
