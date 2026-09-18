@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import { getPublishedPosts } from "@/lib/blog/posts";
 import { BlogIndex } from "@/components/blog/BlogIndex";
 import { getWeeklyReads } from "@/lib/blog/stats";
-import "./blog-index.css";
+import "../blog.css";
 
 // Rendered per-request (this runs on App Hosting, not a static export) so the
 // build never depends on Firestore / a composite index being ready. The list

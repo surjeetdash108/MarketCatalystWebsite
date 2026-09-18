@@ -1,18 +1,24 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useState, useSyncExternalStore } from "react";
 
 /**
  * The article's static share rail (WhatsApp / X / LinkedIn / Telegram + copy
  * link). The intent URLs need the live page URL, so this is a client component
- * that reads window.location after mount; the copy button uses the clipboard.
+ * that reads window.location after hydration; the copy button uses the
+ * clipboard.
  * Same behaviour as the v2 template's inline script, as a reusable component.
  */
 export function ShareRail({ title }: { title: string }) {
-  const [url, setUrl] = useState("");
+  // window.location is a browser API, not React state — read it as an
+  // external store rather than setting state from an effect, which would
+  // render once with no links and again with them.
+  const url = useSyncExternalStore(
+    () => () => {},
+    () => window.location.href,
+    () => "",
+  );
   const [copied, setCopied] = useState(false);
-
-  useEffect(() => setUrl(window.location.href), []);
 
   const e = encodeURIComponent;
   const links = url

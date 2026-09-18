@@ -1,0 +1,597 @@
+/* ============================================================
+   MARKETCATALYST — BLOG INDEX (app/posts)
+   ============================================================
+   Namespaced mcb-* so it can never collide with the landing
+   page's mc-* rules or the older hw-* / mq-* rules in
+   landing.css. The page shell, scroll progress, nav and footer
+   come from app/chrome.css — this file is only what the blog
+   adds on top.
+
+   COLOUR RULE: not one hex lives in this file. Every colour is
+   a token from app/theme.css — re-brand there, once, and the
+   light theme follows automatically.
+
+   SIZE RULE: the design was drawn against a 16px root, while
+   globals.css runs the site at 112.5% (18px) for readability.
+   Sizes here are therefore written in px (the design's rem
+   values x16), so the blog renders at the drawn proportions.
+   ============================================================ */
+
+/* ---- Masthead ---------------------------------------------------- */
+.mcb-head {
+  position: relative;
+  padding: clamp(104px, 14vh, 150px) var(--mc-gutter) clamp(24px, 4vh, 44px);
+}
+.mcb-inner { max-width: var(--mc-maxw); margin: 0 auto; }
+.mcb-h1 {
+  /* Two lines by default. This is a 79-character sentence: measured, it runs
+     34.25x its own font-size wide, so putting it on one line inside the
+     1320px measure caps the type at ~37px. That is the trade — a single line
+     costs roughly half the size. Below 1000px one line would fall under 26px,
+     smaller than the standfirst beneath it, so there it wraps. */
+  max-width: 30ch;
+  font-size: clamp(33.6px, 5.4vw, 70.4px);
+  line-height: .98;
+  letter-spacing: -.045em;
+  font-weight: 600;
+  text-wrap: balance;
+}
+@media (min-width: 1000px) {
+  .mcb-h1 {
+    /* 0.92vw is the measure below 1428px; past that it is a flat 1320px and
+       the cap takes over. Both leave ~4% for the fallback stack. */
+    max-width: none;
+    font-size: min(2.55vw, 37px);
+    white-space: nowrap;
+    text-wrap: nowrap;
+  }
+}
+
+/* ---- Filter bar -------------------------------------------------- */
+.mcb-filters {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 9px;
+  margin-top: clamp(22px, 3.5vh, 32px);
+}
+.mcb-pill {
+  font-family: var(--mc-font-mono);
+  font-size: 10.5px;
+  letter-spacing: .14em;
+  text-transform: uppercase;
+  padding: 9px 15px;
+  border-radius: var(--mc-r-pill);
+  border: 1px solid var(--mc-line);
+  background: transparent;
+  color: var(--mc-text-muted);
+  cursor: pointer;
+  transition: border-color .3s ease, color .3s ease, background .3s ease;
+}
+.mcb-pill:hover { border-color: var(--mc-up); color: var(--mc-up); }
+.mcb-pill[aria-pressed="true"] {
+  border-color: var(--mc-up);
+  background: rgb(var(--mc-up-rgb) / .12);
+  color: var(--mc-up);
+}
+.mcb-pill b { font-weight: 400; color: var(--mc-text-muted); }
+.mcb-pill[aria-pressed="true"] b { color: var(--mc-up); }
+
+.mcb-search {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  /* Pushed to the right edge, away from the filter pills: they are one control
+     group and this is another, and the gap between them says so. It still
+     wraps under them on a narrow screen, where it takes the full width. */
+  margin-left: auto;
+  flex: 0 1 340px;
+  min-width: 0;
+  max-width: 340px;
+  padding: 8px 15px;
+  border: 1px solid var(--mc-line);
+  border-radius: var(--mc-r-pill);
+  background: var(--mc-bg-card);
+  transition: border-color .3s ease;
+}
+.mcb-search:focus-within,
+.mcb-search:hover { border-color: var(--mc-up); }
+.mcb-search > svg { flex: none; color: var(--mc-up); }
+.mcb-search input {
+  flex: 1;
+  min-width: 0;
+  border: none;
+  background: transparent;
+  color: var(--mc-text);
+  font-family: var(--mc-font-mono);
+  font-size: 11.5px;
+  outline: none;
+}
+.mcb-search input::placeholder { color: var(--mc-text-faint); }
+.mcb-clear {
+  flex: none;
+  width: 21px;
+  height: 21px;
+  padding: 0;
+  border: 1px solid var(--mc-line);
+  border-radius: var(--mc-r-pill);
+  background: transparent;
+  color: var(--mc-text-muted);
+  font-family: var(--mc-font-mono);
+  font-size: 10.5px;
+  line-height: 1;
+  cursor: pointer;
+  transition: border-color .25s ease, color .25s ease;
+}
+.mcb-clear:hover { border-color: var(--mc-up); color: var(--mc-up); }
+
+/* ---- Section furniture ------------------------------------------- */
+.mcb-sec-row {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: clamp(12px, 2vw, 22px);
+  margin-bottom: clamp(14px, 2.2vh, 22px);
+}
+.mcb-kicker {
+  flex: none;
+  font-family: var(--mc-font-mono);
+  font-size: 12px;
+  font-weight: 500;
+  letter-spacing: .22em;
+  text-transform: uppercase;
+  color: var(--mc-up);
+}
+.mcb-rule { flex: 1 1 60px; min-width: 40px; height: 1px; background: var(--mc-line); }
+
+/* ---- Editor's pick ----------------------------------------------- */
+.mcb-pick-sec { position: relative; padding: 0 var(--mc-gutter) clamp(18px, 3vh, 32px); }
+.mcb-pick {
+  display: block;
+  border: 1px solid var(--mc-line);
+  border-radius: var(--mc-r-xl);
+  background: linear-gradient(180deg, var(--mc-bg-card-alt), var(--mc-bg-deep));
+  /* Medium, not a hero. It was taking most of the first screen, which pushed
+     the actual post list below the fold — the pick is a recommendation, not
+     the page. */
+  padding: clamp(20px, 2.2vw, 32px);
+  color: var(--mc-text);
+  transition: opacity .9s ease, transform .5s cubic-bezier(.2, .8, .2, 1), border-color .4s ease;
+}
+.mcb-pick:hover { border-color: var(--mc-up); color: var(--mc-text); transform: translateY(-4px); }
+.mcb-pick-h {
+  margin-top: 14px;
+  font-size: clamp(22px, 2.1vw, 30px);
+  line-height: 1.12;
+  letter-spacing: -.03em;
+  font-weight: 600;
+  max-width: 34ch;
+}
+.mcb-pick-p {
+  margin-top: 12px;
+  max-width: 70ch;
+  font-size: clamp(13.5px, .95vw, 15px);
+  line-height: 1.58;
+  color: var(--mc-text-muted);
+  text-wrap: pretty;
+}
+.mcb-pick .mcb-by { margin-top: 18px; font-size: 11px; }
+.mcb-pick .mcb-avatar { width: 26px; height: 26px; font-size: 10px; }
+.mcb-read { margin-left: auto; color: var(--mc-up); }
+
+/* ---- Tag pills ---------------------------------------------------
+   One rule, three tints: the modifier only swaps which token feeds it. */
+.mcb-tag {
+  display: inline-flex;
+  font-family: var(--mc-font-mono);
+  font-size: 9.5px;
+  letter-spacing: .16em;
+  text-transform: uppercase;
+  border-radius: var(--mc-r-pill);
+  padding: 4px 10px;
+  border: 1px solid rgb(var(--mcb-tag-rgb) / .35);
+  background: rgb(var(--mcb-tag-rgb) / .08);
+  color: var(--mcb-tag);
+}
+.mcb-tag-desk { --mcb-tag: var(--mc-up); --mcb-tag-rgb: var(--mc-up-rgb); }
+.mcb-tag-recap { --mcb-tag: var(--mc-amber); --mcb-tag-rgb: var(--mc-amber-rgb); }
+.mcb-tag-edu { --mcb-tag: var(--mc-info); --mcb-tag-rgb: var(--mc-info-rgb); }
+/* The pick's tag is the solid variant — it is the one card that shouts. */
+.mcb-tag-solid {
+  font-size: 10px;
+  padding: 5px 10px;
+  border-color: transparent;
+  background: var(--mc-up);
+  color: var(--mc-on-accent);
+}
+
+/* ---- Byline ------------------------------------------------------ */
+.mcb-by {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 9px;
+  margin-top: 14px;
+  font-family: var(--mc-font-mono);
+  font-size: 11px;
+  color: var(--mc-text-muted);
+}
+.mcb-avatar {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex: none;
+  width: 24px;
+  height: 24px;
+  border-radius: var(--mc-r-pill);
+  background: rgb(var(--mc-up-rgb) / .1);
+  border: 1px solid rgb(var(--mc-up-rgb) / .35);
+  font-size: 9.5px;
+  color: var(--mc-up);
+}
+.mcb-author { color: var(--mc-text-4); }
+/* The bullet is drawn by the item that FOLLOWS it, not as a box of its own:
+   as a separate flex child it could be pushed to the end of a wrapped line
+   and sit there orphaned, which is what the byline did in grid view. */
+.mcb-meta::before {
+  content: "•";
+  margin-right: 9px;
+  color: var(--mc-line);
+}
+
+/* ---- Latest posts ------------------------------------------------ */
+.mcb-latest {
+  position: relative;
+  padding: clamp(26px, 4vh, 44px) var(--mc-gutter) clamp(56px, 9vh, 110px);
+  border-top: 1px solid var(--mc-line);
+}
+.mcb-cols {
+  max-width: var(--mc-maxw);
+  margin: 0 auto;
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 290px), 1fr));
+  gap: clamp(26px, 4vw, 64px);
+  align-items: start;
+}
+/* Two of the three auto-fit tracks for the feed, one for the rail. Once only
+   two tracks fit, the feed fills the row and the rail drops beneath it. */
+.mcb-main { min-width: 0; grid-column: span 2; }
+
+.mcb-tools { display: flex; align-items: center; gap: 6px; font-family: var(--mc-font-mono); font-size: 12px; }
+.mcb-pager { display: flex; align-items: center; gap: 6px; }
+.mcb-pgbtn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  padding: 0;
+  border-radius: var(--mc-r-pill);
+  border: 1px solid var(--mc-line);
+  background: var(--mc-bg-card);
+  color: var(--mc-text-muted);
+  font-family: inherit;
+  font-size: 12px;
+  line-height: 1;
+  cursor: pointer;
+  transition: border-color .25s ease, color .25s ease, background .25s ease;
+}
+.mcb-pgbtn:hover:not(:disabled) { border-color: var(--mc-up); color: var(--mc-up); }
+.mcb-pgbtn:disabled { opacity: .4; cursor: default; }
+.mcb-pgbtn[aria-current="page"] {
+  border-color: var(--mc-up);
+  background: rgb(var(--mc-up-rgb) / .12);
+  color: var(--mc-up);
+}
+.mcb-gap { color: var(--mc-text-faint); padding: 0 2px; }
+.mcb-views {
+  display: flex;
+  gap: 4px;
+  margin-left: 8px;
+  padding-left: 12px;
+  border-left: 1px solid var(--mc-line);
+}
+.mcb-view {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  padding: 0;
+  border-radius: 9px;
+  border: 1px solid var(--mc-line);
+  background: var(--mc-bg-card);
+  color: var(--mc-text-muted);
+  line-height: 1;
+  cursor: pointer;
+  transition: border-color .25s ease, color .25s ease, background .25s ease;
+}
+.mcb-view:hover { border-color: var(--mc-up); color: var(--mc-up); }
+.mcb-view[aria-pressed="true"] {
+  border-color: var(--mc-up);
+  background: rgb(var(--mc-up-rgb) / .12);
+  color: var(--mc-up);
+}
+
+/* ---- The feed ----------------------------------------------------
+   1px of gap over a line-coloured background draws the row separators,
+   so the rows themselves carry no borders and the container can clip
+   them into one rounded slab. */
+.mcb-feed {
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+  background: var(--mc-line);
+  border: 1px solid var(--mc-line);
+  border-radius: var(--mc-r-md);
+  overflow: hidden;
+}
+.mcb-feed.is-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 260px), 1fr));
+}
+.mcb-post {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  gap: clamp(14px, 2vw, 30px);
+  align-items: start;
+  background: var(--mc-bg);
+  padding: clamp(18px, 2.2vw, 28px);
+  color: var(--mc-text);
+  transition: opacity .7s ease, transform .7s cubic-bezier(.2, .8, .2, 1), background .35s ease;
+}
+.mcb-post:hover { background: var(--mc-bg-card-alt); color: var(--mc-text); }
+.mcb-feed.is-grid .mcb-post { grid-template-columns: minmax(0, 1fr); }
+.mcb-feed.is-grid .mcb-arrow { display: none; }
+/* A grid card is never wide enough to hold the byline on one line, so it is
+   stacked on purpose — and the bullets come off, because a separator that
+   always begins a line has stopped separating and started looking like a
+   list marker. */
+.mcb-feed.is-grid .mcb-by { gap: 6px 9px; }
+.mcb-feed.is-grid .mcb-meta { flex: 0 0 100%; }
+.mcb-feed.is-grid .mcb-meta::before { content: none; }
+.mcb-post-h {
+  margin-top: 12px;
+  font-size: clamp(17.6px, 1.7vw, 24px);
+  line-height: 1.16;
+  letter-spacing: -.025em;
+  font-weight: 600;
+  max-width: 34ch;
+}
+.mcb-post-p {
+  margin-top: 10px;
+  max-width: 62ch;
+  font-size: 14px;
+  line-height: 1.6;
+  color: var(--mc-text-muted);
+  text-wrap: pretty;
+}
+.mcb-post-body { min-width: 0; }
+.mcb-arrow { font-family: var(--mc-font-mono); font-size: 13px; color: var(--mc-up); align-self: center; }
+
+/* The quoted line from inside the article, shown when the query matched
+   the body rather than the headline or standfirst. */
+.mcb-quote {
+  display: flex;
+  /* Wrap, and give the quote a flex-basis: the label is sized to its own
+     content and will not shrink, so on a narrow card (grid view, or a phone)
+     it used to squeeze the text into a one-word-per-line ribbon. Now the two
+     simply stack once they stop fitting side by side — driven by the width
+     the card actually has, so it holds in list view, grid view and at every
+     breakpoint without a media query naming any of them. */
+  flex-wrap: wrap;
+  align-items: flex-start;
+  gap: 9px;
+  margin-top: 12px;
+  padding: 10px 12px;
+  border: 1px solid rgb(var(--mc-up-rgb) / .35);
+  border-radius: 9px;
+  background: rgb(var(--mc-up-rgb) / .04);
+  font-family: var(--mc-font-mono);
+  font-size: 11px;
+  line-height: 1.55;
+  color: var(--mc-text-4);
+}
+.mcb-quote-l {
+  flex: none;
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  /* One line, always — a wrapped label would reintroduce the tall-thin box. */
+  white-space: nowrap;
+  color: var(--mc-up);
+}
+/* The magnifier is shared with the search box, where it is 15px; at 11px
+   mono it has to come down to match the cap height. */
+.mcb-quote-l svg { width: 12px; height: 12px; }
+/* 260px is the width at which 11px mono still reads as a sentence (~39
+   characters). Below it the quote drops to its own line rather than being
+   squeezed — chosen so every card in a grid row makes the same choice, since
+   the two label lengths ("in article" / "N mentions in article") would
+   otherwise straddle the threshold and stack inconsistently. */
+.mcb-quote-t { flex: 1 1 260px; min-width: 0; }
+
+/* ---- Empty state ------------------------------------------------- */
+.mcb-empty {
+  border: 1px solid var(--mc-line);
+  border-radius: var(--mc-r-md);
+  background: var(--mc-bg-card);
+  padding: clamp(28px, 4vw, 48px);
+  text-align: center;
+}
+.mcb-empty-k {
+  font-family: var(--mc-font-mono);
+  font-size: 10.5px;
+  letter-spacing: .16em;
+  text-transform: uppercase;
+  color: var(--mc-up);
+}
+.mcb-empty p { margin-top: 14px; font-size: 15px; line-height: 1.6; color: var(--mc-text-muted); }
+.mcb-empty button {
+  margin-top: 18px;
+  font-family: var(--mc-font-mono);
+  font-size: 10.5px;
+  letter-spacing: .14em;
+  text-transform: uppercase;
+  padding: 10px 18px;
+  border-radius: var(--mc-r-pill);
+  border: 1px solid var(--mc-up);
+  background: rgb(var(--mc-up-rgb) / .1);
+  color: var(--mc-up);
+  cursor: pointer;
+  transition: background .25s ease;
+}
+.mcb-empty button:hover { background: rgb(var(--mc-up-rgb) / .2); }
+
+/* ---- Rail -------------------------------------------------------- */
+.mcb-rail {
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: clamp(14px, 2.4vh, 22px);
+  position: sticky;
+  top: 108px;
+}
+.mcb-box {
+  border: 1px solid var(--mc-line);
+  border-radius: var(--mc-r-md);
+  background: var(--mc-bg-card);
+  overflow: hidden;
+}
+.mcb-box-h {
+  padding: 13px 16px;
+  border-bottom: 1px solid var(--mc-line);
+  font-family: var(--mc-font-mono);
+  font-size: 10px;
+  letter-spacing: .18em;
+  text-transform: uppercase;
+  color: var(--mc-text-muted);
+}
+.mcb-most {
+  display: flex;
+  gap: 12px;
+  padding: 13px 16px;
+  border-bottom: 1px solid var(--mc-line-soft);
+  color: var(--mc-text-1);
+  transition: background .3s ease;
+}
+.mcb-most:last-child { border-bottom: 0; }
+.mcb-most:hover { background: var(--mc-bg-card-alt); color: var(--mc-text); }
+.mcb-most-n { flex: none; font-family: var(--mc-font-mono); font-size: 11px; color: var(--mc-up); }
+.mcb-most-t { font-size: 13.5px; line-height: 1.45; text-wrap: pretty; }
+
+/* ---- Newsletter -------------------------------------------------- */
+.mcb-sub {
+  border: 1px solid var(--mc-line);
+  border-radius: var(--mc-r-md);
+  background: linear-gradient(180deg, rgb(var(--mc-up-rgb) / .1), var(--mc-bg-card) 58%);
+  padding: clamp(20px, 2.4vw, 26px);
+}
+.mcb-sub-k {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  font-family: var(--mc-font-mono);
+  font-size: 10px;
+  letter-spacing: .18em;
+  text-transform: uppercase;
+  color: var(--mc-up);
+}
+.mcb-sub-k i {
+  display: block;
+  width: 5px;
+  height: 5px;
+  border-radius: var(--mc-r-pill);
+  background: var(--mc-up);
+  animation: mcBlink 1.8s infinite;
+}
+.mcb-sub h3 {
+  margin-top: 16px;
+  font-size: clamp(18.4px, 1.6vw, 22.4px);
+  line-height: 1.16;
+  letter-spacing: -.025em;
+  font-weight: 600;
+}
+.mcb-sub p { margin-top: 10px; font-size: 13.5px; line-height: 1.55; color: var(--mc-text-muted); }
+.mcb-sub input {
+  width: 100%;
+  margin-top: 16px;
+  padding: 12px 13px;
+  border-radius: var(--mc-r);
+  border: 1px solid var(--mc-line);
+  background: var(--mc-bg-panel);
+  color: var(--mc-text);
+  font-family: var(--mc-font-display);
+  font-size: 14px;
+  outline: none;
+  transition: border-color .25s ease;
+}
+.mcb-sub input:focus { border-color: var(--mc-up); }
+.mcb-sub input.is-bad { border-color: var(--mc-down); }
+.mcb-sub button {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  width: 100%;
+  margin-top: 10px;
+  padding: 13px 18px;
+  border: none;
+  border-radius: var(--mc-r);
+  background: var(--mc-up);
+  color: var(--mc-on-accent);
+  font-family: var(--mc-font-display);
+  font-size: 14.5px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background .25s ease;
+}
+.mcb-sub button:hover { background: var(--mc-up-soft); }
+.mcb-note {
+  margin-top: 12px;
+  font-family: var(--mc-font-mono);
+  font-size: 10px;
+  letter-spacing: .06em;
+  color: var(--mc-text-muted);
+}
+.mcb-note.is-ok { color: var(--mc-up); }
+.mcb-note.is-bad { color: var(--mc-down); }
+
+/* ---- From the terminal ------------------------------------------- */
+.mcb-plug {
+  border: 1px solid var(--mc-line);
+  border-radius: var(--mc-r-md);
+  background: var(--mc-bg-card);
+  padding: clamp(18px, 2.2vw, 24px);
+}
+.mcb-plug-h {
+  font-family: var(--mc-font-mono);
+  font-size: 10px;
+  letter-spacing: .18em;
+  text-transform: uppercase;
+  color: var(--mc-text-muted);
+}
+.mcb-plug p { margin: 12px 0 16px; font-size: 13.5px; line-height: 1.55; color: var(--mc-text-muted); }
+.mcb-plug a { font-family: var(--mc-font-mono); font-size: 11.5px; letter-spacing: .08em; }
+
+/* ============================================================
+   RESPONSIVE
+   ============================================================ */
+
+@media (max-width: 860px) {
+  /* Below the two-track threshold the feed must stop spanning, or the
+     span:2 would conjure an implicit second column and overflow. */
+  .mcb-cols { grid-template-columns: minmax(0, 1fr); }
+  .mcb-main { grid-column: auto; }
+  .mcb-rail { position: static; }
+  .mcb-sec-row { gap: 12px; }
+  .mcb-tools { flex-wrap: wrap; }
+}
+
+@media (max-width: 560px) {
+  .mcb-search { max-width: none; flex-basis: 100%; }
+  .mcb-post { grid-template-columns: minmax(0, 1fr); }
+  .mcb-arrow { display: none; }
+  .mcb-by { gap: 7px; font-size: 10.5px; }
+  .mcb-pick { padding: 22px 18px; }
+}

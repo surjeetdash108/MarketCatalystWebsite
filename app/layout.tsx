@@ -1,6 +1,8 @@
 import type { Metadata } from "next";
 import { fontVariables } from "@/lib/fonts";
 import "./globals.css";
+import "./theme.css";
+import "./chrome.css";
 import "./iq.css";
 import "./landing.css";
 

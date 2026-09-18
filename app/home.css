@@ -1,0 +1,1027 @@
+/* ============================================================
+   MARKETCATALYST — LANDING PAGE (app/page.tsx)
+   ============================================================
+   Namespaced mc-* so it can never collide with the older hw-* /
+   mq-* rules in landing.css, which still dress /about, /contact,
+   /faqs and the shared nav + footer.
+
+   COLOUR RULE: not one hex lives in this file. Every colour is a
+   token from app/theme.css — re-brand there, once.
+
+   SIZE RULE: the design was drawn against a 16px root, while
+   globals.css runs the site at 112.5% (18px) for readability.
+   Font sizes here are therefore written in px, so the landing
+   renders at exactly the drawn proportions.
+   ============================================================ */
+
+/* ---- Keyframes --------------------------------------------------- */
+@keyframes mcCue { 0% { transform: translateY(-70%); opacity: 0; } 40% { opacity: 1; } 100% { transform: translateY(70%); opacity: 0; } }
+@keyframes mcSweep { 0% { transform: translateX(-120%); } 100% { transform: translateX(340%); } }
+
+/* ---- Intro loader ------------------------------------------------ */
+.mc-loader {
+  position: fixed;
+  inset: 0;
+  z-index: 200;
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 20px;
+  padding: clamp(20px, 4vw, 54px);
+  background: var(--mc-bg);
+  clip-path: inset(0 0 0 0);
+  transition: clip-path 1.05s cubic-bezier(.76, 0, .24, 1), opacity .4s ease .7s;
+}
+.mc-loader.is-out { clip-path: inset(0 0 100% 0); opacity: 0; }
+.mc-loader-meta {
+  font-family: var(--mc-font-mono);
+  font-size: 11px;
+  letter-spacing: .2em;
+  text-transform: uppercase;
+  color: var(--mc-text-faint);
+}
+.mc-loader-meta span { display: block; margin-top: 6px; color: var(--mc-up); }
+.mc-loader-count {
+  font-family: var(--mc-font-mono);
+  font-size: clamp(48px, 12vw, 144px);
+  line-height: .82;
+  letter-spacing: -.05em;
+  color: var(--mc-text);
+}
+
+/* ---- Hero -------------------------------------------------------- */
+.mc-hero {
+  position: relative;
+  min-height: 100vh;
+  min-height: 100svh;
+  display: flex;
+  flex-direction: column;
+  /* Centred in the viewport. The top pad clears the fixed nav and the bottom
+     one leaves room for the scroll cue, so they are not equal — centring
+     happens inside that padding box, which keeps the block off the nav while
+     still reading as vertically centred. */
+  justify-content: center;
+  padding: clamp(104px, 13vh, 150px) var(--mc-gutter) clamp(56px, 8vh, 96px);
+  overflow: hidden;
+}
+/* The product shot itself: a 1440x900 mock scaled to fit, revealed under a
+   spotlight that follows the cursor (HomeMotion.tsx drives both). */
+.mc-dash {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  opacity: 0;
+  overflow: hidden;
+  /* Blurred behind the copy. CSS blur takes a length, not a percentage, so
+     "30%" is mapped onto a 10px reference: 3px. Enough that the headline and
+     lede stay readable over it and the shot reads as depth rather than
+     detail, while the layout of the terminal is still recognisable under the
+     spotlight. One number to change if it wants to be softer or sharper. */
+  filter: brightness(1.45) saturate(1.12) blur(3px);
+  transition: opacity .4s ease;
+}
+.mc-veil {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  transition: opacity .5s ease;
+  background: radial-gradient(ellipse 78% 74% at 14% 42%,
+    rgb(var(--mc-bg-rgb) / .94),
+    rgb(var(--mc-bg-rgb) / .55) 58%,
+    rgb(var(--mc-bg-rgb) / .1) 88%);
+}
+.mc-hero-grid {
+  position: relative;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: clamp(20px, 4vw, 60px);
+}
+.mc-hero-left {
+  flex: 1 1 420px;
+  min-width: 0;
+  /* The headline is sized against THIS column, not the viewport. The column is
+     not a fixed share of the screen: above 1024px the HUD sits beside it and
+     takes 430px, below that the HUD wraps full-width and the column takes
+     everything. A vw-based size cannot satisfy both — the value that fits the
+     narrow case wastes half the width in the wide one. */
+  container-type: inline-size;
+  container-name: mc-hero-col;
+}
+.mc-h1 {
+  /* Sized so the LONGER line, "Every market view,", holds on one line — the
+     break belongs at the comma, not wherever the measure runs out.
+
+     Measured: that line renders 8.09x its font-size wide in Space Grotesk at
+     -.05em tracking. Fitting 8.09 * fs into the column gives 12.4cqw as the
+     hard ceiling; 11cqw leaves ~11% for the fallback stack, which sets wider.
+     Both numbers are tied to THIS wording — re-measure if it changes.
+
+     The vw line is the fallback for browsers without container queries: they
+     drop the cqw declaration as invalid and keep this one, which is sized for
+     the narrowest case so it can never overflow. */
+  font-size: min(5.5vw, 118px);
+  font-size: min(11cqw, 118px);
+  line-height: .85;
+  letter-spacing: -.05em;
+  font-weight: 600;
+  /* Each line is its own block below, so this only stops a line breaking
+     inside itself; it cannot run the two lines together. */
+  white-space: nowrap;
+}
+.mc-h1 > span {
+  display: block;
+  overflow: hidden;
+  padding-bottom: .16em;
+  margin-bottom: -.16em;
+}
+.mc-mask {
+  display: block;
+  transform: translateY(105%);
+  transition: transform 1s cubic-bezier(.16, 1, .3, 1);
+}
+.mc-mask.is-in { transform: translateY(0); }
+.mc-fade {
+  opacity: 0;
+  transform: translateY(20px);
+  transition: opacity .8s ease, transform .8s cubic-bezier(.2, .8, .2, 1);
+}
+.mc-fade.is-in { opacity: 1; transform: none; }
+.mc-hero-row {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-end;
+  gap: clamp(20px, 3vw, 46px);
+  margin-top: clamp(24px, 4vh, 44px);
+}
+.mc-lede {
+  flex: 1 1 320px;
+  max-width: 48ch;
+  font-size: clamp(15px, 1.2vw, 18px);
+  line-height: 1.6;
+  color: var(--mc-text-muted);
+  text-wrap: pretty;
+}
+.mc-lede em {
+  font-family: var(--mc-font-serif);
+  font-style: italic;
+  color: var(--mc-text);
+}
+.mc-lede b { font-weight: 400; color: var(--mc-text); }
+.mc-actions { display: flex; flex-wrap: wrap; gap: 12px; }
+.mc-cta {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  background: var(--mc-up);
+  color: var(--mc-on-accent);
+  font-weight: 600;
+  font-size: 15px;
+  padding: 16px 26px;
+  border-radius: var(--mc-r-pill);
+  transition: background .3s ease, color .3s ease, transform .35s cubic-bezier(.2, .8, .2, 1);
+}
+.mc-cta:hover { background: var(--mc-up-soft); color: var(--mc-on-accent); transform: translateY(-2px); }
+.mc-cta i { font-family: var(--mc-font-mono); font-style: normal; }
+.mc-cta-lg { font-size: 16px; padding: 17px 30px; }
+.mc-cta-ghost {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  border: 1px solid var(--mc-line);
+  color: var(--mc-text);
+  font-size: 16px;
+  padding: 17px 30px;
+  border-radius: var(--mc-r-pill);
+  transition: border-color .3s ease, color .3s ease, transform .35s cubic-bezier(.2, .8, .2, 1);
+}
+.mc-cta-ghost:hover { border-color: var(--mc-up); color: var(--mc-up); transform: translateY(-2px); }
+
+/* ---- Hero HUD ---------------------------------------------------- */
+.mc-hud-wrap { flex: 0 1 430px; min-width: 0; }
+.mc-hud {
+  border: 1px solid var(--mc-line);
+  border-radius: var(--mc-r-md);
+  overflow: hidden;
+  background: rgb(9 10 12 / .78);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+}
+.mc-hud-head {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  padding: 13px 17px;
+  border-bottom: 1px solid var(--mc-line);
+  font-family: var(--mc-font-mono);
+  font-size: 10.5px;
+  letter-spacing: .16em;
+  text-transform: uppercase;
+  color: var(--mc-text-muted);
+}
+.mc-hud-head i {
+  width: 6px;
+  height: 6px;
+  border-radius: var(--mc-r-pill);
+  background: var(--mc-up);
+  animation: mcBlink 1.8s infinite;
+}
+.mc-hud-head span:last-child { margin-left: auto; color: var(--mc-text-faint); }
+.mc-hud-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 1px;
+  background: var(--mc-line);
+  font-family: var(--mc-font-mono);
+}
+.mc-hud-cell {
+  background: var(--mc-bg-panel);
+  padding: 17px 17px 15px;
+  transition: background .3s ease;
+}
+.mc-hud-cell:hover { background: var(--mc-bg-hover); }
+.mc-hud-k {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 10px;
+  letter-spacing: .16em;
+  color: var(--mc-text-muted);
+}
+.mc-hud-k > span:first-child { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.mc-hud-k > span:last-child { margin-left: auto; }
+.mc-hud-v { display: flex; align-items: baseline; gap: 6px; margin-top: 6px; }
+.mc-hud-v b { font-size: 21px; font-weight: 400; letter-spacing: -.01em; color: var(--mc-text); }
+.mc-hud-v span { font-size: 11.5px; }
+.mc-hud-bar {
+  margin-top: 10px;
+  height: 4px;
+  border-radius: 2px;
+  background: var(--mc-bg-track);
+  overflow: hidden;
+}
+.mc-hud-bar i { display: block; height: 100%; opacity: .75; }
+.mc-hud-note {
+  margin-top: 9px;
+  font-size: 10px;
+  letter-spacing: .04em;
+  color: var(--mc-text-muted);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.mc-hud-foot {
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+  padding: 14px 17px;
+  border-top: 1px solid var(--mc-line);
+  font-family: var(--mc-font-mono);
+  font-size: 11px;
+  line-height: 1.6;
+  color: var(--mc-text-3);
+  background: rgb(var(--mc-up-rgb) / .04);
+}
+.mc-hud-foot i { font-style: normal; color: var(--mc-up); }
+.mc-cue {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-top: 16px;
+  font-family: var(--mc-font-mono);
+  font-size: 10.5px;
+  letter-spacing: .2em;
+  text-transform: uppercase;
+  color: var(--mc-text-faint);
+}
+.mc-cue i {
+  position: relative;
+  display: block;
+  width: 1px;
+  height: 30px;
+  background: var(--mc-line);
+  overflow: hidden;
+}
+.mc-cue i::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: var(--mc-up);
+  animation: mcCue 2s ease-in-out infinite;
+}
+
+/* ---- Dashboard mock (hero spotlight + tablet/mobile preview) ------ */
+.mcd {
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: 1440px;
+  height: 900px;
+  transform-origin: top left;
+  display: grid;
+  grid-template-columns: 210px minmax(0, 1fr);
+  background: var(--mc-bg-panel);
+}
+.mcd-rail {
+  border-right: 1px solid var(--mc-line);
+  padding: 13px 11px;
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+  background: var(--mc-bg-sidebar);
+}
+.mcd-brand { display: flex; align-items: center; gap: 8px; margin-bottom: 11px; }
+.mcd-brand i { display: block; width: 21px; height: 21px; border-radius: 6px; background: var(--mc-logo-grad); }
+.mcd-brand span { font-size: 12px; font-weight: 600; letter-spacing: -.01em; }
+.mcd-nav {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 6px 8px;
+  border-radius: var(--mc-r-sm);
+  font-size: 11px;
+  color: var(--mc-text-muted);
+}
+.mcd-nav i { display: block; width: 4px; height: 4px; border-radius: var(--mc-r-pill); background: var(--mc-line-strong); }
+.mcd-nav.is-active { color: var(--mc-text); background: rgb(var(--mc-up-rgb) / .12); }
+.mcd-nav.is-active i { background: var(--mc-up); }
+.mcd-main { min-width: 0; display: flex; flex-direction: column; }
+.mcd-ticker {
+  display: flex;
+  align-items: center;
+  gap: 13px;
+  padding: 9px 13px;
+  border-bottom: 1px solid var(--mc-line);
+  font-family: var(--mc-font-mono);
+  font-size: 9.5px;
+  white-space: nowrap;
+  overflow: hidden;
+}
+.mcd-ticker span { display: flex; gap: 5px; }
+.mcd-ticker b { font-weight: 400; color: var(--mc-text-1); }
+.mcd-ticker em { font-style: normal; color: var(--mc-text-muted); }
+.mcd-idx {
+  display: grid;
+  grid-template-columns: repeat(6, minmax(0, 1fr));
+  gap: 8px;
+  padding: 11px 13px;
+}
+.mcd-idx-cell {
+  border: 1px solid var(--mc-line);
+  border-radius: 9px;
+  background: var(--mc-bg-card-alt);
+  padding: 9px 10px;
+  min-width: 0;
+}
+.mcd-idx-cell.is-hero { border-color: var(--mc-line-idx); }
+.mcd-idx-k {
+  font-family: var(--mc-font-mono);
+  font-size: 8px;
+  letter-spacing: .14em;
+  color: var(--mc-text-muted);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.mcd-idx-v { font-size: 14px; font-weight: 600; margin-top: 5px; letter-spacing: -.02em; }
+.mcd-idx-c { font-family: var(--mc-font-mono); font-size: 9px; margin-top: 3px; }
+.mcd-news {
+  margin: 0 13px;
+  border: 1px solid var(--mc-line);
+  border-radius: 11px;
+  background: linear-gradient(135deg, rgb(var(--mc-up-rgb) / .06), var(--mc-bg-card-alt) 46%);
+  padding: 11px 13px;
+}
+.mcd-news-head { display: flex; align-items: center; gap: 9px; flex-wrap: wrap; }
+.mcd-news-head > i {
+  display: block;
+  width: 17px;
+  height: 17px;
+  border-radius: 6px;
+  background: rgb(var(--mc-up-rgb) / .18);
+  border: 1px solid rgb(var(--mc-up-rgb) / .35);
+}
+.mcd-news-head b { font-size: 12px; font-weight: 600; }
+.mcd-news-live { font-family: var(--mc-font-mono); font-size: 9px; color: var(--mc-up); }
+.mcd-news-meta { font-family: var(--mc-font-mono); font-size: 9px; color: var(--mc-text-muted); }
+.mcd-news-badge {
+  margin-left: auto;
+  font-family: var(--mc-font-mono);
+  font-size: 9px;
+  color: var(--mc-on-accent);
+  background: var(--mc-up);
+  padding: 4px 8px;
+  border-radius: var(--mc-r-pill);
+}
+.mcd-news-list { display: flex; flex-direction: column; gap: 5px; margin-top: 9px; }
+.mcd-news-item { display: flex; gap: 7px; font-size: 10.5px; line-height: 1.45; color: var(--mc-text-4); }
+.mcd-news-item i { font-style: normal; color: var(--mc-up); }
+.mcd-news-item b { color: var(--mc-text); font-weight: 600; }
+.mcd-cards {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 10px;
+  padding: 11px 13px 13px;
+  min-height: 0;
+}
+.mcd-card {
+  border: 1px solid var(--mc-line);
+  border-radius: 11px;
+  background: var(--mc-bg-card);
+  overflow: hidden;
+}
+.mcd-card-head {
+  display: flex;
+  justify-content: space-between;
+  padding: 9px 11px;
+  border-bottom: 1px solid var(--mc-line);
+  font-size: 11px;
+  font-weight: 600;
+}
+.mcd-card-head span { font-family: var(--mc-font-mono); font-size: 9px; font-weight: 400; color: var(--mc-up); }
+.mcd-row {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  padding: 8px 11px;
+  border-bottom: 1px solid var(--mc-line-soft);
+}
+.mcd-avatar { display: block; flex: none; width: 16px; height: 16px; border-radius: var(--mc-r-xs); }
+.mcd-sym { font-family: var(--mc-font-mono); font-size: 10px; color: var(--mc-text-1); }
+.mcd-when {
+  font-size: 8.5px;
+  color: var(--mc-text-muted);
+  border: 1px solid var(--mc-line);
+  border-radius: 4px;
+  padding: 2px 5px;
+  white-space: nowrap;
+}
+.mcd-note { font-size: 9.5px; color: var(--mc-text-muted); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.mcd-chg { margin-left: auto; font-family: var(--mc-font-mono); font-size: 10px; }
+.mcd-tabs {
+  display: flex;
+  gap: 5px;
+  padding: 7px 11px;
+  border-bottom: 1px solid var(--mc-line-soft);
+  font-size: 9px;
+}
+.mcd-tabs span { color: var(--mc-text-muted); padding: 3px 7px; }
+.mcd-tabs span.is-active { color: var(--mc-on-accent); background: var(--mc-up); border-radius: var(--mc-r-pill); }
+.mcd-heat { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 4px; padding: 9px 11px; }
+.mcd-heat-cell { border-radius: var(--mc-r-xs); padding: 5px 6px; min-width: 0; }
+.mcd-heat-cell b {
+  display: block;
+  font-family: var(--mc-font-mono);
+  font-size: 8px;
+  color: var(--mc-on-accent);
+  font-weight: 600;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.mcd-heat-cell span {
+  display: block;
+  font-family: var(--mc-font-mono);
+  font-size: 8px;
+  color: rgb(var(--mc-bg-rgb) / .75);
+}
+
+/* ---- Ticker tape ------------------------------------------------- */
+.mc-tape {
+  position: relative;
+  border-top: 1px solid var(--mc-line);
+  border-bottom: 1px solid var(--mc-line);
+  background: var(--mc-bg-raised);
+  padding: 15px 0;
+  overflow: hidden;
+}
+.mc-tape-track { display: flex; width: max-content; will-change: transform; }
+.mc-tape-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 0 20px;
+  font-family: var(--mc-font-mono);
+  font-size: 13px;
+  white-space: nowrap;
+}
+.mc-tape-item b { font-weight: 400; color: var(--mc-text); }
+.mc-tape-item i { font-style: normal; color: var(--mc-line-strong); }
+
+/* ---- Section furniture ------------------------------------------- */
+.mc-kicker {
+  font-family: var(--mc-font-mono);
+  font-size: 11px;
+  letter-spacing: .2em;
+  text-transform: uppercase;
+  color: var(--mc-text-muted);
+}
+.mc-h2 {
+  margin-top: 14px;
+  font-size: clamp(32px, 4.6vw, 67.2px);
+  line-height: .95;
+  letter-spacing: -.045em;
+  font-weight: 600;
+}
+.mc-section-note {
+  margin-top: 16px;
+  max-width: 52ch;
+  font-size: clamp(14.5px, 1.05vw, 16.5px);
+  line-height: 1.6;
+  color: var(--mc-text-muted);
+  text-wrap: pretty;
+}
+
+/* ---- Stacked workspaces ------------------------------------------ */
+.mc-stack { position: relative; padding: clamp(60px, 10vh, 120px) 0 0; }
+.mc-stack-head {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 18px;
+  padding: 0 var(--mc-gutter) clamp(30px, 5vh, 56px);
+}
+.mc-stack-meta {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 6px;
+  font-family: var(--mc-font-mono);
+}
+.mc-stack-idx { font-size: 11.5px; letter-spacing: .16em; color: var(--mc-text-faint); }
+.mc-stack-badge {
+  font-size: 9.5px;
+  letter-spacing: .14em;
+  text-transform: uppercase;
+  color: var(--mc-up);
+  border: 1px solid rgb(var(--mc-up-rgb) / .35);
+  background: rgb(var(--mc-up-rgb) / .1);
+  border-radius: var(--mc-r-pill);
+  padding: 5px 11px;
+}
+.mc-panel {
+  position: sticky;
+  top: 12vh;
+  padding: 0 var(--mc-gutter);
+  margin-bottom: clamp(18px, 3vh, 34px);
+  will-change: transform;
+}
+.mc-panel-card {
+  max-width: var(--mc-maxw);
+  margin: 0 auto;
+  border: 1px solid var(--mc-line);
+  border-radius: var(--mc-r-xl);
+  background: linear-gradient(180deg, var(--mc-bg-hover), var(--mc-bg-deep));
+  overflow: hidden;
+  box-shadow: var(--mc-shadow-panel);
+}
+.mc-panel-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 14px;
+  padding: 13px 20px;
+  border-bottom: 1px solid var(--mc-line);
+  font-family: var(--mc-font-mono);
+  font-size: 11px;
+  letter-spacing: .14em;
+  color: var(--mc-text-muted);
+}
+.mc-panel-head span:last-child { color: var(--mc-up); }
+.mc-panel-body {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 300px), 1fr));
+  gap: clamp(20px, 3vw, 48px);
+  padding: clamp(22px, 3.4vw, 46px);
+}
+.mc-panel-copy { min-width: 0; }
+.mc-h3 {
+  font-size: clamp(25.6px, 3vw, 43.2px);
+  line-height: 1.02;
+  letter-spacing: -.035em;
+  font-weight: 600;
+  max-width: 20ch;
+}
+.mc-panel-p {
+  margin-top: 18px;
+  max-width: 48ch;
+  font-size: clamp(14.5px, 1.1vw, 16.5px);
+  line-height: 1.6;
+  color: var(--mc-text-muted);
+  text-wrap: pretty;
+}
+.mc-metrics {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 1px;
+  background: var(--mc-line);
+  border: 1px solid var(--mc-line);
+  border-radius: var(--mc-r);
+  overflow: hidden;
+  margin-top: 26px;
+}
+.mc-metric {
+  background: var(--mc-bg-card);
+  padding: 13px 14px;
+  font-family: var(--mc-font-mono);
+  min-width: 0;
+}
+.mc-metric b {
+  display: block;
+  font-size: 9.5px;
+  font-weight: 400;
+  letter-spacing: .14em;
+  color: var(--mc-text-faint);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.mc-metric span { display: block; font-size: 15px; margin-top: 6px; }
+.mc-read {
+  position: relative;
+  overflow: hidden;
+  margin-top: 16px;
+  border: 1px solid var(--mc-line);
+  border-radius: var(--mc-r);
+  padding: 13px 15px;
+  background: rgb(var(--mc-up-rgb) / .045);
+  font-family: var(--mc-font-mono);
+  font-size: 12px;
+  line-height: 1.65;
+  color: var(--mc-text-3);
+}
+.mc-read b { font-weight: 400; color: var(--mc-up); }
+.mc-read i {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  width: 60px;
+  background: linear-gradient(90deg, transparent, rgb(var(--mc-up-rgb) / .1), transparent);
+  animation: mcSweep 3.8s linear infinite;
+}
+.mc-panel-vis { min-width: 0; display: flex; flex-direction: column; gap: 14px; }
+
+/* window mock */
+.mc-win {
+  border: 1px solid var(--mc-line-strong);
+  border-radius: var(--mc-r-md);
+  background: var(--mc-bg-card);
+  overflow: hidden;
+  box-shadow: var(--mc-shadow-window);
+}
+.mc-win-bar {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 9px 12px;
+  border-bottom: 1px solid var(--mc-line);
+  font-family: var(--mc-font-mono);
+  font-size: 9.5px;
+  letter-spacing: .14em;
+  text-transform: uppercase;
+  color: var(--mc-text-muted);
+}
+.mc-win-dots { display: flex; gap: 4px; }
+.mc-win-dots i { display: block; width: 6px; height: 6px; border-radius: var(--mc-r-pill); background: var(--mc-line-strong); }
+.mc-win-dots i:last-child { background: var(--mc-up); animation: mcBlink 2.2s infinite; }
+.mc-win-stamp { margin-left: auto; color: var(--mc-text-faint); letter-spacing: .1em; }
+.mc-win-tabs {
+  display: flex;
+  align-items: center;
+  gap: 2px;
+  padding: 0 8px;
+  border-bottom: 1px solid var(--mc-line);
+  background: var(--mc-bg-raised);
+  overflow: hidden;
+}
+/* A real <button>, so the UA styling has to come off first. The underline is
+   the only affordance the design allows, which makes hover and focus carry
+   most of the weight of saying "this is a control". */
+.mc-win-tab {
+  appearance: none;
+  margin: 0;
+  background: none;
+  border: 0;
+  border-bottom: 2px solid transparent;
+  padding: 9px 9px 7px;
+  font-family: var(--mc-font-mono);
+  font-size: 9px;
+  letter-spacing: .12em;
+  text-transform: uppercase;
+  white-space: nowrap;
+  color: var(--mc-text-faint);
+  cursor: pointer;
+  transition: color .2s ease, border-color .2s ease;
+}
+.mc-win-tab:hover { color: var(--mc-text-muted); border-bottom-color: var(--mc-line-strong); }
+.mc-win-tab.is-active { color: var(--mc-text); border-bottom-color: var(--mc-up); }
+.mc-win-tab.is-active:hover { border-bottom-color: var(--mc-up); }
+.mc-win-tab:focus-visible,
+.mc-win-row:focus-visible {
+  outline: 2px solid var(--mc-up);
+  outline-offset: -2px;
+}
+.mc-win-live {
+  margin-left: auto;
+  padding: 9px 4px 7px;
+  font-family: var(--mc-font-mono);
+  font-size: 9px;
+  letter-spacing: .12em;
+  color: var(--mc-up);
+}
+.mc-win-cols,
+.mc-win-row {
+  display: grid;
+  grid-template-columns: 1.3fr .9fr .9fr .8fr;
+  gap: 8px;
+  font-family: var(--mc-font-mono);
+  white-space: nowrap;
+}
+.mc-win-cols {
+  padding: 8px 12px;
+  border-bottom: 1px solid var(--mc-line);
+  font-size: 8.5px;
+  letter-spacing: .14em;
+  color: var(--mc-text-faint);
+}
+.mc-win-cols span { overflow: hidden; text-overflow: ellipsis; }
+.mc-win-cols span + span { text-align: right; }
+/* Rows are buttons too: picking one reads it back in full under the table,
+   including the columns the narrow layout drops. */
+.mc-win-row {
+  align-items: center;
+  width: 100%;
+  margin: 0;
+  appearance: none;
+  background: none;
+  border: 0;
+  border-bottom: 1px solid var(--mc-line-soft);
+  border-left: 2px solid transparent;
+  padding: 9px 12px 9px 10px;
+  font-size: 10.5px;
+  text-align: left;
+  cursor: pointer;
+  transition: background .25s ease, border-color .25s ease;
+}
+.mc-win-row:hover { background: var(--mc-bg-hover); }
+.mc-win-row.is-picked {
+  background: rgb(var(--mc-up-rgb) / .07);
+  border-left-color: var(--mc-up);
+}
+.mc-win-row.is-picked .mc-win-a { color: var(--mc-text); }
+.mc-win-a { color: var(--mc-text-1); overflow: hidden; text-overflow: ellipsis; }
+.mc-win-b { color: var(--mc-text-4); text-align: right; overflow: hidden; text-overflow: ellipsis; }
+.mc-win-c { text-align: right; overflow: hidden; text-overflow: ellipsis; }
+.mc-win-d { display: flex; justify-content: flex-end; align-items: center; gap: 6px; min-width: 0; }
+.mc-win-d i { display: block; flex: none; height: 3px; border-radius: 2px; opacity: .55; }
+.mc-win-d span { color: var(--mc-text-muted); overflow: hidden; text-overflow: ellipsis; }
+.mc-win-foot {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  padding: 9px 12px;
+  font-family: var(--mc-font-mono);
+  font-size: 9.5px;
+  letter-spacing: .04em;
+  color: var(--mc-text-faint);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.mc-win-foot i { font-style: normal; color: var(--mc-up); }
+.mc-win-foot span { overflow: hidden; text-overflow: ellipsis; }
+/* Pinned-row detail: the symbol leads, the figures follow in the muted tone
+   the summary line uses, so the strip reads as one sentence either way. */
+.mc-win-foot b { color: var(--mc-text); font-weight: 500; letter-spacing: .08em; }
+.mc-win-foot.is-detail { color: var(--mc-text-muted); }
+.mc-spark {
+  flex: 1;
+  min-height: 140px;
+  border: 1px solid var(--mc-line);
+  border-radius: var(--mc-r-md);
+  background: var(--mc-bg-card);
+  padding: 14px;
+  display: flex;
+  align-items: flex-end;
+  gap: 4px;
+}
+.mc-spark i { flex: 1; min-width: 0; border-radius: 2px 2px 0 0; }
+
+/* ---- Coverage ---------------------------------------------------- */
+.mc-coverage {
+  position: relative;
+  padding: clamp(70px, 12vh, 150px) var(--mc-gutter);
+  border-top: 1px solid var(--mc-line);
+  overflow: hidden;
+}
+.mc-spot {
+  position: absolute;
+  width: 620px;
+  height: 620px;
+  border-radius: var(--mc-r-pill);
+  pointer-events: none;
+  background: radial-gradient(circle, rgb(var(--mc-up-rgb) / .1), transparent 62%);
+  transform: translate3d(-500px, -500px, 0);
+  opacity: 0;
+  transition: opacity .4s ease;
+}
+.mc-inner { position: relative; max-width: var(--mc-maxw); margin: 0 auto; }
+.mc-head-row {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 18px;
+  margin-bottom: clamp(26px, 4vh, 48px);
+}
+.mc-head-note { font-family: var(--mc-font-mono); font-size: 11.5px; color: var(--mc-text-muted); }
+.mc-stats {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 230px), 1fr));
+  gap: 1px;
+  background: var(--mc-line);
+  border: 1px solid var(--mc-line);
+  border-radius: 16px;
+  overflow: hidden;
+}
+.mc-stat {
+  background: var(--mc-bg);
+  padding: clamp(22px, 2.6vw, 36px);
+  transition: background .4s ease;
+}
+.mc-stat:hover { background: var(--mc-bg-hover); }
+.mc-stat-v { display: flex; align-items: baseline; gap: 7px; flex-wrap: wrap; }
+.mc-stat-v b {
+  font-size: clamp(35.2px, 3.8vw, 57.6px);
+  font-weight: 600;
+  letter-spacing: -.045em;
+  line-height: 1;
+}
+.mc-stat-v span {
+  font-family: var(--mc-font-mono);
+  font-size: 12px;
+  letter-spacing: .08em;
+  color: var(--mc-text-muted);
+}
+.mc-stat-l {
+  margin-top: 12px;
+  font-family: var(--mc-font-mono);
+  font-size: 10.5px;
+  letter-spacing: .16em;
+  text-transform: uppercase;
+  color: var(--mc-up);
+}
+.mc-stat-n { margin-top: 8px; font-size: 13.5px; line-height: 1.55; color: var(--mc-text-muted); }
+
+/* ---- Pricing ----------------------------------------------------- */
+.mc-pricing { position: relative; padding: clamp(70px, 12vh, 150px) var(--mc-gutter); }
+.mc-pricing .mc-head-row { margin-bottom: clamp(28px, 5vh, 54px); }
+.mc-pricing .mc-h2 { font-size: clamp(32px, 4.4vw, 57.6px); }
+.mc-pricing .mc-head-note { color: var(--mc-text-faint); }
+.mc-plans {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 265px), 1fr));
+  gap: clamp(14px, 1.6vw, 22px);
+}
+.mc-plan {
+  position: relative;
+  border: 1px solid var(--mc-line);
+  border-radius: var(--mc-r-lg);
+  background: var(--mc-bg-card);
+  padding: clamp(22px, 2.6vw, 34px);
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  transition: border-color .4s ease, transform .4s cubic-bezier(.2, .8, .2, 1);
+}
+.mc-plan:hover { border-color: var(--mc-up); transform: translateY(-6px); }
+.mc-plan.is-hot {
+  border-color: var(--mc-up);
+  background: linear-gradient(180deg, rgb(var(--mc-up-rgb) / .07), var(--mc-bg-card) 58%);
+}
+.mc-plan-top { display: flex; align-items: center; justify-content: space-between; gap: 10px; }
+.mc-plan-name {
+  font-family: var(--mc-font-mono);
+  font-size: 11.5px;
+  letter-spacing: .16em;
+  text-transform: uppercase;
+  color: var(--mc-text-muted);
+}
+.mc-plan-flag {
+  font-family: var(--mc-font-mono);
+  font-size: 9.5px;
+  letter-spacing: .14em;
+  text-transform: uppercase;
+  color: var(--mc-on-accent);
+  background: var(--mc-up);
+  padding: 5px 10px;
+  border-radius: var(--mc-r-pill);
+}
+.mc-plan-price { display: flex; align-items: baseline; gap: 6px; }
+.mc-plan-price b {
+  font-size: clamp(38.4px, 3.4vw, 54.4px);
+  font-weight: 600;
+  letter-spacing: -.045em;
+  line-height: 1;
+}
+.mc-plan-price span { font-family: var(--mc-font-mono); font-size: 12.5px; color: var(--mc-text-muted); }
+.mc-plan-blurb { font-size: 14.5px; line-height: 1.55; color: var(--mc-text-muted); }
+.mc-plan-feats { display: flex; flex-direction: column; gap: 9px; }
+.mc-plan-feat { display: flex; align-items: flex-start; gap: 10px; font-size: 14px; color: var(--mc-text-2); }
+.mc-plan-feat i { font-style: normal; color: var(--mc-up); font-family: var(--mc-font-mono); }
+.mc-plan-cta {
+  margin-top: auto;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 14px 20px;
+  border-radius: var(--mc-r-pill);
+  font-weight: 600;
+  font-size: 15px;
+  background: transparent;
+  color: var(--mc-text);
+  border: 1px solid var(--mc-line-strong);
+  transition: background .3s ease, color .3s ease, border-color .3s ease;
+}
+.mc-plan-cta:hover { background: var(--mc-up); color: var(--mc-on-accent); border-color: var(--mc-up); }
+.mc-plan-cta.is-solid { background: var(--mc-up); color: var(--mc-on-accent); border-color: var(--mc-up); }
+.mc-plan-cta.is-solid:hover { background: var(--mc-up-soft); }
+
+/* ---- Final CTA --------------------------------------------------- */
+.mc-final {
+  position: relative;
+  padding: clamp(54px, 8vh, 96px) var(--mc-gutter);
+  border-top: 1px solid var(--mc-line);
+  text-align: center;
+  overflow: hidden;
+}
+.mc-final h2 {
+  margin: 0 auto;
+  max-width: 18ch;
+  font-size: clamp(38.4px, 7.4vw, 102.4px);
+  line-height: .95;
+  letter-spacing: -.05em;
+  font-weight: 600;
+}
+.mc-final-actions {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 13px;
+  margin-top: clamp(22px, 3.5vh, 34px);
+}
+.mc-final-fine {
+  margin-top: 24px;
+  font-family: var(--mc-font-mono);
+  font-size: 11px;
+  letter-spacing: .1em;
+  color: var(--mc-text-faint);
+}
+
+/* ============================================================
+   RESPONSIVE — tablet + mobile
+   ============================================================ */
+
+/* Tablet / small laptop */
+@media (max-width: 1024px) {
+  .mc-panel { top: 10vh; }
+  .mc-hud-wrap { flex: 1 1 100%; }
+  .mc-stack-head { align-items: flex-start; }
+  .mc-stack-meta { align-items: flex-start; }
+}
+
+/* The product shot is a backdrop on every device. Coarse pointers cannot
+   hover, so on phone and tablet the spotlight follows a FINGER instead of a
+   cursor — press and drag over the hero and the terminal is revealed under
+   it, the same reveal, driven by the one gesture a touch screen has.
+   See HomeMotion.tsx. */
+@media (max-width: 860px) {
+  /* Sticky stacking needs viewport headroom the phone doesn't have — the
+     panels become an ordinary vertical list (HomeMotion skips the scale
+     choreography at this width too). */
+  .mc-panel { position: relative; top: auto; margin-bottom: 16px; }
+  .mc-panel-card { box-shadow: none; }
+  .mc-hero { min-height: auto; padding-top: 120px; }
+  .mc-hero-grid { align-items: flex-start; }
+  .mc-hero-row { align-items: flex-start; }
+  .mc-metrics { grid-template-columns: repeat(auto-fit, minmax(min(100%, 96px), 1fr)); }
+  .mc-final h2 { max-width: 14ch; }
+  .mc-loader-meta { font-size: 10px; }
+}
+
+@media (max-width: 560px) {
+  .mc-win-cols,
+  .mc-win-row { grid-template-columns: 1.2fr .9fr .9fr; }
+  .mc-win-cols span:nth-child(4),
+  .mc-win-row .mc-win-d { display: none; }
+  .mc-spark { min-height: 108px; }
+  .mc-stack-head { gap: 14px; }
+  .mc-cta, .mc-cta-ghost { width: 100%; justify-content: center; }
+  .mc-hud-grid { grid-template-columns: minmax(0, 1fr); }
+}
+
+/* No-JS fallback lives in a <noscript><style> block in app/page.tsx: with
+   scripting off the loader would never lift and the masked hero copy would
+   never animate in, so both are neutralised there. */
