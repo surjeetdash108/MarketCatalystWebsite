@@ -45,7 +45,7 @@ type Upstream = {
     value: number;
     pctChange: number;
     prevClose: number | null;
-    basis: "live" | "close";
+    basis: "live" | "close" | "saved";
     date: string | null;
   }[];
   quotes: { sym: string; pctChange: number }[];
@@ -129,6 +129,8 @@ const CELLS: { id: Upstream["cells"][number]["id"]; k: string; dp: number }[] = 
  * which session it is, so a weekend reading is never mistaken for live.
  */
 function noteFor(c: Upstream["cells"][number], dp: number): string {
+  // Every source is failing and this is the last value the backend recorded.
+  if (c.basis === "saved" && c.date) return `last recorded ${shortDate(c.date)}`;
   if (c.basis === "close" && c.date) {
     return c.prevClose != null
       ? `${shortDate(c.date)} close · prev ${num(c.prevClose, dp)}`
