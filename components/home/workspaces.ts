@@ -286,11 +286,11 @@ const SPECS: WsSpec[] = [
     tag: "live",
     title: "What moved, before you ask why.",
     body: "Top gainers and losers, unusual volume and the five-day leaders — each ranked with relative volume, market cap, sector and the news behind the move.",
-    metrics: [m("SECTOR", "All", "text", true), m("MARKET CAP", "All", "text", true), m("QUOTES", "~15 min delayed", "muted", true)],
+    metrics: [m("TOP GAINERS", "100", "up"), m("TOP LOSERS", "100", "down"), m("UNUSUAL VOLUME", "24", "amber")],
     spark: [0, 1],
     win: {
       title: "movers",
-      stamp: "~15 min delayed",
+      stamp: "session",
       tabs: [
         {
           label: "Top Gainers",

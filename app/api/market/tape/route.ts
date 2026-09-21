@@ -13,11 +13,13 @@ import { getLiveTape, TAPE_MAX_AGE } from "@/lib/market/tape";
  * the last good body while one request behind it refreshes, so a visitor never
  * pays for the upstream read.
  */
-// The body is identical for every visitor, so Next caches the whole response
-// and regenerates it at most once per window, rather than running this handler
-// per request. Must be a literal (Next reads it statically); keep it equal to
-// TAPE_MAX_AGE in lib/market/tape.ts.
-export const revalidate = 30;
+// Rendered per request, NOT ISR. On App Hosting an ISR route regenerates in the
+// background after responding, and Cloud Run throttles the CPU once the
+// response is sent, so the regeneration never completes and the build-time
+// body ({ ok: false }) was served indefinitely (x-nextjs-cache: STALE).
+// Per-request is cheap: getLiveTape() answers from its 30s in-memory cache, and
+// the Cache-Control below lets the CDN absorb repeat hits.
+export const dynamic = "force-dynamic";
 export const runtime = "nodejs";
 
 export async function GET() {

@@ -8,15 +8,18 @@ import { Tape } from "@/components/home/Tape";
 import { SiteFooter } from "@/components/chrome/SiteFooter";
 import { getLiveTape } from "@/lib/market/tape";
 
-// Regenerated at most every 30s (ISR) so the first paint carries real market
-// figures; the client keeps them current after that.
-export const revalidate = 30;
+// Rendered per request so the first paint carries the current market figures.
+// Not ISR: on App Hosting the background regeneration never completes (Cloud
+// Run throttles CPU after the response), which pinned the build-time render —
+// placeholders — in place. getLiveTape() is memory-cached for 30s, so this
+// costs the backend at most one call per window.
+export const dynamic = "force-dynamic";
 
 // The landing page is server-rendered end to end — copy, tables, pricing and
 // the product shot are all real DOM, so they're in the HTML for crawlers.
 //
 // The hero HUD and the marquee are server-rendered with the real tape (read
-// from the backend's public landing endpoint, cached 30s), then <HeroHud /> and
+// from the backend's public landing endpoint, memory-cached 30s), then <HeroHud /> and
 // <Tape /> poll /api/market/tape to keep them current. If the backend has never
 // answered they show placeholders — never invented figures.
 export default async function Home() {

@@ -58,9 +58,11 @@ async function readUpstream(): Promise<Upstream | null> {
     const res = await fetch(`${ORIGIN}/public/landing-tape`, {
       signal: ctrl.signal,
       headers: { accept: "application/json" },
-      // Matches the page's ISR window, so the landing page can stay static
-      // between regenerations instead of rendering per request.
-      next: { revalidate: TTL_MS / 1000 },
+      // Not Next's data cache: on App Hosting a cached entry is refreshed in
+      // the background after the response, which Cloud Run's CPU throttling
+      // never lets finish — the first (build-time) answer would be served
+      // forever. The in-memory cache below does the job instead.
+      cache: "no-store",
     });
     if (!res.ok) return null;
     const body = (await res.json()) as Upstream;
