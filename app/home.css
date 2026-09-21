@@ -230,11 +230,20 @@
 }
 .mc-lede {
   flex: 1 1 320px;
-  max-width: 48ch;
+  max-width: 52ch;
   font-size: clamp(15px, 1.2vw, 18px);
   line-height: 1.6;
   color: var(--mc-text-muted);
   text-wrap: pretty;
+  /* The same smoked-glass card as the tape snapshot beside it, so the two
+     halves of the hero read as a pair and the copy holds up over the lit
+     part of the product shot. */
+  padding: 18px 22px;
+  border: 1px solid var(--mc-line);
+  border-radius: var(--mc-r-md);
+  background: rgb(9 10 12 / .78);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
 }
 .mc-lede em {
   font-family: var(--mc-font-serif);
@@ -275,7 +284,19 @@
 .mc-cta-ghost:hover { border-color: var(--mc-up); color: var(--mc-up); transform: translateY(-2px); }
 
 /* ---- Hero HUD ---------------------------------------------------- */
-.mc-hud-wrap { flex: 0 1 430px; min-width: 0; }
+/* --mc-hud-drop: how far the tape snapshot (and the scroll cue under it) sits
+   below its natural spot. Raise it to move the card further down, 0 to put it
+   back. It is a visual nudge (relative `top`), so nothing else in the hero
+   moves; `transform` is off-limits here because .mc-fade animates it.
+   The hero clips its overflow, so past roughly the hero's bottom padding
+   (56-96px) the scroll cue starts to get cut off. */
+.mc-hud-wrap {
+  --mc-hud-drop: 85px;
+  flex: 0 1 430px;
+  min-width: 0;
+  position: relative;
+  top: var(--mc-hud-drop);
+}
 .mc-hud {
   border: 1px solid var(--mc-line);
   border-radius: var(--mc-r-md);
@@ -770,8 +791,13 @@
   padding: 0 8px;
   border-bottom: 1px solid var(--mc-line);
   background: var(--mc-bg-raised);
-  overflow: hidden;
+  /* The app's own tab labels, so some bars are long: they scroll sideways
+     rather than clip, with the scrollbar hidden to keep the chrome quiet. */
+  overflow-x: auto;
+  overflow-y: hidden;
+  scrollbar-width: none;
 }
+.mc-win-tabs::-webkit-scrollbar { display: none; }
 /* A real <button>, so the UA styling has to come off first. The underline is
    the only affordance the design allows, which makes hover and focus carry
    most of the weight of saying "this is a control". */
@@ -800,6 +826,7 @@
   outline-offset: -2px;
 }
 .mc-win-live {
+  flex: none;
   margin-left: auto;
   padding: 9px 4px 7px;
   font-family: var(--mc-font-mono);
@@ -807,10 +834,11 @@
   letter-spacing: .12em;
   color: var(--mc-up);
 }
+/* The grid template comes from the tab via --mc-cols: columns vary per tab. */
 .mc-win-cols,
 .mc-win-row {
   display: grid;
-  grid-template-columns: 1.3fr .9fr .9fr .8fr;
+  grid-template-columns: var(--mc-cols);
   gap: 8px;
   font-family: var(--mc-font-mono);
   white-space: nowrap;
@@ -823,7 +851,11 @@
   color: var(--mc-text-faint);
 }
 .mc-win-cols span { overflow: hidden; text-overflow: ellipsis; }
-.mc-win-cols span + span { text-align: right; }
+.mc-win-cols .is-r,
+.mc-win-row .is-r { text-align: right; }
+.mc-win-cols .is-c,
+.mc-win-row .is-c { text-align: center; }
+.mc-win-row span { min-width: 0; overflow: hidden; text-overflow: ellipsis; }
 /* Rows are buttons too: picking one reads it back in full under the table,
    including the columns the narrow layout drops. */
 .mc-win-row {
@@ -846,13 +878,16 @@
   background: rgb(var(--mc-up-rgb) / .07);
   border-left-color: var(--mc-up);
 }
-.mc-win-row.is-picked .mc-win-a { color: var(--mc-text); }
-.mc-win-a { color: var(--mc-text-1); overflow: hidden; text-overflow: ellipsis; }
-.mc-win-b { color: var(--mc-text-4); text-align: right; overflow: hidden; text-overflow: ellipsis; }
-.mc-win-c { text-align: right; overflow: hidden; text-overflow: ellipsis; }
-.mc-win-d { display: flex; justify-content: flex-end; align-items: center; gap: 6px; min-width: 0; }
-.mc-win-d i { display: block; flex: none; height: 3px; border-radius: 2px; opacity: .55; }
-.mc-win-d span { color: var(--mc-text-muted); overflow: hidden; text-overflow: ellipsis; }
+.mc-win-id { color: var(--mc-text-1); }
+.mc-win-row.is-picked .mc-win-id { color: var(--mc-text); }
+/* Sample figures: the shape of the value reads (sign, colour, width), the
+   value itself does not — these are not market data. */
+.mc-blur {
+  filter: blur(3.2px);
+  user-select: none;
+  pointer-events: none;
+}
+.mc-win-foot em { font-style: normal; margin-right: 10px; }
 .mc-win-foot {
   display: flex;
   align-items: center;
@@ -1097,10 +1132,6 @@
 }
 
 @media (max-width: 560px) {
-  .mc-win-cols,
-  .mc-win-row { grid-template-columns: 1.2fr .9fr .9fr; }
-  .mc-win-cols span:nth-child(4),
-  .mc-win-row .mc-win-d { display: none; }
   .mc-spark { min-height: 108px; }
   .mc-stack-head { gap: 14px; }
   .mc-cta, .mc-cta-ghost { width: 100%; justify-content: center; }

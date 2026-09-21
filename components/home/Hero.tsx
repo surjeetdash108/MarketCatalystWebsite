@@ -1,7 +1,8 @@
 import { APP_SIGNUP_URL } from "@/components/marketing/app-url";
+import type { LiveTape } from "@/lib/market/tape-types";
 import { HeroHud } from "./HeroHud";
 
-export function Hero() {
+export function Hero({ tape }: { tape: LiveTape | null }) {
   return (
     <section className="mc-hero" id="mc-top">
       {/* The product shot behind the copy, revealed under a spotlight that
@@ -48,7 +49,7 @@ export function Hero() {
           <div className="mc-hero-row">
             <p className="mc-lede mc-fade" data-fade="320">
               The entire market, narrated. Movers, earnings, analyst actions, insider and institutional flows, heatmaps,
-              screeners, themes, IPOs, options and your own book — fourteen research workspaces, each with an{" "}
+              screeners, themes, IPOs, macro, daily and weekly recaps, and your own book — fourteen research workspaces, each with an{" "}
               <em className="mc-serif">AI read</em> that tells you <em className="mc-serif">what</em> moved and{" "}
               <em className="mc-serif">why</em>. No reconstructing the story from ten scattered sources.{" "}
               <b>And plenty more waiting inside.</b>
@@ -62,7 +63,7 @@ export function Hero() {
         </div>
 
         <div className="mc-hud-wrap mc-fade" data-fade="520">
-          <HeroHud />
+          <HeroHud initial={tape} />
 
           <div className="mc-cue">
             <i />

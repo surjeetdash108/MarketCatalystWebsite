@@ -2,22 +2,19 @@
 
 import { hud, hudRead, tone, type Hud } from "./data";
 import { useLiveTape } from "./live-tape";
+import type { LiveTape } from "@/lib/market/tape-types";
 
 /**
  * The hero's tape snapshot — S&P, gold, VIX and crude.
  *
- * Renders the designed figures on the server, then swaps in the real ones once
- * the live tape answers. The swap is per-cell and by key, so a partial frame
- * (gold missing, say) still upgrades the three cells it can and leaves the
- * fourth alone rather than blanking it.
- *
- * The strip underneath moves with the numbers. Its designed copy is editorial
- * — "gold catching the haven bid" — which is fine beside designed figures and
- * wrong beside live ones the moment gold ticks down, so when real data arrives
- * the read is generated from that same frame instead.
+ * `initial` is the real tape the server rendered the page with; the client
+ * store replaces it as fresh figures arrive. Only if neither exists does it
+ * fall back to placeholder dashes. The swap is per-cell and by key, so a
+ * partial frame (gold missing, say) upgrades the cells it can and leaves the
+ * rest alone rather than blanking them.
  */
-export function HeroHud() {
-  const live = useLiveTape();
+export function HeroHud({ initial }: { initial: LiveTape | null }) {
+  const live = useLiveTape() ?? initial;
 
   const byKey = new Map((live?.cells ?? []).map((c) => [c.k, c]));
   const cells: Hud[] = hud.map((h) => {
@@ -36,7 +33,7 @@ export function HeroHud() {
             vendor-delayed and the market is often shut; claiming "live" in
             either case would be a lie told in 9px type. */}
         <span title={isLive ? live?.delayNote : undefined}>
-          {isLive ? `US · ${phaseLabel(live!.phase, live!.stale)}` : "US · live"}
+          {isLive ? `US · ${phaseLabel(live!.phase, live!.stale)}` : "US · loading"}
         </span>
       </div>
 

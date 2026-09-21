@@ -13,7 +13,11 @@ import { getLiveTape, TAPE_MAX_AGE } from "@/lib/market/tape";
  * the last good body while one request behind it refreshes, so a visitor never
  * pays for the upstream read.
  */
-export const dynamic = "force-dynamic";
+// The body is identical for every visitor, so Next caches the whole response
+// and regenerates it at most once per window, rather than running this handler
+// per request. Must be a literal (Next reads it statically); keep it equal to
+// TAPE_MAX_AGE in lib/market/tape.ts.
+export const revalidate = 30;
 export const runtime = "nodejs";
 
 export async function GET() {

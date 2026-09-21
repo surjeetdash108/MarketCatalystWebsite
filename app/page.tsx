@@ -6,16 +6,22 @@ import { HomeMotion } from "@/components/home/HomeMotion";
 import { Coverage, FinalCta, PricingPlans, WorkspaceStack } from "@/components/home/Sections";
 import { Tape } from "@/components/home/Tape";
 import { SiteFooter } from "@/components/chrome/SiteFooter";
+import { getLiveTape } from "@/lib/market/tape";
+
+// Regenerated at most every 30s (ISR) so the first paint carries real market
+// figures; the client keeps them current after that.
+export const revalidate = 30;
 
 // The landing page is server-rendered end to end — copy, tables, pricing and
 // the product shot are all real DOM, so they're in the HTML for crawlers.
 //
-// Four parts hydrate afterwards: <HomeMotion /> (intro loader, cursor
-// spotlight, scroll choreography), the workspace panels (their tabs and rows
-// are interactive), and <HeroHud /> + <Tape />, which replace their designed
-// figures with the live tape once it answers. Nothing on the critical path
-// waits for the market — the designed numbers are what the server sends.
-export default function Home() {
+// The hero HUD and the marquee are server-rendered with the real tape (read
+// from the backend's public landing endpoint, cached 30s), then <HeroHud /> and
+// <Tape /> poll /api/market/tape to keep them current. If the backend has never
+// answered they show placeholders — never invented figures.
+export default async function Home() {
+  const tape = await getLiveTape();
+
   return (
     <div className="mc-page">
       {/* With scripting off the loader would never lift and the masked hero
@@ -26,8 +32,8 @@ export default function Home() {
 
       <HomeMotion />
       <SiteNav />
-      <Hero />
-      <Tape />
+      <Hero tape={tape} />
+      <Tape initial={tape} />
       <WorkspaceStack />
       <Coverage />
       <PricingPlans />

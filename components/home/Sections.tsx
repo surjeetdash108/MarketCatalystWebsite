@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { APP_SIGNUP_URL } from "@/components/marketing/app-url";
-import { plans, stats, workspaces } from "./data";
+import { plans, stats } from "./data";
+import { workspaces } from "./workspaces";
 import { WorkspacePanel } from "./WorkspacePanel";
 
 // ── Stacked workspace panels ────────────────────────────────
@@ -16,15 +17,15 @@ export function WorkspaceStack() {
             Every view, <span className="mc-serif">stacked</span> in one scroll
           </h2>
           <p className="mc-section-note">
-            Five of the fourteen workspaces below — plus screener, themes, IPO corner, options, macro &amp; VIX, commentary,
-            recaps, heatmap and watchlist waiting inside.
+            Eight of the app&apos;s screens below, with their real tabs and columns — plus the dashboard, live feed, heatmap,
+            themes, stock search, recaps and watchlist waiting inside. Figures are blurred samples.
           </p>
         </div>
         <div className="mc-stack-meta">
           <div className="mc-stack-idx" id="mc-stack-idx">
             01 / {total}
           </div>
-          <div className="mc-stack-badge">5 of 14 shown · 9 more inside</div>
+          <div className="mc-stack-badge">{workspaces.length} of 14 shown · {14 - workspaces.length} more inside</div>
         </div>
       </div>
 

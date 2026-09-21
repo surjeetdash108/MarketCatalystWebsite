@@ -44,9 +44,9 @@
   --mc-text-1: #E4E9E6;      /* table primary cells */
   --mc-text-2: #C6CDC9;      /* feature list */
   --mc-text-3: #B9C2BD;      /* ai read copy */
-  --mc-text-4: #A6AEB5;      /* dashboard body copy */
-  --mc-text-muted: #8B939C;  /* secondary / labels */
-  --mc-text-faint: #6C747C;  /* meta, legal, column heads */
+  --mc-text-4: #B4BCC2;      /* dashboard body copy */
+  --mc-text-muted: #A8B0B8;  /* secondary / labels */
+  --mc-text-faint: #8A929A;  /* meta, legal, column heads */
 
   /* ---- Market direction + accents ---------------------------------- */
   --mc-up: #4ADE80;

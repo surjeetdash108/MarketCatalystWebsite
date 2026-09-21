@@ -2,11 +2,13 @@
 
 import { tape as staticTape, tone, type TapeItem } from "./data";
 import { useLiveTape } from "./live-tape";
+import type { LiveTape } from "@/lib/market/tape-types";
 
 /**
  * The marquee under the hero.
  *
- * Designed symbols until the live tape answers, then the real ones. The track
+ * Server-rendered with the real quotes (`initial`), then kept current by the
+ * live store. Placeholder symbols with no move only if neither exists. The track
  * is always its own content doubled — HomeMotion.tsx wraps the scroll at
  * `scrollWidth / 2`, so a track that is not exactly two copies would jump at
  * the seam. It re-measures every frame, so the swap itself is free.
@@ -15,8 +17,8 @@ import { useLiveTape } from "./live-tape";
  * percentages in a loop is noise, and the same figures are announced properly
  * in the HUD above.
  */
-export function Tape() {
-  const live = useLiveTape();
+export function Tape({ initial }: { initial: LiveTape | null }) {
+  const live = useLiveTape() ?? initial;
 
   const items: TapeItem[] =
     live && live.quotes.length > 0

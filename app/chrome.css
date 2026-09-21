@@ -121,10 +121,10 @@
      faint wash of the page colour is what gives the blur something to read
      against — at zero alpha the backdrop-filter is invisible and the bar
      looks unstyled over the hero. */
-  background: rgb(var(--mc-bg-rgb) / .34);
-  border-bottom: 1px solid transparent;
-  backdrop-filter: blur(16px) saturate(140%);
-  -webkit-backdrop-filter: blur(16px) saturate(140%);
+  background: rgb(var(--mc-bg-rgb) / .55);
+  border-bottom: 1px solid var(--mc-line-soft);
+  backdrop-filter: blur(20px) saturate(160%);
+  -webkit-backdrop-filter: blur(20px) saturate(160%);
   transition: background .4s ease, border-color .4s ease, padding .4s ease;
 }
 .mc-nav.is-stuck {

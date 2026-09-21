@@ -38,10 +38,14 @@ export const geistSans = Geist({
 // IBM Plex Mono for every ticker/label/figure, Newsreader italic for the
 // editorial accents inside headlines. Self-hosted via next/font because the
 // site CSP blocks external font stylesheets (fonts.googleapis.com).
+// 400 is deliberately not loaded. At 400 the mono labels read thin and grey
+// on the near-black ground; with no 400 face, CSS font matching resolves every
+// 400 (and lighter) request to 500, so the whole site gets the medium cut
+// without touching the ~150 rules and inline styles that set the family.
 export const ibmPlexMono = IBM_Plex_Mono({
   variable: "--font-ibm-plex-mono",
   subsets: ["latin"],
-  weight: ["400", "500", "600"],
+  weight: ["500", "600"],
   display: "swap",
 });
 
@@ -52,9 +56,11 @@ export const newsreader = Newsreader({
   display: "swap",
 });
 
+// Same trick as IBM Plex Mono above: no 400, so regular requests land on 500.
 export const jetbrainsMono = JetBrains_Mono({
   variable: "--font-jetbrains-mono",
   subsets: ["latin"],
+  weight: ["500", "600", "700"],
   display: "swap",
 });
 
