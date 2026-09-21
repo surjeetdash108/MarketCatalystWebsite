@@ -1,0 +1,118 @@
+.privacy-card {
+  background: var(--surface-1);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 40px 48px;
+  color: var(--text-hi);
+}
+
+.privacy-title {
+  font-size: 28px;
+  line-height: 1.2;
+  margin: 0 0 6px;
+  color: var(--text-hi);
+}
+
+.privacy-updated {
+  color: var(--text-dim-solid);
+  font-size: 14px;
+  margin: 0 0 32px;
+}
+
+.privacy-toc {
+  background: var(--surface-2);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: 20px 24px;
+  margin-bottom: 36px;
+}
+
+.privacy-toc-title {
+  font-weight: 700;
+  font-size: 14px;
+  margin-bottom: 10px;
+  color: var(--text-hi);
+}
+
+.privacy-toc ol {
+  margin: 0;
+  padding-left: 20px;
+  font-size: 14px;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  grid-template-rows: repeat(6, auto);
+  grid-auto-flow: column;
+  column-gap: 28px;
+  row-gap: 6px;
+}
+
+.privacy-toc li {
+  margin-bottom: 6px;
+}
+
+.privacy-toc a,
+.privacy-back-top,
+.privacy-card a {
+  color: var(--brand-2, #3b63e8);
+}
+
+.privacy-toc a,
+.privacy-back-top {
+  text-decoration: none;
+}
+
+.privacy-toc a:hover,
+.privacy-back-top:hover {
+  text-decoration: underline;
+}
+
+.privacy-card h2 {
+  font-size: 19px;
+  line-height: 1.4;
+  margin-top: 36px;
+  margin-bottom: 10px;
+  padding-top: 20px;
+  border-top: 1px solid var(--border);
+  color: var(--text-hi);
+
+  /* Keeps section headings visible below the sticky MarketCatalyst header */
+  scroll-margin-top: 100px;
+}
+
+.privacy-card h2:first-of-type {
+  border-top: none;
+  padding-top: 0;
+}
+
+.privacy-card p,
+.privacy-card li {
+  font-size: 15.5px;
+  line-height: 1.65;
+  color: var(--text);
+}
+
+.privacy-card ul {
+  padding-left: 22px;
+}
+
+.privacy-card li {
+  margin-bottom: 6px;
+}
+
+.privacy-back-top {
+  display: inline-block;
+  margin-top: 40px;
+  font-size: 13px;
+}
+
+@media (max-width: 600px) {
+  .privacy-card {
+    padding: 28px 20px;
+  }
+
+  .privacy-toc ol {
+    grid-template-columns: 1fr;
+    grid-template-rows: none;
+    grid-auto-flow: row;
+  }
+}
