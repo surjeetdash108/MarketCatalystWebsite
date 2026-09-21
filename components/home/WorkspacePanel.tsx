@@ -60,7 +60,7 @@ export function WorkspacePanel({ w }: { w: Workspace }) {
       <div className="mc-panel-card">
         <div className="mc-panel-head">
           <span>
-            {w.num} / {w.name}
+            {w.num} / <span className="mc-name">{w.name}</span>
           </span>
           <span>{w.tag}</span>
         </div>
@@ -98,7 +98,7 @@ export function WorkspacePanel({ w }: { w: Workspace }) {
                   <i />
                   <i />
                 </span>
-                <span>{w.win.title}</span>
+                <span className="mc-name">{w.name}</span>
                 <span className="mc-win-stamp">{w.win.stamp}</span>
               </div>
 

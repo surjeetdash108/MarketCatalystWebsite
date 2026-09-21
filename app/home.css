@@ -612,7 +612,7 @@
   font-size: 11px;
   letter-spacing: .2em;
   text-transform: uppercase;
-  color: var(--mc-text-muted);
+  color: var(--mc-text-2);
 }
 .mc-h2 {
   margin-top: 14px;
@@ -647,7 +647,7 @@
   gap: 6px;
   font-family: var(--mc-font-mono);
 }
-.mc-stack-idx { font-size: 11.5px; letter-spacing: .16em; color: var(--mc-text-faint); }
+.mc-stack-idx { font-size: 11.5px; letter-spacing: .16em; color: var(--mc-text-2); }
 .mc-stack-badge {
   font-size: 9.5px;
   letter-spacing: .14em;
@@ -684,9 +684,9 @@
   font-family: var(--mc-font-mono);
   font-size: 11px;
   letter-spacing: .14em;
-  color: var(--mc-text-muted);
+  color: var(--mc-text-2);
 }
-.mc-panel-head span:last-child { color: var(--mc-up); }
+.mc-panel-head > span:last-child { color: var(--mc-up); }
 .mc-panel-body {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(min(100%, 300px), 1fr));
@@ -730,7 +730,7 @@
   font-size: 9.5px;
   font-weight: 400;
   letter-spacing: .14em;
-  color: var(--mc-text-faint);
+  color: var(--mc-text-2);
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
@@ -778,12 +778,15 @@
   font-size: 9.5px;
   letter-spacing: .14em;
   text-transform: uppercase;
-  color: var(--mc-text-muted);
+  color: var(--mc-text-2);
 }
+/* Workspace names keep their real casing ("IPOs", not "IPOS") even though the
+   chrome around them is set in capitals. */
+.mc-name { text-transform: none; letter-spacing: .04em; }
 .mc-win-dots { display: flex; gap: 4px; }
 .mc-win-dots i { display: block; width: 6px; height: 6px; border-radius: var(--mc-r-pill); background: var(--mc-line-strong); }
 .mc-win-dots i:last-child { background: var(--mc-up); animation: mcBlink 2.2s infinite; }
-.mc-win-stamp { margin-left: auto; color: var(--mc-text-faint); letter-spacing: .1em; }
+.mc-win-stamp { margin-left: auto; color: var(--mc-text-2); letter-spacing: .1em; }
 .mc-win-tabs {
   display: flex;
   align-items: center;
@@ -813,11 +816,11 @@
   letter-spacing: .12em;
   text-transform: uppercase;
   white-space: nowrap;
-  color: var(--mc-text-faint);
+  color: var(--mc-text-2);
   cursor: pointer;
   transition: color .2s ease, border-color .2s ease;
 }
-.mc-win-tab:hover { color: var(--mc-text-muted); border-bottom-color: var(--mc-line-strong); }
+.mc-win-tab:hover { color: var(--mc-text); border-bottom-color: var(--mc-line-strong); }
 .mc-win-tab.is-active { color: var(--mc-text); border-bottom-color: var(--mc-up); }
 .mc-win-tab.is-active:hover { border-bottom-color: var(--mc-up); }
 .mc-win-tab:focus-visible,
@@ -848,7 +851,7 @@
   border-bottom: 1px solid var(--mc-line);
   font-size: 8.5px;
   letter-spacing: .14em;
-  color: var(--mc-text-faint);
+  color: var(--mc-text-2);
 }
 .mc-win-cols span { overflow: hidden; text-overflow: ellipsis; }
 .mc-win-cols .is-r,
@@ -896,7 +899,7 @@
   font-family: var(--mc-font-mono);
   font-size: 9.5px;
   letter-spacing: .04em;
-  color: var(--mc-text-faint);
+  color: var(--mc-text-2);
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
@@ -906,7 +909,7 @@
 /* Pinned-row detail: the symbol leads, the figures follow in the muted tone
    the summary line uses, so the strip reads as one sentence either way. */
 .mc-win-foot b { color: var(--mc-text); font-weight: 500; letter-spacing: .08em; }
-.mc-win-foot.is-detail { color: var(--mc-text-muted); }
+.mc-win-foot.is-detail { color: var(--mc-text-2); }
 .mc-spark {
   flex: 1;
   min-height: 140px;
