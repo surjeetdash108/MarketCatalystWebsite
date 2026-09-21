@@ -1,81 +1,139 @@
+.terms-page {
+  max-width: 760px;
+  margin: 0 auto;
+  padding: 48px 20px 96px;
+  box-sizing: border-box;
+}
+
 .terms-card {
+  box-sizing: border-box;
   background: var(--surface-1);
   border: 1px solid var(--border);
   border-radius: 12px;
   padding: 40px 48px;
   color: var(--text-hi);
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial,
+    sans-serif;
+  line-height: 1.65;
 }
 
-.terms-title {
+/* =========================================================
+   TITLE
+   Matches the original HTML/browser rendering
+   ========================================================= */
+
+.terms-card h1.terms-title {
+  display: block;
   font-size: 28px;
-  line-height: 1.2;
+  line-height: normal;
+  font-weight: 700 !important;
   margin: 0 0 6px;
+  padding: 0;
   color: var(--text-hi);
 }
 
+/* =========================================================
+   LAST UPDATED
+   ========================================================= */
+
 .terms-updated {
+  display: block;
   color: var(--text-dim-solid);
   font-size: 14px;
+  line-height: 1.65;
+  font-weight: 400;
   margin: 0 0 32px;
+  padding: 0;
 }
+
+.terms-updated strong {
+  font-weight: 700 !important;
+  color: var(--text-hi);
+}
+
+/* =========================================================
+   TABLE OF CONTENTS
+   ========================================================= */
 
 .terms-toc {
   background: var(--surface-2);
   border: 1px solid var(--border);
   border-radius: 10px;
   padding: 20px 24px;
-  margin-bottom: 36px;
+  margin: 0 0 36px;
 }
 
 .terms-toc-title {
-  font-weight: 700;
+  display: block;
   font-size: 14px;
-  margin-bottom: 10px;
+  line-height: normal;
+  font-weight: 700 !important;
+  margin: 0 0 10px;
+  padding: 0;
   color: var(--text-hi);
 }
 
 .terms-toc ol {
-  margin: 0;
-  padding-left: 20px;
-  font-size: 14px;
   display: grid;
+
   grid-template-columns: 1fr 1fr;
   grid-template-rows: repeat(7, auto);
   grid-auto-flow: column;
+
   column-gap: 28px;
   row-gap: 6px;
+
+  margin: 0;
+  padding-left: 20px;
+
+  font-size: 14px;
+  line-height: normal;
+
+  list-style-type: decimal !important;
+  list-style-position: outside;
 }
 
 .terms-toc li {
+  display: list-item !important;
+  list-style-type: decimal !important;
+
   margin-bottom: 6px;
+  padding: 0;
+
+  font-size: 14px;
+  line-height: normal;
+  font-weight: 400;
 }
 
-.terms-toc a,
-.terms-back-top,
-.terms-card a {
+.terms-toc a {
   color: var(--brand-2, #3b63e8);
-}
-
-.terms-toc a,
-.terms-back-top {
   text-decoration: none;
 }
 
-.terms-toc a:hover,
-.terms-back-top:hover {
+.terms-toc a:hover {
   text-decoration: underline;
 }
 
+/* =========================================================
+   SECTION HEADINGS
+   ========================================================= */
+
 .terms-card h2 {
+  display: block;
+
   font-size: 19px;
-  line-height: 1.4;
+  line-height: normal;
+  font-weight: 700 !important;
+
   margin-top: 36px;
   margin-bottom: 10px;
+
   padding-top: 20px;
+
   border-top: 1px solid var(--border);
+
   color: var(--text-hi);
 
-  /* Keeps headings visible below the sticky MarketCatalyst header */
   scroll-margin-top: 100px;
 }
 
@@ -84,49 +142,147 @@
   padding-top: 0;
 }
 
-.terms-card p,
-.terms-card li {
+/* =========================================================
+   PARAGRAPHS
+   ========================================================= */
+
+.terms-card p {
+  display: block;
+
   font-size: 15.5px;
   line-height: 1.65;
+  font-weight: 400;
+
   color: var(--text);
+
+  margin-top: 1em;
+  margin-bottom: 1em;
 }
+
+.terms-card .terms-updated {
+  margin-top: 0;
+  margin-bottom: 32px;
+}
+
+/* =========================================================
+   BULLET LISTS
+   THIS IS THE IMPORTANT PART
+   ========================================================= */
 
 .terms-card ul {
+  display: block;
+
+  margin-top: 1em;
+  margin-bottom: 1em;
+
   padding-left: 22px;
+
+  list-style-type: disc !important;
+  list-style-position: outside;
 }
 
-.terms-card li {
+.terms-card ul li {
+  display: list-item !important;
+
+  list-style-type: disc !important;
+  list-style-position: outside;
+
+  font-size: 15.5px;
+  line-height: 1.65;
+  font-weight: 400;
+
+  color: var(--text);
+
   margin-bottom: 6px;
+  padding: 0;
 }
 
-.terms-caps {
+/* Make sure nested/global reset styles cannot remove bullets */
+.terms-card ul li::marker {
+  display: inline !important;
+  font-size: 1em;
+}
+
+/* =========================================================
+   ALL LINKS
+   ========================================================= */
+
+.terms-card a {
+  color: var(--brand-2, #3b63e8);
+}
+
+.terms-card a:hover {
+  text-decoration: underline;
+}
+
+/* =========================================================
+   CAPITALIZED DISCLAIMER TEXT
+   ========================================================= */
+
+.terms-card .terms-caps {
   font-size: 13.5px !important;
+  line-height: 1.65 !important;
   letter-spacing: 0.2px;
 }
 
+/* =========================================================
+   PLACEHOLDERS
+   Same structure as original HTML, adapted to dark theme
+   ========================================================= */
+
 .terms-placeholder {
-  font-weight: 700;
-  /* font-style: italic; */
-  /* text-decoration: underline;
-  text-decoration-style: dashed; */
-  text-underline-offset: 3px;
+  display: inline;
+
+  background: var(--surface-2);
+  border: 1px dashed var(--border);
+
   color: var(--text-hi);
+
+  padding: 2px 6px;
+  border-radius: 4px;
+
+  font-size: 0.95em;
+  font-weight: 700;
 }
+
+/* =========================================================
+   BACK TO TOP
+   ========================================================= */
 
 .terms-back-top {
   display: inline-block;
+
   margin-top: 40px;
+
   font-size: 13px;
+  line-height: normal;
+  font-weight: 400;
+
+  color: var(--brand-2, #3b63e8);
+
+  text-decoration: none;
 }
 
-@media (max-width: 600px) {
-  .terms-card {
-    padding: 28px 20px;
-  }
+.terms-back-top:hover {
+  text-decoration: underline;
+}
 
+/* =========================================================
+   MOBILE
+   Original HTML switches at 480px
+   ========================================================= */
+
+@media (max-width: 480px) {
   .terms-toc ol {
     grid-template-columns: 1fr;
     grid-template-rows: none;
     grid-auto-flow: row;
+  }
+}
+
+/* Production card mobile padding */
+@media (max-width: 600px) {
+  .terms-card {
+    padding: 28px 20px;
   }
 }

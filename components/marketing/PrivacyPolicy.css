@@ -1,81 +1,156 @@
+.privacy-page {
+  max-width: 760px;
+  margin: 0 auto;
+  padding: 48px 20px 96px;
+  box-sizing: border-box;
+}
+
 .privacy-card {
+  box-sizing: border-box;
+
   background: var(--surface-1);
   border: 1px solid var(--border);
   border-radius: 12px;
+
   padding: 40px 48px;
+
+  color: var(--text-hi);
+
+  font-family:
+    -apple-system,
+    BlinkMacSystemFont,
+    "Segoe UI",
+    Helvetica,
+    Arial,
+    sans-serif;
+
+  line-height: 1.65;
+}
+
+/* =========================================================
+   TITLE
+   ========================================================= */
+
+.privacy-card h1.privacy-title {
+  display: block;
+
+  font-size: 28px;
+  line-height: normal;
+  font-weight: 700 !important;
+
+  margin: 0 0 6px;
+  padding: 0;
+
   color: var(--text-hi);
 }
 
-.privacy-title {
-  font-size: 28px;
-  line-height: 1.2;
-  margin: 0 0 6px;
-  color: var(--text-hi);
-}
+/* =========================================================
+   LAST UPDATED
+   ========================================================= */
 
 .privacy-updated {
+  display: block;
+
   color: var(--text-dim-solid);
+
   font-size: 14px;
+  line-height: 1.65;
+  font-weight: 400;
+
   margin: 0 0 32px;
+  padding: 0;
 }
+
+/* =========================================================
+   TABLE OF CONTENTS
+   ========================================================= */
 
 .privacy-toc {
   background: var(--surface-2);
+
   border: 1px solid var(--border);
   border-radius: 10px;
+
   padding: 20px 24px;
-  margin-bottom: 36px;
+  margin: 0 0 36px;
 }
 
 .privacy-toc-title {
-  font-weight: 700;
+  display: block;
+
+  font-weight: 700 !important;
   font-size: 14px;
-  margin-bottom: 10px;
+  line-height: normal;
+
+  margin: 0 0 10px;
+  padding: 0;
+
   color: var(--text-hi);
 }
 
 .privacy-toc ol {
-  margin: 0;
-  padding-left: 20px;
-  font-size: 14px;
   display: grid;
+
   grid-template-columns: 1fr 1fr;
   grid-template-rows: repeat(6, auto);
   grid-auto-flow: column;
+
   column-gap: 28px;
   row-gap: 6px;
+
+  margin: 0;
+  padding-left: 20px;
+
+  font-size: 14px;
+  line-height: normal;
+
+  list-style-type: decimal !important;
+  list-style-position: outside;
 }
 
 .privacy-toc li {
+  display: list-item !important;
+
+  list-style-type: decimal !important;
+  list-style-position: outside;
+
   margin-bottom: 6px;
+  padding: 0;
+
+  font-size: 14px;
+  line-height: normal;
+  font-weight: 400;
 }
 
-.privacy-toc a,
-.privacy-back-top,
-.privacy-card a {
+.privacy-toc a {
   color: var(--brand-2, #3b63e8);
-}
-
-.privacy-toc a,
-.privacy-back-top {
   text-decoration: none;
 }
 
-.privacy-toc a:hover,
-.privacy-back-top:hover {
+.privacy-toc a:hover {
   text-decoration: underline;
 }
 
+/* =========================================================
+   SECTION HEADINGS
+   ========================================================= */
+
 .privacy-card h2 {
+  display: block;
+
   font-size: 19px;
-  line-height: 1.4;
+  line-height: normal;
+  font-weight: 700 !important;
+
   margin-top: 36px;
   margin-bottom: 10px;
+
   padding-top: 20px;
+
   border-top: 1px solid var(--border);
+
   color: var(--text-hi);
 
-  /* Keeps section headings visible below the sticky MarketCatalyst header */
   scroll-margin-top: 100px;
 }
 
@@ -84,35 +159,124 @@
   padding-top: 0;
 }
 
-.privacy-card p,
-.privacy-card li {
+/* =========================================================
+   PARAGRAPHS
+   ========================================================= */
+
+.privacy-card p {
+  display: block;
+
   font-size: 15.5px;
   line-height: 1.65;
+  font-weight: 400;
+
   color: var(--text);
+
+  margin-top: 1em;
+  margin-bottom: 1em;
+  padding: 0;
 }
+
+.privacy-card .privacy-updated {
+  margin-top: 0;
+  margin-bottom: 32px;
+}
+
+/* =========================================================
+   BULLET LISTS
+   ========================================================= */
 
 .privacy-card ul {
+  display: block;
+
+  margin-top: 1em;
+  margin-bottom: 1em;
+
   padding-left: 22px;
+
+  list-style-type: disc !important;
+  list-style-position: outside;
 }
 
-.privacy-card li {
+.privacy-card ul li {
+  display: list-item !important;
+
+  list-style-type: disc !important;
+  list-style-position: outside;
+
+  font-size: 15.5px;
+  line-height: 1.65;
+  font-weight: 400;
+
+  color: var(--text);
+
   margin-bottom: 6px;
+  padding: 0;
 }
+
+.privacy-card ul li::marker {
+  display: inline !important;
+  font-size: 1em;
+}
+
+/* =========================================================
+   BOLD TEXT INSIDE BULLETS
+   ========================================================= */
+
+.privacy-card strong {
+  font-weight: 700 !important;
+  color: var(--text-hi);
+}
+
+/* =========================================================
+   LINKS
+   ========================================================= */
+
+.privacy-card a {
+  color: var(--brand-2, #3b63e8);
+}
+
+.privacy-card a:hover {
+  text-decoration: underline;
+}
+
+/* =========================================================
+   BACK TO TOP
+   ========================================================= */
 
 .privacy-back-top {
   display: inline-block;
+
   margin-top: 40px;
+
   font-size: 13px;
+  line-height: normal;
+  font-weight: 400;
+
+  color: var(--brand-2, #3b63e8);
+
+  text-decoration: none;
+}
+
+.privacy-back-top:hover {
+  text-decoration: underline;
+}
+
+/* =========================================================
+   MOBILE
+   Original HTML breakpoint: 480px
+   ========================================================= */
+
+@media (max-width: 480px) {
+  .privacy-toc ol {
+    grid-template-columns: 1fr;
+    grid-template-rows: none;
+    grid-auto-flow: row;
+  }
 }
 
 @media (max-width: 600px) {
   .privacy-card {
     padding: 28px 20px;
-  }
-
-  .privacy-toc ol {
-    grid-template-columns: 1fr;
-    grid-template-rows: none;
-    grid-auto-flow: row;
   }
 }
