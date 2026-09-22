@@ -48,11 +48,17 @@ export function Hero({ tape }: { tape: LiveTape | null }) {
 
           <div className="mc-hero-row">
             <p className="mc-lede mc-fade" data-fade="320">
-              The entire market, narrated. Movers, earnings, analyst actions, insider and institutional flows, heatmaps,
-              screeners, themes, IPOs, macro, daily and weekly recaps, and your own book — fourteen research workspaces, each with an{" "}
-              <em className="mc-serif">AI read</em> that tells you <em className="mc-serif">what</em> moved and{" "}
-              <em className="mc-serif">why</em>. No reconstructing the story from ten scattered sources.{" "}
-              <b>And plenty more waiting inside.</b>
+              <b>The entire market, narrated.</b> Keep your pulse on the tape with{" "}
+              <em className="mc-serif">Live Heatmaps</em>, breaking news feeds, and real-time sector performance. Plan your week using comprehensive Earnings, Economic, and IPO calendars.
+              <br /><br />
+
+              Cut through the noise with Daily and Weekly recaps, powered by our{" "}
+              <em className="mc-serif">'What Matters Now' AI synthesis</em>. Dive deeper into any ticker with 13F filings, insider flows, earnings transcripts, and historical reaction overlays.
+              <br /><br />
+
+              Build your edge with advanced screeners, ETF tools, and dynamic watchlists. No scattered sources—everything is seamlessly integrated into one platform.
+              <br /><br />
+              <b>And plenty more waiting <em className="mc-serif">inside.</em></b>
             </p>
             <div className="mc-actions mc-fade" data-fade="420">
               <a className="mc-cta" href={APP_SIGNUP_URL}>
