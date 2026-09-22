@@ -60,8 +60,7 @@ export function SiteNav({
   return (
     <header className="mc-nav" id="mc-nav">
       <Link href="/" className="mc-brand" onClick={close}>
-        <i />
-        <span>MarketCatalyst</span>
+        <img src="/logo.png" alt="MarketCatalyst" className="mc-brand-logo" />
       </Link>
 
       <nav className={`mc-nav-links${open ? " is-open" : ""}`} id="mc-nav-links">

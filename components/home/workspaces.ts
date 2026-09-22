@@ -74,7 +74,8 @@ type Kind =
   | "date" // Sep 18
   | "iso" // 2026-09-18
   | "pick" // one of `opts`
-  | "text"; // a line of words (headlines, summaries)
+  | "text" // a line of words (headlines, summaries)
+  | "txn"; // disposed 1,209,649 sh @ $286.41
 
 type Col = {
   h: string;
@@ -168,8 +169,10 @@ function gen(c: Col, id: string, r: () => number, bias: number): Cell {
     case "int":
       return blurred(`${c.pre ?? ""}${commas(Math.round(between(c.min ?? 1, c.max ?? 99)))}${c.suf ?? ""}`, c.tones?.[0] ?? "muted");
     case "signedInt": {
-      const n = Math.round(mag(c.min ?? 1, c.max ?? 60));
-      return blurred(`${n >= 0 ? "+" : "-"}${c.pre ?? ""}${commas(Math.abs(n))}${c.suf ?? ""}`, n >= 0 ? "up" : "down");
+      const dp = c.dp ?? 0;
+      const raw = mag(c.min ?? 1, c.max ?? 60);
+      const n = dp > 0 ? raw : Math.round(raw);
+      return blurred(`${n >= 0 ? "+" : "-"}${c.pre ?? ""}${commas(Math.abs(n), dp)}${c.suf ?? ""}`, n >= 0 ? "up" : "down");
     }
     case "num":
       return blurred(`${c.pre ?? ""}${between(c.min ?? 0, c.max ?? 10).toFixed(c.dp ?? 2)}${c.suf ?? ""}`, c.tones?.[0] ?? "muted");
@@ -186,6 +189,12 @@ function gen(c: Col, id: string, r: () => number, bias: number): Cell {
       const n = 3 + Math.floor(r() * 4);
       return blurred(Array.from({ length: n }, () => WORDS[Math.floor(r() * WORDS.length)]).join(" "), "muted");
     }
+    case "txn": {
+      const verb = sgn > 0 ? "acquired" : "disposed";
+      const shares = Math.round(between(c.min ?? 20000, c.max ?? 15000000));
+      const price = between(5, 400);
+      return blurred(`${verb} ${commas(shares)} sh @ $${price.toFixed(2)}`, "muted");
+    }
   }
 }
 
@@ -199,8 +208,8 @@ type TabSpec = {
   read: string;
 };
 
-/** Mono type in the window runs ~6.4px a character; clamp keeps a headline column from taking the whole row. */
-const colWidth = (chars: number) => Math.round(Math.min(170, Math.max(44, chars * 6.4 + 6)));
+/** Mono type in the window runs ~7.1px a character; clamp keeps a headline column from taking the whole row. */
+const colWidth = (chars: number) => Math.round(Math.min(190, Math.max(48, chars * 7.1 + 12)));
 
 function tab(ws: string, t: TabSpec): WinTab {
   const rows = t.rows.map((id) => {
@@ -248,23 +257,18 @@ const MOVERS_COLS = (change: string, bias: number): Col[] => [
 
 const EARNINGS_COLS: Col[] = [
   col("Company", "id"),
+  col("Date", "date"),
   col("Surprise", "pct0", { min: 1, max: 24 }),
   col("Actual", "eps"),
   col("Consensus", "eps"),
+  col("1YR Ago", "eps"),
   col("Actual Rev", "rev"),
+  col("Pre-Mkt", "pct1", { min: 0, max: 2 }),
+  col("After-Hrs", "pct1", { min: 0, max: 2 }),
   col("Guidance", "pick", {
     opts: ["▲ Raised", "▼ Cut", "Mixed", "Reaffirmed", "—"],
     tones: ["up", "down", "amber", "muted", "faint"],
   }),
-];
-
-const PLAYBOOK_COLS: Col[] = [
-  col("Report", "id"),
-  col("Result", "pick", { opts: ["Beat +4.3%", "Beat +8.1%", "Miss -2.1%", "Beat +1.7%"], tones: ["up", "up", "down", "up"] }),
-  col("Gap", "pct1", { max: 7 }),
-  col("Day 1", "pct1"),
-  col("Day 5", "pct1"),
-  col("Volume", "mult", { min: 1.2, max: 5.5 }),
 ];
 
 const SCREENER_COLS: Col[] = [
@@ -295,7 +299,7 @@ const SPECS: WsSpec[] = [
         {
           label: "Top Gainers",
           cols: MOVERS_COLS("Change", 1),
-          rows: ["TSLA", "NVDA", "AMD", "AVGO", "NFLX"],
+          rows: ["CRML", "PRTH", "GRAL", "NUAI", "SECZ"],
           bias: 1,
           foot: "top 100 gainers + 100 losers · ranked by session move",
           read: "Leadership is narrow when a handful of names carry the tape — relative volume shows whether the move has participation.",
@@ -346,32 +350,25 @@ const SPECS: WsSpec[] = [
       stamp: "Day · At a glance",
       tabs: [
         {
-          label: "Before open",
+          label: "All",
           cols: EARNINGS_COLS,
-          rows: ["FDX", "LEN", "KMX", "DRI", "GIS"],
-          foot: "Before open · 25 shown per table",
+          rows: ["AVAV", "CTAS", "PAYX", "CCL", "JBL"],
+          foot: "All · Month · 25 shown per table",
+          read: "Every report on the calendar, before open and after close together, with the pre- and after-market reaction alongside it.",
+        },
+        {
+          label: "Moved pre-mkt",
+          cols: EARNINGS_COLS,
+          rows: ["CIEN", "SAIL", "ABM", "FCEL", "YEXT"],
+          foot: "Moved pre-mkt · Before open · click ▸ for the last 4 reported quarters",
           read: "Pre-market reporters, each with its surprise, the revenue print and how the stock is trading before the bell.",
         },
         {
-          label: "After close",
+          label: "Moved after-hrs",
           cols: EARNINGS_COLS,
           rows: ["ORCL", "ADBE", "MU", "NKE", "COST"],
-          foot: "After close · click ▸ for the last 4 reported quarters",
+          foot: "Moved after-hrs · After close · click ▸ for the last 4 reported quarters",
           read: "After-close reports carry the most information — the after-hours column shows the verdict before the next session.",
-        },
-        {
-          label: "Time not specified",
-          cols: EARNINGS_COLS,
-          rows: ["AVAV", "CTAS", "PAYX", "CCL", "JBL"],
-          foot: "Time not specified",
-          read: "Names without a confirmed session still get the full row, so nothing on the calendar is left out.",
-        },
-        {
-          label: "Playbook",
-          cols: PLAYBOOK_COLS,
-          rows: ["Aug 12 '26", "May 13 '26", "Feb 11 '26", "Nov 12 '25", "Aug 13 '25"],
-          foot: "Gap is the open vs the prior close · Day 1/3/5 vs the close before the report",
-          read: "How the name trades when it reports: the typical move, the reaction on a beat and a miss, and whether the gap holds.",
         },
       ],
     },
@@ -387,6 +384,21 @@ const SPECS: WsSpec[] = [
       title: "analyst actions",
       stamp: "FMP · Polygon",
       tabs: [
+        {
+          label: "Analysts",
+          cols: [
+            col("Analyst / firm", "id"),
+            col("Actions", "int", { min: 300, max: 800 }),
+            col("Upgrades", "int", { min: 40, max: 260, tones: ["up"] }),
+            col("Downgrades", "int", { min: 40, max: 250, tones: ["down"] }),
+            col("Initiations", "int", { min: 0, max: 3 }),
+            col("Tickers", "int", { min: 140, max: 380 }),
+            col("Latest", "date"),
+          ],
+          rows: ["JP Morgan", "Morgan Stanley", "Barclays", "Wells Fargo", "UBS"],
+          foot: "221 firms · ranked by rating changes",
+          read: "The firms, ranked by how active they are — and which way they have been leaning.",
+        },
         {
           label: "Consensus & price targets",
           cols: [
@@ -413,20 +425,6 @@ const SPECS: WsSpec[] = [
           foot: "All · Upgrades · Downgrades · Initiations · Clusters only",
           read: "Every rating change by every firm, with the grade it moved from and the target it set.",
         },
-        {
-          label: "Analysts",
-          cols: [
-            col("Analyst / firm", "id"),
-            col("Actions", "int", { min: 8, max: 60 }),
-            col("Upgrades", "int", { min: 0, max: 14, tones: ["up"] }),
-            col("Downgrades", "int", { min: 0, max: 9, tones: ["down"] }),
-            col("Initiations", "int", { min: 0, max: 6 }),
-            col("Latest", "date"),
-          ],
-          rows: ["Morgan Stanley", "Goldman Sachs", "JPMorgan", "Barclays", "UBS"],
-          foot: "firms ranked by rating changes",
-          read: "The firms, ranked by how active they are — and which way they have been leaning.",
-        },
       ],
     },
   },
@@ -446,11 +444,14 @@ const SPECS: WsSpec[] = [
           cols: [
             col("Ticker", "id"),
             col("Side", "pick", { opts: ["BUY", "SELL", "SELL"], tones: ["up", "down", "down"] }),
-            col("Insider / owner", "pick", { opts: ["CEO", "CFO", "Director", "10% Owner", "EVP"] }),
-            col("Value", "signedInt", { pre: "$", suf: "K", min: 90, max: 990 }),
+            col("Insider / owner", "pick", {
+              opts: ["Filer", "Executive Chair", "President", "See Remarks", "Director", "10% Owner", "CFO"],
+            }),
+            col("Transaction", "txn", { min: 20000, max: 15000000 }),
+            col("Value", "signedInt", { pre: "$", suf: "M", min: 20, max: 900, dp: 1 }),
             col("Date", "iso"),
           ],
-          rows: ["AVGO", "CRM", "PLTR", "META", "JPM"],
+          rows: ["BTSG", "AUR", "AMZN", "BABA", "PLTR"],
           foot: "All · Buys · Sells · live · SEC EDGAR Form 4",
           read: "Open-market buys and sales, valued — the trades that carry a signal, separated from grants and exercises.",
         },
@@ -459,21 +460,17 @@ const SPECS: WsSpec[] = [
           cols: [
             col("Ticker", "id"),
             col("As of", "const", { opts: ["Q2 '26"] }),
-            col("13F filers", "int", { min: 900, max: 6400 }),
-            col("Inst. %", "num", { min: 40, max: 90, dp: 1, suf: "%" }),
-            col("Filers QoQ", "signedInt", { min: 3, max: 90 }),
+            col("13F filers", "int", { min: 900, max: 6600 }),
+            col("Inst. %", "num", { min: 40, max: 145, dp: 1, suf: "%" }),
+            col("Q1 '26", "int", { min: 900, max: 6500 }),
+            col("Q4 '25", "int", { min: 900, max: 6400 }),
+            col("Q3 '25", "int", { min: 900, max: 6200 }),
+            col("Filers QoQ", "signedInt", { min: 3, max: 170 }),
             col("Shares QoQ", "signedInt", { suf: "M", min: 1, max: 40 }),
           ],
-          rows: ["NVDA", "MSFT", "AAPL", "AMZN", "GOOGL"],
+          rows: ["MSFT", "AMZN", "AAPL", "NVDA", "GOOGL"],
           foot: "13F · most recent quarter · sort by Owners or Move",
           read: "Institutional ownership by ticker — the filer count quarter by quarter shows whether the holder base is growing.",
-        },
-        {
-          label: "Tracked 13F funds",
-          cols: [col("Fund", "id"), col("13F AUM", "num", { min: 40, max: 900, dp: 2, pre: "$", suf: "B" }), col("Positions", "int", { min: 40, max: 4800 }), col("Latest filing", "iso")],
-          rows: ["Berkshire Hathaway", "Bridgewater Associates", "Renaissance Technologies", "Citadel Advisors", "Pershing Square"],
-          foot: "Tracked 13F funds · by AUM · live · SEC EDGAR 13F",
-          read: "The funds worth following, by assets — and the cross-fund signals when several add the same name.",
         },
       ],
     },
@@ -574,7 +571,7 @@ const SPECS: WsSpec[] = [
             col("Estimate", "num", { min: 0.1, max: 4.5, suf: "%" }),
             col("Actual", "num", { min: 0.1, max: 4.5, suf: "%" }),
           ],
-          rows: ["CPI YoY", "Fed Rate Decision", "Retail Sales MoM", "Jobless Claims", "PCE Price Index"],
+          rows: ["S&P Global Composite PMI", "Initial Jobless Claims", "New Home Sales", "Durable Goods Orders MoM", "Current Account"],
           foot: "Economic calendar · FMP · High first, then Med, then Low",
           read: "The week hangs on the high-impact prints — each one is compared against the estimate and the prior reading.",
         },
@@ -594,10 +591,12 @@ const SPECS: WsSpec[] = [
           label: "Market holidays",
           cols: [
             col("Holiday", "id"),
-            col("Date", "pick", { opts: ["Thu, Nov 26", "Fri, Nov 27", "Fri, Dec 25", "Fri, Jan 1"] }),
+            col("Date", "pick", {
+              opts: ["Thu, Nov 26", "Fri, Nov 27", "Thu, Dec 24", "Fri, Dec 25", "Fri, Jan 1", "Mon, Jan 18"],
+            }),
             col("Status", "pick", { opts: ["Closed", "Early close"], tones: ["down", "amber"] }),
           ],
-          rows: ["Thanksgiving Day", "Christmas Day", "New Year's Day", "Martin Luther King Jr. Day"],
+          rows: ["Thanksgiving Day", "Day after Thanksgiving", "Christmas Eve", "Christmas Day", "New Years Day", "Martin Luther King, Jr. Day"],
           foot: "Market holidays · Polygon",
           read: "Closed and early-close sessions, flagged ahead so a thin tape is expected rather than a surprise.",
         },
@@ -617,7 +616,7 @@ const SPECS: WsSpec[] = [
     tag: "calendar",
     title: "New listings, from filing to first print.",
     body: "Recent IPO performance against the offer price, the SEC registration pipeline and the live IPO calendar with range and status.",
-    metrics: [m("TRADING ABOVE OFFER", "7/12", "up"), m("BEST PERFORMER", "+84%", "up"), m("MEDIAN SINCE IPO", "+12.34%", "up")],
+    metrics: [m("TRADING ABOVE OFFER", "78/125", "up"), m("BEST PERFORMER", "TCGLF +667%", "up"), m("MEDIAN SINCE IPO", "+0.90%", "up")],
     spark: [3, 1],
     win: {
       title: "ipos",
@@ -627,13 +626,16 @@ const SPECS: WsSpec[] = [
           label: "Recent IPO performance",
           cols: [
             col("Company", "id"),
+            col("Sector", "const", { opts: ["—"] }),
             col("IPO date", "iso"),
+            col("Shares", "vol", { min: 1, max: 60 }),
+            col("Deal size", "num", { min: 20, max: 900, dp: 1, pre: "$", suf: "M" }),
             col("Offer", "price", { min: 14, max: 45 }),
             col("Current", "price", { min: 10, max: 95 }),
             col("Day 1", "pct", { max: 60 }),
             col("Since IPO", "pct", { max: 130 }),
           ],
-          rows: ["CRWV", "CRCL", "FIG", "CHYM", "KLAR"],
+          rows: ["PTT", "AMRO", "BMB", "ETRA", "HNUC"],
           foot: "Aftermarket performance · click any row to open stock detail",
           read: "Recent deals measured from the offer price — how they traded on day one and where they are now.",
         },

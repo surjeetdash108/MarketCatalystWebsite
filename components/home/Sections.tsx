@@ -12,7 +12,7 @@ export function WorkspaceStack() {
     <section className="mc-stack" id="workspaces">
       <div className="mc-stack-head">
         <div>
-          <div className="mc-kicker">14 workspaces · stacked</div>
+          <div className="mc-kicker">16 workspaces · stacked</div>
           <h2 className="mc-h2">
             Every view, <span className="mc-serif">stacked</span> in one scroll
           </h2>
@@ -25,7 +25,7 @@ export function WorkspaceStack() {
           <div className="mc-stack-idx" id="mc-stack-idx">
             01 / {total}
           </div>
-          <div className="mc-stack-badge">{workspaces.length} of 14 shown · {14 - workspaces.length} more inside</div>
+          <div className="mc-stack-badge">{workspaces.length} of 16 shown · {16 - workspaces.length} more inside</div>
         </div>
       </div>
 
@@ -81,7 +81,7 @@ export function PricingPlans() {
               One platform. <span className="mc-serif">Simple plans.</span>
             </h2>
           </div>
-          <div className="mc-head-note">Cancel anytime · no data lock-in</div>
+          <div className="mc-head-note">Cancel anytime, no questions asked</div>
         </div>
 
         <div className="mc-plans">

@@ -29,6 +29,40 @@
 }
 .mc-loader.is-out { clip-path: inset(0 0 100% 0); opacity: 0; }
 
+/* The trading-screens photograph behind the wordmark. HomeMotion.tsx steps
+   its blur/opacity once per frame on the same 0->100 ramp as the wordmark
+   below, so the backdrop resolves into focus in lockstep with the count
+   instead of just sitting there as a static image. */
+.mc-loader-bg {
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+  --mc-bg-blur: 38px;
+  --mc-bg-fade: .14;
+}
+.mc-loader-bg img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center;
+  /* A hair oversized so the blur radius never exposes the image edge. */
+  transform: scale(1.06);
+  filter: blur(var(--mc-bg-blur));
+  opacity: var(--mc-bg-fade);
+  will-change: filter, opacity;
+}
+/* Holds the wordmark/count legible against the photograph at every point in
+   the reveal, darkest at the frame and thinnest where the type sits. */
+.mc-loader-scrim {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background: radial-gradient(ellipse 120% 90% at 50% 46%,
+    rgb(var(--mc-bg-rgb) / .48) 0%,
+    rgb(var(--mc-bg-rgb) / .74) 55%,
+    rgb(var(--mc-bg-rgb) / .92) 100%);
+}
+
 /* The wordmark sits dead centre and resolves out of a blur while the counter
    in the corner fills; HomeMotion.tsx drives every custom property below once
    per frame. The values here are the state at 000 — the first paint, and the
@@ -231,7 +265,7 @@
 .mc-lede {
   flex: 1 1 320px;
   max-width: 52ch;
-  font-size: clamp(15px, 1.2vw, 18px);
+  font-size: clamp(16.5px, 1.35vw, 19.5px);
   line-height: 1.6;
   color: var(--mc-text-muted);
   text-wrap: pretty;
@@ -292,7 +326,7 @@
    (56-96px) the scroll cue starts to get cut off. */
 .mc-hud-wrap {
   --mc-hud-drop: 85px;
-  flex: 0 1 430px;
+  flex: 0 1 470px;
   min-width: 0;
   position: relative;
   top: var(--mc-hud-drop);
@@ -309,10 +343,10 @@
   display: flex;
   align-items: center;
   gap: 9px;
-  padding: 13px 17px;
+  padding: 14px 18px;
   border-bottom: 1px solid var(--mc-line);
   font-family: var(--mc-font-mono);
-  font-size: 10.5px;
+  font-size: 11.5px;
   letter-spacing: .16em;
   text-transform: uppercase;
   color: var(--mc-text-muted);
@@ -334,7 +368,7 @@
 }
 .mc-hud-cell {
   background: var(--mc-bg-panel);
-  padding: 17px 17px 15px;
+  padding: 19px 19px 17px;
   transition: background .3s ease;
 }
 .mc-hud-cell:hover { background: var(--mc-bg-hover); }
@@ -342,26 +376,26 @@
   display: flex;
   align-items: center;
   gap: 6px;
-  font-size: 10px;
+  font-size: 11px;
   letter-spacing: .16em;
   color: var(--mc-text-muted);
 }
 .mc-hud-k > span:first-child { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 .mc-hud-k > span:last-child { margin-left: auto; }
-.mc-hud-v { display: flex; align-items: baseline; gap: 6px; margin-top: 6px; }
-.mc-hud-v b { font-size: 21px; font-weight: 400; letter-spacing: -.01em; color: var(--mc-text); }
-.mc-hud-v span { font-size: 11.5px; }
+.mc-hud-v { display: flex; align-items: baseline; gap: 7px; margin-top: 7px; }
+.mc-hud-v b { font-size: 25px; font-weight: 400; letter-spacing: -.01em; color: var(--mc-text); }
+.mc-hud-v span { font-size: 13px; }
 .mc-hud-bar {
-  margin-top: 10px;
-  height: 4px;
-  border-radius: 2px;
+  margin-top: 11px;
+  height: 5px;
+  border-radius: 2.5px;
   background: var(--mc-bg-track);
   overflow: hidden;
 }
 .mc-hud-bar i { display: block; height: 100%; opacity: .75; }
 .mc-hud-note {
-  margin-top: 9px;
-  font-size: 10px;
+  margin-top: 10px;
+  font-size: 11px;
   letter-spacing: .04em;
   color: var(--mc-text-muted);
   white-space: nowrap;
@@ -372,10 +406,10 @@
   display: flex;
   align-items: flex-start;
   gap: 8px;
-  padding: 14px 17px;
+  padding: 15px 18px;
   border-top: 1px solid var(--mc-line);
   font-family: var(--mc-font-mono);
-  font-size: 11px;
+  font-size: 12px;
   line-height: 1.6;
   color: var(--mc-text-3);
   background: rgb(var(--mc-up-rgb) / .04);
@@ -624,7 +658,7 @@
 .mc-section-note {
   margin-top: 16px;
   max-width: 52ch;
-  font-size: clamp(14.5px, 1.05vw, 16.5px);
+  font-size: clamp(15.5px, 1.15vw, 17.5px);
   line-height: 1.6;
   color: var(--mc-text-muted);
   text-wrap: pretty;
@@ -677,7 +711,6 @@
 .mc-panel-head {
   display: flex;
   align-items: center;
-  justify-content: space-between;
   gap: 14px;
   padding: 13px 20px;
   border-bottom: 1px solid var(--mc-line);
@@ -686,12 +719,17 @@
   letter-spacing: .14em;
   color: var(--mc-text-2);
 }
-.mc-panel-head > span:last-child { color: var(--mc-up); }
 .mc-panel-body {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(min(100%, 300px), 1fr));
   gap: clamp(20px, 3vw, 48px);
   padding: clamp(22px, 3.4vw, 46px);
+}
+/* Above tablet, the two columns are always side by side (see the auto-fit
+   math above), so it's safe to hand the terminal window more of the row
+   than the copy — the table carries more information per pixel than prose. */
+@media (min-width: 700px) {
+  .mc-panel-body { grid-template-columns: minmax(280px, 1fr) minmax(340px, 1.3fr); }
 }
 .mc-panel-copy { min-width: 0; }
 .mc-h3 {
@@ -704,7 +742,7 @@
 .mc-panel-p {
   margin-top: 18px;
   max-width: 48ch;
-  font-size: clamp(14.5px, 1.1vw, 16.5px);
+  font-size: clamp(15.5px, 1.2vw, 17.5px);
   line-height: 1.6;
   color: var(--mc-text-muted);
   text-wrap: pretty;
@@ -745,7 +783,7 @@
   padding: 13px 15px;
   background: rgb(var(--mc-up-rgb) / .045);
   font-family: var(--mc-font-mono);
-  font-size: 12px;
+  font-size: 13px;
   line-height: 1.65;
   color: var(--mc-text-3);
 }
@@ -772,10 +810,10 @@
   display: flex;
   align-items: center;
   gap: 8px;
-  padding: 9px 12px;
+  padding: 11px 14px;
   border-bottom: 1px solid var(--mc-line);
   font-family: var(--mc-font-mono);
-  font-size: 9.5px;
+  font-size: 11px;
   letter-spacing: .14em;
   text-transform: uppercase;
   color: var(--mc-text-2);
@@ -786,7 +824,6 @@
 .mc-win-dots { display: flex; gap: 4px; }
 .mc-win-dots i { display: block; width: 6px; height: 6px; border-radius: var(--mc-r-pill); background: var(--mc-line-strong); }
 .mc-win-dots i:last-child { background: var(--mc-up); animation: mcBlink 2.2s infinite; }
-.mc-win-stamp { margin-left: auto; color: var(--mc-text-2); letter-spacing: .1em; }
 .mc-win-tabs {
   display: flex;
   align-items: center;
@@ -810,9 +847,9 @@
   background: none;
   border: 0;
   border-bottom: 2px solid transparent;
-  padding: 9px 9px 7px;
+  padding: 11px 11px 9px;
   font-family: var(--mc-font-mono);
-  font-size: 9px;
+  font-size: 10.5px;
   letter-spacing: .12em;
   text-transform: uppercase;
   white-space: nowrap;
@@ -831,9 +868,9 @@
 .mc-win-live {
   flex: none;
   margin-left: auto;
-  padding: 9px 4px 7px;
+  padding: 11px 6px 9px;
   font-family: var(--mc-font-mono);
-  font-size: 9px;
+  font-size: 10.5px;
   letter-spacing: .12em;
   color: var(--mc-up);
 }
@@ -842,14 +879,14 @@
 .mc-win-row {
   display: grid;
   grid-template-columns: var(--mc-cols);
-  gap: 8px;
+  gap: 10px;
   font-family: var(--mc-font-mono);
   white-space: nowrap;
 }
 .mc-win-cols {
-  padding: 8px 12px;
+  padding: 10px 14px;
   border-bottom: 1px solid var(--mc-line);
-  font-size: 8.5px;
+  font-size: 9.5px;
   letter-spacing: .14em;
   color: var(--mc-text-2);
 }
@@ -870,8 +907,8 @@
   border: 0;
   border-bottom: 1px solid var(--mc-line-soft);
   border-left: 2px solid transparent;
-  padding: 9px 12px 9px 10px;
-  font-size: 10.5px;
+  padding: 12px 14px 12px 12px;
+  font-size: 11.5px;
   text-align: left;
   cursor: pointer;
   transition: background .25s ease, border-color .25s ease;
@@ -881,7 +918,7 @@
   background: rgb(var(--mc-up-rgb) / .07);
   border-left-color: var(--mc-up);
 }
-.mc-win-id { color: var(--mc-text-1); }
+.mc-win-id { color: var(--mc-text-1); font-size: 12.5px; font-weight: 500; letter-spacing: .01em; }
 .mc-win-row.is-picked .mc-win-id { color: var(--mc-text); }
 /* Sample figures: the shape of the value reads (sign, colour, width), the
    value itself does not — these are not market data. */
@@ -895,9 +932,9 @@
   display: flex;
   align-items: center;
   gap: 7px;
-  padding: 9px 12px;
+  padding: 11px 14px;
   font-family: var(--mc-font-mono);
-  font-size: 9.5px;
+  font-size: 11px;
   letter-spacing: .04em;
   color: var(--mc-text-2);
   white-space: nowrap;
@@ -987,7 +1024,7 @@
   text-transform: uppercase;
   color: var(--mc-up);
 }
-.mc-stat-n { margin-top: 8px; font-size: 13.5px; line-height: 1.55; color: var(--mc-text-muted); }
+.mc-stat-n { margin-top: 8px; font-size: 14.5px; line-height: 1.55; color: var(--mc-text-muted); }
 
 /* ---- Pricing ----------------------------------------------------- */
 .mc-pricing { position: relative; padding: clamp(70px, 12vh, 150px) var(--mc-gutter); }
@@ -1041,7 +1078,7 @@
   line-height: 1;
 }
 .mc-plan-price span { font-family: var(--mc-font-mono); font-size: 12.5px; color: var(--mc-text-muted); }
-.mc-plan-blurb { font-size: 14.5px; line-height: 1.55; color: var(--mc-text-muted); }
+.mc-plan-blurb { font-size: 15.5px; line-height: 1.55; color: var(--mc-text-muted); }
 .mc-plan-feats { display: flex; flex-direction: column; gap: 9px; }
 .mc-plan-feat { display: flex; align-items: flex-start; gap: 10px; font-size: 14px; color: var(--mc-text-2); }
 .mc-plan-feat i {
@@ -1126,6 +1163,17 @@
   .mc-hud-wrap { flex: 1 1 100%; }
   .mc-stack-head { align-items: flex-start; }
   .mc-stack-meta { align-items: flex-start; }
+  /* The larger table type above is a desktop-width enhancement — at this
+     width the terminal window doesn't have the room for it, so scale the
+     table itself (not the rest of the panel) back toward its compact size. */
+  .mc-win-bar { font-size: 9.5px; padding: 9px 12px; }
+  .mc-win-tab { font-size: 9px; padding: 9px 9px 7px; }
+  .mc-win-live { font-size: 9px; padding: 9px 4px 7px; }
+  .mc-win-cols { font-size: 8.5px; padding: 8px 12px; }
+  .mc-win-cols, .mc-win-row { gap: 8px; }
+  .mc-win-row { font-size: 10.5px; padding: 9px 12px 9px 10px; }
+  .mc-win-id { font-size: 11px; }
+  .mc-win-foot { font-size: 9.5px; padding: 9px 12px; }
 }
 
 /* The product shot is a backdrop on every device. Coarse pointers cannot
