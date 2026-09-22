@@ -265,7 +265,7 @@
 .mc-lede {
   flex: 1 1 320px;
   max-width: 52ch;
-  font-size: clamp(15px, 1.2vw, 18px);
+  font-size: clamp(16.5px, 1.35vw, 19.5px);
   line-height: 1.6;
   color: var(--mc-text-muted);
   text-wrap: pretty;
@@ -326,7 +326,7 @@
    (56-96px) the scroll cue starts to get cut off. */
 .mc-hud-wrap {
   --mc-hud-drop: 85px;
-  flex: 0 1 430px;
+  flex: 0 1 470px;
   min-width: 0;
   position: relative;
   top: var(--mc-hud-drop);
@@ -343,10 +343,10 @@
   display: flex;
   align-items: center;
   gap: 9px;
-  padding: 13px 17px;
+  padding: 14px 18px;
   border-bottom: 1px solid var(--mc-line);
   font-family: var(--mc-font-mono);
-  font-size: 10.5px;
+  font-size: 11.5px;
   letter-spacing: .16em;
   text-transform: uppercase;
   color: var(--mc-text-muted);
@@ -368,7 +368,7 @@
 }
 .mc-hud-cell {
   background: var(--mc-bg-panel);
-  padding: 17px 17px 15px;
+  padding: 19px 19px 17px;
   transition: background .3s ease;
 }
 .mc-hud-cell:hover { background: var(--mc-bg-hover); }
@@ -376,26 +376,26 @@
   display: flex;
   align-items: center;
   gap: 6px;
-  font-size: 10px;
+  font-size: 11px;
   letter-spacing: .16em;
   color: var(--mc-text-muted);
 }
 .mc-hud-k > span:first-child { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 .mc-hud-k > span:last-child { margin-left: auto; }
-.mc-hud-v { display: flex; align-items: baseline; gap: 6px; margin-top: 6px; }
-.mc-hud-v b { font-size: 21px; font-weight: 400; letter-spacing: -.01em; color: var(--mc-text); }
-.mc-hud-v span { font-size: 11.5px; }
+.mc-hud-v { display: flex; align-items: baseline; gap: 7px; margin-top: 7px; }
+.mc-hud-v b { font-size: 25px; font-weight: 400; letter-spacing: -.01em; color: var(--mc-text); }
+.mc-hud-v span { font-size: 13px; }
 .mc-hud-bar {
-  margin-top: 10px;
-  height: 4px;
-  border-radius: 2px;
+  margin-top: 11px;
+  height: 5px;
+  border-radius: 2.5px;
   background: var(--mc-bg-track);
   overflow: hidden;
 }
 .mc-hud-bar i { display: block; height: 100%; opacity: .75; }
 .mc-hud-note {
-  margin-top: 9px;
-  font-size: 10px;
+  margin-top: 10px;
+  font-size: 11px;
   letter-spacing: .04em;
   color: var(--mc-text-muted);
   white-space: nowrap;
@@ -406,10 +406,10 @@
   display: flex;
   align-items: flex-start;
   gap: 8px;
-  padding: 14px 17px;
+  padding: 15px 18px;
   border-top: 1px solid var(--mc-line);
   font-family: var(--mc-font-mono);
-  font-size: 11px;
+  font-size: 12px;
   line-height: 1.6;
   color: var(--mc-text-3);
   background: rgb(var(--mc-up-rgb) / .04);
@@ -658,7 +658,7 @@
 .mc-section-note {
   margin-top: 16px;
   max-width: 52ch;
-  font-size: clamp(14.5px, 1.05vw, 16.5px);
+  font-size: clamp(15.5px, 1.15vw, 17.5px);
   line-height: 1.6;
   color: var(--mc-text-muted);
   text-wrap: pretty;
@@ -742,7 +742,7 @@
 .mc-panel-p {
   margin-top: 18px;
   max-width: 48ch;
-  font-size: clamp(14.5px, 1.1vw, 16.5px);
+  font-size: clamp(15.5px, 1.2vw, 17.5px);
   line-height: 1.6;
   color: var(--mc-text-muted);
   text-wrap: pretty;
@@ -783,7 +783,7 @@
   padding: 13px 15px;
   background: rgb(var(--mc-up-rgb) / .045);
   font-family: var(--mc-font-mono);
-  font-size: 12px;
+  font-size: 13px;
   line-height: 1.65;
   color: var(--mc-text-3);
 }
@@ -1024,7 +1024,7 @@
   text-transform: uppercase;
   color: var(--mc-up);
 }
-.mc-stat-n { margin-top: 8px; font-size: 13.5px; line-height: 1.55; color: var(--mc-text-muted); }
+.mc-stat-n { margin-top: 8px; font-size: 14.5px; line-height: 1.55; color: var(--mc-text-muted); }
 
 /* ---- Pricing ----------------------------------------------------- */
 .mc-pricing { position: relative; padding: clamp(70px, 12vh, 150px) var(--mc-gutter); }
@@ -1078,9 +1078,9 @@
   line-height: 1;
 }
 .mc-plan-price span { font-family: var(--mc-font-mono); font-size: 12.5px; color: var(--mc-text-muted); }
-.mc-plan-blurb { font-size: 14.5px; line-height: 1.55; color: var(--mc-text-muted); }
+.mc-plan-blurb { font-size: 15.5px; line-height: 1.55; color: var(--mc-text-muted); }
 .mc-plan-feats { display: flex; flex-direction: column; gap: 9px; }
-.mc-plan-feat { display: flex; align-items: flex-start; gap: 10px; font-size: 14px; color: var(--mc-text-2); }
+.mc-plan-feat { display: flex; align-items: flex-start; gap: 10px; font-size: 15px; color: var(--mc-text-2); }
 .mc-plan-feat i { font-style: normal; color: var(--mc-up); font-family: var(--mc-font-mono); }
 .mc-plan-cta {
   margin-top: auto;

@@ -49,7 +49,7 @@ export function Hero({ tape }: { tape: LiveTape | null }) {
           <div className="mc-hero-row">
             <p className="mc-lede mc-fade" data-fade="320">
               The entire market, narrated. Movers, earnings, analyst actions, insider and institutional flows, heatmaps,
-              screeners, themes, IPOs, macro, daily and weekly recaps, and your own book — sixteen research workspaces, each with an{" "}
+              screeners, themes, IPOs, macro, AI infrastructure and ETF coverage, daily and weekly recaps, and your own book — sixteen research workspaces, each with an{" "}
               <em className="mc-serif">AI read</em> that tells you <em className="mc-serif">what</em> moved and{" "}
               <em className="mc-serif">why</em>. No reconstructing the story from ten scattered sources.{" "}
               <b>And plenty more waiting inside.</b>
