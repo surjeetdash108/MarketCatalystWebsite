@@ -444,6 +444,10 @@
    overrides this, because its rules are real selectors and this is :where(). */
 .post-doc, #mc-post-doc { background: #ffffff !important; }
 [data-theme="dark"] .post-doc, [data-theme="dark"] #mc-post-doc { background: #070d20 !important; }
+.post-doc h1,
+.post-doc .subtitle {
+  max-width: none !important;
+}
 
 /* The horizontal-overflow backstop.
    Confined to the document container, so it cannot clip the site's own sticky
