@@ -62,7 +62,6 @@ export function WorkspacePanel({ w }: { w: Workspace }) {
           <span>
             {w.num} / <span className="mc-name">{w.name}</span>
           </span>
-          <span>{w.tag}</span>
         </div>
 
         <div className="mc-panel-body">
@@ -99,7 +98,6 @@ export function WorkspacePanel({ w }: { w: Workspace }) {
                   <i />
                 </span>
                 <span className="mc-name">{w.name}</span>
-                <span className="mc-win-stamp">{w.win.stamp}</span>
               </div>
 
               <div className="mc-win-tabs" role="tablist" aria-label={`${w.name} views`} ref={tabsRef}>

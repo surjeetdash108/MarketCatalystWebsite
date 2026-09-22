@@ -145,14 +145,7 @@
 }
 .mc-brand:hover { color: var(--mc-text); }
 .mc-brand, .mc-burger { position: relative; z-index: 2; }
-.mc-brand i {
-  display: block;
-  width: 9px;
-  height: 9px;
-  border-radius: 2px;
-  background: var(--mc-up);
-  animation: mcBlink 2s infinite;
-}
+.mc-brand-logo { display: block; height: 24px; width: auto; }
 .mc-nav-links {
   display: flex;
   flex-wrap: wrap;
@@ -160,7 +153,7 @@
   justify-content: flex-end;
   gap: clamp(10px, 1.5vw, 22px);
   font-family: var(--mc-font-mono);
-  font-size: 11px;
+  font-size: 13px;
   letter-spacing: .09em;
   text-transform: uppercase;
 }
@@ -240,7 +233,6 @@
   grid-template-columns: repeat(auto-fit, minmax(min(100%, 190px), 1fr));
   gap: clamp(24px, 4vw, 58px);
 }
-.mc-footer .mc-brand i { animation: none; }
 .mc-footer-tag {
   margin-top: 14px;
   max-width: 30ch;
@@ -301,7 +293,7 @@
     border-bottom: 1px solid var(--mc-line);
     transform: translateY(-101%);
     transition: transform .42s cubic-bezier(.2, .8, .2, 1);
-    font-size: 12px;
+    font-size: 13px;
     z-index: 1;
   }
   .mc-nav-links.is-open { transform: translateY(0); }

@@ -30,6 +30,7 @@ export function HomeMotion() {
   const loaderRef = useRef<HTMLDivElement | null>(null);
   const countRef = useRef<HTMLDivElement | null>(null);
   const wordRef = useRef<HTMLDivElement | null>(null);
+  const bgRef = useRef<HTMLDivElement | null>(null);
   const raf = useRef<number | null>(null);
 
   useEffect(() => {
@@ -105,6 +106,15 @@ export function HomeMotion() {
           // The tagline shares the timing but never blurs — it only fades up,
           // a beat behind the wordmark so it lands last.
           s2.setProperty("--mc-tag-fade", String(clamp01((e - 0.15) / 0.85)));
+        }
+        // The backdrop photograph softens out of the same blur ramp as the
+        // wordmark, so the scene reads as one gesture coming into focus —
+        // but it keeps a floor on the blur so the ticker detail never
+        // resolves sharp enough to compete with the type sitting over it.
+        if (bgRef.current) {
+          const s3 = bgRef.current.style;
+          s3.setProperty("--mc-bg-blur", `${5 + (1 - e) * 30}px`);
+          s3.setProperty("--mc-bg-fade", String(0.14 + e * 0.5));
         }
         if (p < 1) raf.current = requestAnimationFrame(tick);
         else timers.push(setTimeout(finish, 320));
@@ -461,6 +471,12 @@ export function HomeMotion() {
   return (
     <>
       <div className="mc-loader" ref={loaderRef} aria-hidden="true">
+        <div className="mc-loader-bg" ref={bgRef} aria-hidden="true">
+          {/* Decorative and aria-hidden two levels up, so no alt text. High
+              fetch priority: it's the first paint the site shows at all. */}
+          <img src="/prelanding.jpg" alt="" fetchPriority="high" decoding="async" />
+        </div>
+        <div className="mc-loader-scrim" aria-hidden="true" />
         <div className="mc-loader-centre" ref={wordRef}>
           <div className="mc-loader-word">
             <span>Market</span>
