@@ -293,6 +293,7 @@
   display: inline-flex;
   align-items: center;
   gap: 10px;
+  margin-top: 20px;
   background: var(--mc-up);
   color: var(--mc-on-accent);
   font-weight: 600;
