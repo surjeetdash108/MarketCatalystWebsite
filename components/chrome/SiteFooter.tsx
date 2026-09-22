@@ -20,8 +20,7 @@ export function SiteFooter() {
       <div className="mc-footer-grid">
         <div>
           <Link href="/" className="mc-brand">
-            <i />
-            <span>MarketCatalyst</span>
+            <img src="/logo.png" alt="MarketCatalyst" className="mc-brand-logo" />
           </Link>
           <p className="mc-footer-tag">Market intelligence, narrated. From ticker to thesis, in one place.</p>
           <div className="mc-clock" id="mc-clock">

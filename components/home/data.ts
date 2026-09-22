@@ -70,7 +70,7 @@ export type Stat = { value: number; suffix: string; label: string; note: string 
 
 export const stats: Stat[] = [
   {
-    value: 14,
+    value: 16,
     suffix: "workspaces",
     label: "Every view in one scroll",
     note: "Movers, earnings, heatmap, macro, screener, themes, IPOs, recaps, portfolio and watchlist.",
@@ -118,7 +118,7 @@ export const plans: Plan[] = [
     blurb: "Explore every workspace with delayed data.",
     popular: false,
     cta: "Start free",
-    features: ["All 14 workspaces", "Delayed market data", "Daily EOD recap"],
+    features: ["All 16 workspaces", "Delayed market data", "Daily EOD recap"],
   },
   {
     name: "Pro",
