@@ -29,7 +29,7 @@ export function Pricing() {
           <div className="mqp-price">
             $29<span>/mo</span>
           </div>
-          <p className="mqp-d">Real-time research for active investors.</p>
+          <p className="mqp-d">Everything in STARTER plus</p>
           <ul className="mqp-feat">
             <li>Real-time data &amp; alerts</li>
             <li>AI read in every view</li>
@@ -45,7 +45,7 @@ export function Pricing() {
           <div className="mqp-price">
             $79<span>/mo</span>
           </div>
-          <p className="mqp-d">Maximum firepower for serious investors.</p>
+          <p className="mqp-d">Everything in PRO plus</p>
           <ul className="mqp-feat">
             <li>Everything in Pro</li>
             <li>Multi-portfolio &amp; 13F tracking</li>

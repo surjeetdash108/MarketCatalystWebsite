@@ -123,7 +123,7 @@ export const plans: Plan[] = [
   {
     name: "Pro",
     price: "$29",
-    blurb: "Real-time research for active investors.",
+    blurb: "Everything in STARTER plus",
     popular: true,
     cta: "Go Pro",
     features: ["Real-time data & alerts", "AI read in every view", "Portfolio & watchlist AI", "Scheduled recaps"],
@@ -131,7 +131,7 @@ export const plans: Plan[] = [
   {
     name: "Elite",
     price: "$79",
-    blurb: "Maximum firepower for serious investors.",
+    blurb: "Everything in PRO plus",
     popular: false,
     cta: "Go Elite",
     features: [

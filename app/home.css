@@ -1044,7 +1044,21 @@
 .mc-plan-blurb { font-size: 14.5px; line-height: 1.55; color: var(--mc-text-muted); }
 .mc-plan-feats { display: flex; flex-direction: column; gap: 9px; }
 .mc-plan-feat { display: flex; align-items: flex-start; gap: 10px; font-size: 14px; color: var(--mc-text-2); }
-.mc-plan-feat i { font-style: normal; color: var(--mc-up); font-family: var(--mc-font-mono); }
+.mc-plan-feat i {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 18px;
+  height: 18px;
+  flex: 0 0 18px;
+  border-radius: 50%;
+  font-style: normal;
+  color: var(--mc-up);
+  border: 1px solid var(--mc-up);
+  font-size: 11px;
+  font-weight: 700;
+  line-height: 1;
+}
 .mc-plan-cta {
   margin-top: auto;
   display: inline-flex;

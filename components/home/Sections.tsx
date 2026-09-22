@@ -99,7 +99,7 @@ export function PricingPlans() {
               <div className="mc-plan-feats">
                 {p.features.map((f) => (
                   <div className="mc-plan-feat" key={f}>
-                    <i>/</i>
+                    <i>✓</i>
                     <span>{f}</span>
                   </div>
                 ))}
