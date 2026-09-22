@@ -47,7 +47,7 @@ export function Hero({ tape }: { tape: LiveTape | null }) {
           </h1>
 
           <div className="mc-hero-row">
-            <p className="mc-lede mc-fade" data-fade="320">
+            <p className="mc-lede mc-fade"data-fade="320"style={{ maxWidth: "1100px" }}>
               <b>The entire market, narrated.</b> Keep your pulse on the tape with{" "}
               <em className="mc-serif">Live Heatmaps</em>, breaking news feeds, and real-time sector performance. Plan your week using comprehensive Earnings, Economic, and IPO calendars.
               <br /><br />
@@ -57,8 +57,7 @@ export function Hero({ tape }: { tape: LiveTape | null }) {
               <br /><br />
 
               Build your edge with advanced screeners, ETF tools, and dynamic watchlists. No scattered sources—everything is seamlessly integrated into one platform.
-              <br /><br />
-              <b>And plenty more waiting <em className="mc-serif">inside.</em></b>
+              <b> And plenty more waiting <em className="mc-serif">inside.</em></b>
             </p>
             <div className="mc-actions mc-fade" data-fade="420">
               <a className="mc-cta" href={APP_SIGNUP_URL}>

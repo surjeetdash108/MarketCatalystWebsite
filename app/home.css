@@ -257,9 +257,9 @@
 .mc-fade.is-in { opacity: 1; transform: none; }
 .mc-hero-row {
   display: flex;
-  flex-wrap: wrap;
-  align-items: flex-end;
-  gap: clamp(20px, 3vw, 46px);
+  flex-direction: column;
+  align-items: flex-start;
+  /* gap: 64px; */
   margin-top: clamp(24px, 4vh, 44px);
 }
 .mc-lede {
@@ -325,7 +325,7 @@
    The hero clips its overflow, so past roughly the hero's bottom padding
    (56-96px) the scroll cue starts to get cut off. */
 .mc-hud-wrap {
-  --mc-hud-drop: 85px;
+  --mc-hud-drop: 0px;
   flex: 0 1 470px;
   min-width: 0;
   position: relative;
