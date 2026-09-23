@@ -31,7 +31,7 @@ const CACHE_TTL_MS = 5 * 60 * 1000;
  *  types "educational" means the section. */
 const SECTION_LABEL: Record<string, string> = {
   recap: "Recap",
-  research: "Research desk",
+  research: "Analysis",
   educational: "Educational",
 };
 

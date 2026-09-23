@@ -815,7 +815,7 @@
   .auth-panel { padding: 22px 18px 18px; }
   .hw-nav { flex-wrap: wrap; padding: 12px 24px; margin: 0 -24px; }
   .hw-brand { margin: 0 auto; }
-  /* Five items now (About, Blogs, FAQs, Log in, Sign up) on their own row
+  /* Five items now (About, Research, FAQs, Log in, Sign up) on their own row
      under the centred brand. wrap + row-gap so the set can break to a second
      line on a narrow phone instead of overflowing, and the gap tightens rather
      than the links shrinking below a tappable size. */
