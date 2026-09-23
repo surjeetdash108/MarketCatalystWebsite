@@ -163,7 +163,8 @@ function readFor(by: Map<string, Upstream["cells"][number]>): string {
   if (gold != null && !flat(gold)) bits.push(gold > 0 ? "gold bid" : "gold offered");
   if (brent != null && !flat(brent)) bits.push(brent > 0 ? "crude firmer" : "crude lower");
 
-  return `${lead}: S&P ${pct(spx)}${bits.length ? `, ${bits.join(", ")}` : ""}.`;
+  // return `${lead}: S&P ${pct(spx)}${bits.length ? `, ${bits.join(", ")}` : ""}.`;
+  return `S&P ${pct(spx)}${bits.length ? `, ${bits.join(", ")}` : ""}.`;
 }
 
 function phaseDelayNote(u: Upstream): string {
