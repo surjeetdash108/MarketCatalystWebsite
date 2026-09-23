@@ -146,6 +146,7 @@
 .mc-brand:hover { color: var(--mc-text); }
 .mc-brand, .mc-burger { position: relative; z-index: 2; }
 .mc-brand-logo { display: block; height: 30px; width: auto; }
+.mc-brand-word-accent { color: var(--mc-up); }
 .mc-nav-links {
   display: flex;
   flex-wrap: wrap;

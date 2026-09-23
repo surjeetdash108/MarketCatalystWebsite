@@ -94,7 +94,7 @@ type Col = {
 const col = (h: string, k: Kind, o: Omit<Col, "h" | "k"> = {}): Col => ({ h, k, ...o });
 
 /** FNV-1a — turns a stable key into a PRNG seed. */
-const hash = (s: string) => {
+export const hash = (s: string) => {
   let h = 2166136261;
   for (let i = 0; i < s.length; i++) {
     h ^= s.charCodeAt(i);
@@ -104,7 +104,7 @@ const hash = (s: string) => {
 };
 
 /** mulberry32 — tiny, deterministic, good enough for sample figures. */
-const rng = (seed: number) => () => {
+export const rng = (seed: number) => () => {
   seed = (seed + 0x6d2b79f5) | 0;
   let t = Math.imul(seed ^ (seed >>> 15), 1 | seed);
   t = (t + Math.imul(t ^ (t >>> 7), 61 | t)) ^ t;

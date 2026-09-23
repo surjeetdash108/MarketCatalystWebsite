@@ -3,6 +3,10 @@
 import { useCallback, useRef, useState } from "react";
 import { tone } from "./data";
 import type { Workspace } from "./workspaces";
+import { ScreenerChart } from "./ScreenerChart";
+
+/** The screener's real filter groups (app/screener page) — fixed chrome, not sample data. */
+const SCREENER_FILTER_GROUPS = ["Relative Strength", "Growth", "Technical rating", "Liquidity & cap"];
 
 /**
  * One stacked workspace panel — copy on the left, a working terminal window
@@ -29,8 +33,18 @@ export function WorkspacePanel({ w }: { w: Workspace }) {
   const [picked, setPicked] = useState<number | null>(null);
   const tabsRef = useRef<HTMLDivElement>(null);
 
+  // The Screener is the one workspace whose whole pitch is "every match
+  // opens straight into its chart" — so unlike the other panels, its window
+  // shows a live-looking candlestick instead of another data grid. Its tab
+  // strip is relabelled with the app's filter groups (SCREENER_FILTER_GROUPS)
+  // instead of the preset names, but it still switches the same four preset
+  // screens underneath — clicking "Growth" still swaps results/chart/read.
+  const isScreener = w.name === "Screener";
   const tab = w.win.tabs[active];
   const row = picked === null ? null : tab.rows[picked];
+  const activeIdx = picked ?? 0;
+  const activeRow = tab.rows[activeIdx];
+  const matches = w.metrics.find((m) => m.k === "MATCHES");
 
   const select = useCallback((i: number) => {
     setActive(i);
@@ -116,49 +130,103 @@ export function WorkspacePanel({ w }: { w: Workspace }) {
                     onClick={() => select(i)}
                     onKeyDown={(e) => onTabKey(e, i)}
                   >
-                    {t.label}
+                    {/* The screener's tab strip is relabelled with the app's
+                        filter groups, but it's the same four preset screens
+                        underneath — picking one still swaps the data. */}
+                    {isScreener ? SCREENER_FILTER_GROUPS[i] : t.label}
                   </button>
                 ))}
                 <span className="mc-win-live">PREVIEW</span>
               </div>
 
               <div id={panelId} role="tabpanel" aria-labelledby={`${panelId}-tab-${active}`}>
-                {/* Column count varies per tab, so the grid template is set
-                    here — each column's share follows its content, and every
-                    column fits the window (no sideways scroll). */}
-                <div
-                  className="mc-win-grid"
-                  style={{ "--mc-cols": tab.widths.map((w) => `minmax(0, ${w}fr)`).join(" ") } as React.CSSProperties}
-                >
-                  <div className="mc-win-cols">
-                    {tab.cols.map((c, i) => (
-                      <span key={i} className={`is-${tab.align[i]}`} title={c}>
-                        {c}
-                      </span>
-                    ))}
-                  </div>
+                {isScreener ? (
+                  <div className="mc-scr">
+                    <div className="mc-scr-body">
+                      <div className="mc-scr-results">
+                        <div className="mc-scr-results-head">
+                          <span>Results</span>
+                          {matches && (
+                            <b className={matches.blur ? "mc-blur" : undefined} aria-hidden={matches.blur || undefined}>
+                              {matches.v} matches
+                            </b>
+                          )}
+                        </div>
+                        <div className="mc-scr-list">
+                          {tab.rows.map((r, i) => (
+                            <button
+                              type="button"
+                              key={r.id}
+                              aria-pressed={i === activeIdx}
+                              className={`mc-scr-row${i === activeIdx ? " is-picked" : ""}`}
+                              onClick={() => setPicked(i === picked ? null : i)}
+                            >
+                              <span className="mc-scr-sym mc-win-id">{r.id}</span>
+                              <span className="mc-scr-px mc-blur" aria-hidden="true">
+                                {r.cells[1].v}
+                              </span>
+                              <span className="mc-scr-rs mc-blur" aria-hidden="true" style={{ color: tone(r.cells[4].tone) }}>
+                                RS {r.cells[3].v.replace("/99", "")} · {r.cells[4].v}
+                              </span>
+                            </button>
+                          ))}
+                        </div>
+                      </div>
 
-                  {tab.rows.map((r, i) => (
-                    <button
-                      type="button"
-                      key={r.id}
-                      aria-pressed={i === picked}
-                      className={`mc-win-row${i === picked ? " is-picked" : ""}`}
-                      onClick={() => setPicked(i === picked ? null : i)}
-                    >
-                      {r.cells.map((c, j) => (
-                        <span
-                          key={j}
-                          className={`is-${tab.align[j]}${c.blur ? " mc-blur" : " mc-win-id"}`}
-                          aria-hidden={c.blur || undefined}
-                          style={c.blur || tab.align[j] !== "l" ? { color: tone(c.tone) } : undefined}
-                        >
-                          {c.v}
+                      <div className="mc-scr-chart">
+                        <div className="mc-scr-toolbar" aria-hidden="true">
+                          <span className="is-on">3M</span>
+                          <span className="is-on">Candles</span>
+                          <span>MA</span>
+                          <span>EMA</span>
+                          <span className="is-on">Volume</span>
+                          <span>RSI</span>
+                          <span>Earnings</span>
+                        </div>
+                        <div className="mc-scr-canvas mc-blur" aria-hidden="true">
+                          <ScreenerChart seed={`${w.name}|${tab.label}|${activeRow.id}`} />
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                ) : (
+                  /* Column count varies per tab, so the grid template is set
+                     here — each column's share follows its content, and every
+                     column fits the window (no sideways scroll). */
+                  <div
+                    className="mc-win-grid"
+                    style={{ "--mc-cols": tab.widths.map((w) => `minmax(0, ${w}fr)`).join(" ") } as React.CSSProperties}
+                  >
+                    <div className="mc-win-cols">
+                      {tab.cols.map((c, i) => (
+                        <span key={i} className={`is-${tab.align[i]}`} title={c}>
+                          {c}
                         </span>
                       ))}
-                    </button>
-                  ))}
-                </div>
+                    </div>
+
+                    {tab.rows.map((r, i) => (
+                      <button
+                        type="button"
+                        key={r.id}
+                        aria-pressed={i === picked}
+                        className={`mc-win-row${i === picked ? " is-picked" : ""}`}
+                        onClick={() => setPicked(i === picked ? null : i)}
+                      >
+                        {r.cells.map((c, j) => (
+                          <span
+                            key={j}
+                            className={`is-${tab.align[j]}${c.blur ? " mc-blur" : " mc-win-id"}`}
+                            aria-hidden={c.blur || undefined}
+                            style={c.blur || tab.align[j] !== "l" ? { color: tone(c.tone) } : undefined}
+                          >
+                            {c.v}
+                          </span>
+                        ))}
+                      </button>
+                    ))}
+                  </div>
+                )}
               </div>
 
               {/* The strip either summarises the tab or, once a row is
@@ -187,11 +255,15 @@ export function WorkspacePanel({ w }: { w: Workspace }) {
               </div>
             </div>
 
-            <div className="mc-spark" aria-hidden="true">
-              {w.spark.map((s, i) => (
-                <i key={i} style={{ height: s.h, background: tone(s.tone) }} />
-              ))}
-            </div>
+            {/* The Screener already has a chart doing this job — a second,
+                unrelated sparkline underneath would just be noise. */}
+            {!isScreener && (
+              <div className="mc-spark" aria-hidden="true">
+                {w.spark.map((s, i) => (
+                  <i key={i} style={{ height: s.h, background: tone(s.tone) }} />
+                ))}
+              </div>
+            )}
           </div>
         </div>
       </div>

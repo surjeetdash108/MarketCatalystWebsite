@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { APP_LOGIN_URL, APP_SIGNUP_URL } from "@/components/marketing/app-url";
+import { BrandMark } from "./BrandMark";
 
 /**
  * The site footer, worn by the landing page and the blog alike.
@@ -20,7 +21,7 @@ export function SiteFooter() {
       <div className="mc-footer-grid">
         <div>
           <Link href="/" className="mc-brand">
-            <img src="/logo.png" alt="MarketCatalyst" className="mc-brand-logo" />
+            <BrandMark />
           </Link>
           <p className="mc-footer-tag">Market intelligence, narrated. From ticker to thesis, in one place.</p>
           <div className="mc-clock" id="mc-clock">

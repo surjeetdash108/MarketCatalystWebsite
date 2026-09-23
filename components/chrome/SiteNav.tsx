@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import Link from "next/link";
 import { APP_LOGIN_URL, APP_SIGNUP_URL } from "@/components/marketing/app-url";
+import { BrandMark } from "./BrandMark";
 import type { Theme } from "./useReaderTheme";
 
 /**
@@ -60,7 +61,7 @@ export function SiteNav({
   return (
     <header className="mc-nav" id="mc-nav">
       <Link href="/" className="mc-brand" onClick={close}>
-        <img src="/logo.png" alt="MarketCatalyst" className="mc-brand-logo" />
+        <BrandMark />
       </Link>
 
       <nav className={`mc-nav-links${open ? " is-open" : ""}`} id="mc-nav-links">
