@@ -1,8 +1,10 @@
 import Link from "next/link";
 import { APP_SIGNUP_URL } from "@/components/marketing/app-url";
-import { plans, stats } from "./data";
+import { stats } from "./data";
 import { workspaces } from "./workspaces";
 import { WorkspacePanel } from "./WorkspacePanel";
+
+export { PricingPlans } from "./PricingPlans";
 
 // ── Stacked workspace panels ────────────────────────────────
 export function WorkspaceStack() {
@@ -61,52 +63,6 @@ export function Coverage() {
               </div>
               <div className="mc-stat-l">{s.label}</div>
               <div className="mc-stat-n">{s.note}</div>
-            </div>
-          ))}
-        </div>
-      </div>
-    </section>
-  );
-}
-
-// ── Pricing ─────────────────────────────────────────────────
-export function PricingPlans() {
-  return (
-    <section className="mc-pricing" id="pricing">
-      <div className="mc-inner">
-        <div className="mc-head-row">
-          <div>
-            <div className="mc-kicker">Pricing</div>
-            <h2 className="mc-h2">
-              One platform. <span className="mc-serif">Simple plans.</span>
-            </h2>
-          </div>
-          <div className="mc-head-note">Cancel anytime, no questions asked</div>
-        </div>
-
-        <div className="mc-plans">
-          {plans.map((p) => (
-            <div className={`mc-plan${p.popular ? " is-hot" : ""}`} key={p.name}>
-              <div className="mc-plan-top">
-                <span className="mc-plan-name">{p.name}</span>
-                {p.popular ? <span className="mc-plan-flag">Most popular</span> : null}
-              </div>
-              <div className="mc-plan-price">
-                <b>{p.price}</b>
-                <span>/mo</span>
-              </div>
-              <p className="mc-plan-blurb">{p.blurb}</p>
-              <div className="mc-plan-feats">
-                {p.features.map((f) => (
-                  <div className="mc-plan-feat" key={f}>
-                    <i>✓</i>
-                    <span>{f}</span>
-                  </div>
-                ))}
-              </div>
-              <a className={`mc-plan-cta${p.popular ? " is-solid" : ""}`} href={APP_SIGNUP_URL}>
-                {p.cta}
-              </a>
             </div>
           ))}
         </div>
