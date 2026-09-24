@@ -494,7 +494,15 @@ const SPECS: WsSpec[] = [
           read: "Every holding with its day move and unrealized P/L — the biggest driver of the day is named in the AI summary.",
         },
         {
-          label: "Portfolio Pulse",
+          // Position size + conviction are real fields on every holding
+          // (MarketCatalystUI's Holding type, set from the Add Holding
+          // drawer), but "Portfolio Pulse" is the *separate* dashboard card
+          // that surfaces them (app/iq/screens/dashboard.tsx) — the actual
+          // Portfolio screen (app/iq/screens/portfolio.tsx) has no tabs at
+          // all. Labelling this tab "Portfolio Pulse" would claim the
+          // Portfolio page has a second view it doesn't; this is a second
+          // lens on the same Holdings list instead.
+          label: "By Conviction",
           cols: [
             col("Ticker", "id"),
             col("Position size", "pick", { opts: ["Small", "Medium", "Large"] }),
