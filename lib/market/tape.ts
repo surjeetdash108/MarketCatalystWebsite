@@ -48,7 +48,9 @@ type Upstream = {
     basis: "live" | "close" | "saved";
     date: string | null;
   }[];
-  quotes: { sym: string; pctChange: number }[];
+  // `value` is optional: the backend has not shipped quote prices yet, only
+  // `sym`/`pctChange` — do not assume it is present.
+  quotes: { sym: string; value?: number; pctChange: number }[];
 };
 
 async function readUpstream(): Promise<Upstream | null> {
@@ -191,6 +193,7 @@ function toSnapshot(u: Upstream): LiveTape {
 
   const quotes: LiveQuote[] = u.quotes.map((q) => ({
     sym: q.sym,
+    v: q.value != null ? num(q.value, 2) : "—",
     chg: pct(q.pctChange),
     tone: q.pctChange >= 0 ? "up" : "down",
   }));

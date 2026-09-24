@@ -31,6 +31,7 @@ export function Tape({ initial }: { initial: LiveTape | null }) {
         {items.map((t, i) => (
           <div className="mc-tape-item" key={`${t.sym}-${i}`}>
             <b>{t.sym}</b>
+            <span style={{ color: tone("muted") }}>{t.v}</span>
             <span style={{ color: tone(t.tone) }}>{t.chg}</span>
             <i>/</i>
           </div>

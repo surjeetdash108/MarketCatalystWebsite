@@ -21,7 +21,7 @@ export type LiveCell = {
   note: string;
 };
 
-export type LiveQuote = { sym: string; chg: string; tone: "up" | "down" };
+export type LiveQuote = { sym: string; v: string; chg: string; tone: "up" | "down" };
 
 export type LiveTape = {
   asOf: string;
