@@ -1,0 +1,270 @@
+/* ============================================================
+   MARKETCATALYST — FEATURES
+   ============================================================
+   Namespaced mcf-* so it never collides with mc-* (landing),
+   mcb-* (blog) or mcp-* (about/faqs/contact) — though the hero,
+   card, cta and section furniture below is deliberately borrowed
+   from pages.css (mcp-hero, mcp-h1, mcp-lede, mcp-cta…) so this
+   page reads as the same product, not a bolted-on section. This
+   file only adds what /features and /features/[slug] need that
+   pages.css does not already have: the filter chips, the feature
+   card grid, the AI-layer card, and the detail page's two-column
+   "what you get / AI read" layout.
+
+   COLOUR RULE: not one hex lives in this file — every colour is a
+   token from app/theme.css.
+   ============================================================ */
+
+/* ---- Filter chips -------------------------------------------------- */
+.mcf-chips {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 10px;
+}
+.mcf-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  padding: 10px 16px;
+  border: 1px solid var(--mc-line-strong);
+  border-radius: var(--mc-r-pill);
+  background: transparent;
+  color: var(--mc-text-2);
+  font-family: var(--mc-font-mono);
+  font-size: 11.5px;
+  letter-spacing: .1em;
+  text-transform: uppercase;
+  cursor: pointer;
+  transition: border-color .25s ease, color .25s ease, background .25s ease;
+}
+.mcf-chip:hover { border-color: var(--mc-up); color: var(--mc-text); }
+.mcf-chip.is-active {
+  border-color: var(--mc-up);
+  background: var(--mc-up);
+  color: var(--mc-on-accent);
+}
+.mcf-chip-n { opacity: .65; }
+.mcf-chip.is-active .mcf-chip-n { opacity: .85; }
+
+/* ---- Feature card grid (workspaces) --------------------------------- */
+.mcf-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(min(100%, 280px), 1fr));
+  gap: 16px;
+  margin-top: clamp(22px, 3vh, 32px);
+}
+.mcf-card {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  min-height: 198px;
+  padding: 24px;
+  border: 1px solid var(--mc-line);
+  border-radius: var(--mc-r-md);
+  background: linear-gradient(180deg, var(--mc-bg-card), var(--mc-bg-deep));
+  color: var(--mc-text);
+  transition: border-color .3s ease, transform .3s ease, background .3s ease;
+}
+.mcf-card:hover { border-color: var(--mc-up); transform: translateY(-4px); color: var(--mc-text); }
+.mcf-card-top {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+  font-family: var(--mc-font-mono);
+  font-size: 10.5px;
+  letter-spacing: .14em;
+  text-transform: uppercase;
+  color: var(--mc-text-faint);
+}
+.mcf-card-title { font-size: 21px; font-weight: 600; letter-spacing: -.015em; line-height: 1.2; }
+.mcf-card-blurb { font-size: 14px; line-height: 1.55; color: var(--mc-text-muted); text-wrap: pretty; }
+.mcf-card-go {
+  margin-top: auto;
+  font-family: var(--mc-font-mono);
+  font-size: 11.5px;
+  letter-spacing: .06em;
+  color: var(--mc-up);
+}
+
+/* No results for the active chip (never happens today — every group has at
+   least one screen — but a future group with nothing yet should not render
+   an empty grid with no explanation). */
+.mcf-empty {
+  padding: 40px;
+  border: 1px dashed var(--mc-line-strong);
+  border-radius: var(--mc-r-md);
+  color: var(--mc-text-muted);
+  font-size: 14.5px;
+}
+
+/* ---- AI layer cards --------------------------------------------------
+   Same tinted-border treatment as .mcp-box (faqs rail), sized as a proper
+   card grid so the three AI screens read as the layer that sits over
+   everything below rather than another row of workspaces. */
+.mcf-ai-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 320px), 1fr));
+  gap: 16px;
+  margin-top: clamp(20px, 3vh, 28px);
+}
+.mcf-ai-card {
+  display: flex;
+  flex-direction: column;
+  gap: 13px;
+  min-height: 208px;
+  padding: 26px;
+  border: 1px solid rgb(var(--mc-up-rgb) / .35);
+  border-radius: var(--mc-r-md);
+  background: linear-gradient(180deg, rgb(var(--mc-up-rgb) / .1), var(--mc-bg-card) 62%);
+  color: var(--mc-text);
+  transition: border-color .3s ease, transform .3s ease;
+}
+.mcf-ai-card:hover { border-color: var(--mc-up); transform: translateY(-4px); color: var(--mc-text); }
+.mcf-ai-tag {
+  font-family: var(--mc-font-mono);
+  font-size: 11px;
+  letter-spacing: .14em;
+  text-transform: uppercase;
+  color: var(--mc-up);
+}
+.mcf-ai-card-title { font-size: 25px; font-weight: 600; letter-spacing: -.02em; line-height: 1.18; }
+.mcf-ai-card-blurb { font-size: 14.5px; line-height: 1.55; color: var(--mc-text-muted); text-wrap: pretty; }
+.mcf-ai-card-go { margin-top: auto; font-family: var(--mc-font-mono); font-size: 11.5px; color: var(--mc-up); }
+
+/* ============================================================
+   DETAIL PAGE (/features/[slug])
+   ============================================================ */
+
+.mcf-detail-sec { padding: 0 var(--mc-gutter) clamp(60px, 10vh, 110px); }
+
+.mcf-crumb {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 9px;
+  align-items: center;
+  font-family: var(--mc-font-mono);
+  font-size: 11.5px;
+  letter-spacing: .1em;
+  text-transform: uppercase;
+  color: var(--mc-text-faint);
+}
+.mcf-crumb a { color: var(--mc-text-muted); }
+.mcf-crumb a:hover { color: var(--mc-up); }
+.mcf-crumb span:last-child { color: var(--mc-text); }
+
+.mcf-head {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 420px), 1fr));
+  gap: 20px 60px;
+  align-items: end;
+  margin-top: clamp(28px, 5vh, 48px);
+}
+.mcf-head-lede {
+  margin: 0;
+  font-size: clamp(16.5px, 1.3vw, 19px);
+  line-height: 1.58;
+  color: var(--mc-text-2);
+  text-wrap: pretty;
+}
+
+.mcf-body {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 400px), 1fr));
+  gap: 20px;
+  margin-top: clamp(36px, 6vh, 52px);
+}
+
+.mcf-points-card,
+.mcf-ai-panel {
+  display: flex;
+  flex-direction: column;
+  border-radius: var(--mc-r-md);
+  padding: clamp(22px, 2.6vw, 30px);
+}
+.mcf-points-card {
+  border: 1px solid var(--mc-line);
+  background: linear-gradient(180deg, var(--mc-bg-card), var(--mc-bg-deep));
+}
+.mcf-ai-panel {
+  gap: 16px;
+  border: 1px solid rgb(var(--mc-up-rgb) / .35);
+  background: linear-gradient(180deg, rgb(var(--mc-up-rgb) / .1), var(--mc-bg-card) 58%);
+}
+
+.mcf-panel-k {
+  font-family: var(--mc-font-mono);
+  font-size: 11.5px;
+  letter-spacing: .16em;
+  text-transform: uppercase;
+  color: var(--mc-text-faint);
+}
+.mcf-ai-panel .mcf-panel-k { color: var(--mc-up); }
+
+.mcf-points { margin-top: 10px; display: flex; flex-direction: column; }
+.mcf-point {
+  display: grid;
+  grid-template-columns: 30px 1fr;
+  gap: 12px;
+  padding: 15px 0;
+  border-bottom: 1px solid var(--mc-line);
+  font-size: 15.5px;
+  line-height: 1.5;
+  color: var(--mc-text-1);
+}
+.mcf-point:last-child { border-bottom: 0; padding-bottom: 4px; }
+.mcf-point-n {
+  padding-top: 3px;
+  font-family: var(--mc-font-mono);
+  font-size: 11.5px;
+  color: var(--mc-up);
+}
+
+.mcf-ai-quote {
+  display: grid;
+  grid-template-columns: 3px 1fr;
+  gap: 16px;
+}
+.mcf-ai-quote i { border-radius: 2px; background: var(--mc-up); }
+.mcf-ai-quote p {
+  margin: 0;
+  font-size: clamp(18px, 1.7vw, 22px);
+  font-weight: 500;
+  line-height: 1.42;
+  letter-spacing: -.01em;
+  color: var(--mc-text);
+  text-wrap: pretty;
+}
+.mcf-ai-panel .mcp-cta { margin-top: auto; align-self: flex-start; }
+
+.mcf-pager {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 280px), 1fr));
+  gap: 16px;
+  margin-top: clamp(36px, 6vh, 52px);
+}
+.mcf-pager-card {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding: 22px 24px;
+  border: 1px solid var(--mc-line);
+  border-radius: var(--mc-r-md);
+  color: var(--mc-text);
+  transition: border-color .3s ease;
+}
+.mcf-pager-card:hover { border-color: var(--mc-up); color: var(--mc-text); }
+.mcf-pager-next { text-align: right; }
+.mcf-pager-k {
+  font-family: var(--mc-font-mono);
+  font-size: 10.5px;
+  letter-spacing: .14em;
+  text-transform: uppercase;
+  color: var(--mc-text-faint);
+}
+.mcf-pager-t { font-size: 20px; font-weight: 600; letter-spacing: -.015em; }
+
+@media (max-width: 560px) {
+  .mcf-chips { gap: 8px; }
+  .mcf-chip { padding: 9px 14px; }
+}

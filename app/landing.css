@@ -815,10 +815,10 @@
   .auth-panel { padding: 22px 18px 18px; }
   .hw-nav { flex-wrap: wrap; padding: 12px 24px; margin: 0 -24px; }
   .hw-brand { margin: 0 auto; }
-  /* Five items now (About, Research, FAQs, Log in, Sign up) on their own row
-     under the centred brand. wrap + row-gap so the set can break to a second
-     line on a narrow phone instead of overflowing, and the gap tightens rather
-     than the links shrinking below a tappable size. */
+  /* Six items now (About, Features, Research, FAQs, Log in, Sign up) on their
+     own row under the centred brand. wrap + row-gap so the set can break to a
+     second line on a narrow phone instead of overflowing, and the gap
+     tightens rather than the links shrinking below a tappable size. */
   .hw-nav-cta { width: 100%; margin-left: 0; justify-content: center; flex-wrap: wrap; gap: 8px 14px; margin-top: 6px; }
 }
 @media (max-width: 380px) {

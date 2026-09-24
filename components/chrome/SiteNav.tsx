@@ -26,7 +26,7 @@ export function SiteNav({
   theme,
   onToggleTheme,
 }: {
-  active?: "about" | "blogs" | "faqs";
+  active?: "about" | "features" | "blogs" | "faqs";
   theme?: Theme;
   onToggleTheme?: () => void;
 }) {
@@ -51,9 +51,9 @@ export function SiteNav({
   }, [open]);
 
   const close = () => setOpen(false);
-  const cls = (id: "about" | "blogs" | "faqs") =>
+  const cls = (id: "about" | "features" | "blogs" | "faqs") =>
     `mc-navlink${active === id ? " is-active" : ""}`;
-  const current = (id: "about" | "blogs" | "faqs") =>
+  const current = (id: "about" | "features" | "blogs" | "faqs") =>
     active === id ? ("page" as const) : undefined;
 
   const toDark = theme === "light";
@@ -67,6 +67,9 @@ export function SiteNav({
       <nav className={`mc-nav-links${open ? " is-open" : ""}`} id="mc-nav-links">
         <Link className={cls("about")} href="/about" onClick={close} aria-current={current("about")}>
           About us
+        </Link>
+        <Link className={cls("features")} href="/features" onClick={close} aria-current={current("features")}>
+          Features
         </Link>
         <Link className={cls("blogs")} href="/posts" onClick={close} aria-current={current("blogs")}>
           Research

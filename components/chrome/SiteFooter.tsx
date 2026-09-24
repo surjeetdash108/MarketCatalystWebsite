@@ -32,6 +32,7 @@ export function SiteFooter() {
         <div>
           <div className="mc-footer-h">Product</div>
           <div className="mc-footer-links">
+            <Link href="/features">Features</Link>
             <a href={APP_SIGNUP_URL}>Sign up</a>
             <a href={APP_LOGIN_URL}>Log in</a>
             {/* Rooted, not a bare #pricing: this footer is also worn by
