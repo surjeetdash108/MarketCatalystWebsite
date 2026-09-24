@@ -869,12 +869,22 @@
 .mc-win-live {
   flex: none;
   margin-left: auto;
-  padding: 11px 6px 9px;
+  /* Left padding guarantees a gap from the last tab even when the strip is
+     tight enough that the auto margin above has no free space left to give
+     (overflow-x on .mc-win-tabs collapses it to 0 rather than overlapping). */
+  padding: 11px 6px 9px 12px;
   font-family: var(--mc-font-mono);
   font-size: 10.5px;
   letter-spacing: .12em;
   color: var(--mc-up);
 }
+/* Each column track has a px floor (see WorkspacePanel.tsx), so once the
+   window is narrower than the row's natural width the row overflows rather
+   than every track shrinking below its own header — scroll it sideways
+   instead of truncating "Conviction" into "Convicti…". Same hidden-scrollbar
+   treatment as .mc-win-tabs above. */
+.mc-win-grid { overflow-x: auto; scrollbar-width: none; }
+.mc-win-grid::-webkit-scrollbar { display: none; }
 /* The grid template comes from the tab via --mc-cols: columns vary per tab. */
 .mc-win-cols,
 .mc-win-row {
@@ -901,7 +911,11 @@
    including the columns the narrow layout drops. */
 .mc-win-row {
   align-items: center;
-  width: 100%;
+  /* No explicit width: a <button> block box already stretches to fill
+     .mc-win-grid by default, and letting that stay "auto" (rather than a
+     hard 100%) is what lets the row grow past the container to its
+     minmax(px, fr) floor instead of being crushed back under it — the same
+     reason .mc-win-cols above needs no width rule either. */
   margin: 0;
   appearance: none;
   background: none;
@@ -1234,7 +1248,7 @@
      table itself (not the rest of the panel) back toward its compact size. */
   .mc-win-bar { font-size: 9.5px; padding: 9px 12px; }
   .mc-win-tab { font-size: 9px; padding: 9px 9px 7px; }
-  .mc-win-live { font-size: 9px; padding: 9px 4px 7px; }
+  .mc-win-live { font-size: 9px; padding: 9px 4px 7px 10px; }
   .mc-win-cols { font-size: 8.5px; padding: 8px 12px; }
   .mc-win-cols, .mc-win-row { gap: 8px; }
   .mc-win-row { font-size: 10.5px; padding: 9px 12px 9px 10px; }

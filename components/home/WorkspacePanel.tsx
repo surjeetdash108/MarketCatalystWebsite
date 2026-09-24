@@ -191,11 +191,15 @@ export function WorkspacePanel({ w }: { w: Workspace }) {
                   </div>
                 ) : (
                   /* Column count varies per tab, so the grid template is set
-                     here — each column's share follows its content, and every
-                     column fits the window (no sideways scroll). */
+                     here — each column's share follows its content. Each
+                     track floors at its natural width (colWidth() in
+                     workspaces.ts) and grows from there, so on a window wide
+                     enough every column fits with no sideways scroll; on a
+                     phone-width card the floor wins first and .mc-win-grid
+                     scrolls instead of truncating a header into "Convicti…". */
                   <div
                     className="mc-win-grid"
-                    style={{ "--mc-cols": tab.widths.map((w) => `minmax(0, ${w}fr)`).join(" ") } as React.CSSProperties}
+                    style={{ "--mc-cols": tab.widths.map((w) => `minmax(${w}px, ${w}fr)`).join(" ") } as React.CSSProperties}
                   >
                     <div className="mc-win-cols">
                       {tab.cols.map((c, i) => (
