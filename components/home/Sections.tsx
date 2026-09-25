@@ -3,7 +3,7 @@ import { APP_SIGNUP_URL } from "@/components/marketing/app-url";
 import { stats } from "./data";
 import { workspaces } from "./workspaces";
 import { WorkspacePanel } from "./WorkspacePanel";
-import { WORKSPACE_FEATURES } from "@/lib/features/features";
+import { WORKSPACE_COUNT } from "@/lib/features/features";
 
 export { PricingPlans } from "./PricingPlans";
 
@@ -13,7 +13,7 @@ export function WorkspaceStack() {
   // Single source of truth for "how many workspaces exist at all" — the same
   // count /features derives from MarketCatalystUI's menu-items.ts, so this
   // section can't drift from that page the way it drifted from 16 to 17.
-  const allCount = WORKSPACE_FEATURES.length;
+  const allCount = WORKSPACE_COUNT;
 
   return (
     <section className="mc-stack" id="workspaces">
@@ -24,7 +24,7 @@ export function WorkspaceStack() {
             Every view, <span className="mc-serif">stacked</span> in one scroll
           </h2>
           <p className="mc-section-note">
-            Eight of the app&apos;s screens below, with their real tabs and columns — plus the dashboard, live feed, heatmap,
+            Eight of the app&apos;s screens below, with their real tabs and columns — plus the live feed, heatmap,
             themes, ETF Corner, AI Corner, stock search, recaps and watchlist waiting inside. Figures are blurred samples.
           </p>
         </div>

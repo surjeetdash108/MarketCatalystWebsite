@@ -2,13 +2,13 @@ import type { Metadata } from "next";
 import { ReaderShell } from "@/components/chrome/ReaderShell";
 import { MarketChart } from "@/components/chrome/MarketChart";
 import { FeatureBoard } from "@/components/features/FeatureBoard";
-import { AI_FEATURES, WORKSPACE_FEATURES } from "@/lib/features/features";
+import { AI_FEATURES, WORKSPACE_COUNT, WORKSPACE_FEATURES } from "@/lib/features/features";
 import "../pages.css";
 import "../features.css";
 
 export const metadata: Metadata = {
   title: "Features — MarketCatalyst",
-  description: `${WORKSPACE_FEATURES.length} research workspaces plus the AI layer that reads every one of them — markets, research, recaps and your own portfolio, each explained.`,
+  description: `${WORKSPACE_COUNT} research workspaces plus the AI layer that reads every one of them — markets, research, recaps and your own portfolio, each explained.`,
   alternates: { canonical: "/features" },
 };
 
@@ -30,7 +30,7 @@ export default function FeaturesIndexPage() {
             <div className="mc-rev">
               <div className="mcp-kicker">
                 <i />
-                <span>Features · {WORKSPACE_FEATURES.length} workspaces + AI</span>
+                <span>Features · {WORKSPACE_COUNT} workspaces + AI</span>
               </div>
               <h1 className="mcp-h1">
                 Everything the terminal does, laid out <span className="mc-serif">inside.</span>

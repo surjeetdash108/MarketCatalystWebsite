@@ -327,13 +327,16 @@ export type FeatureView = Feature & { num: string; href: string };
 
 const pad = (n: number) => String(n).padStart(2, "0");
 
+/** Dashboard is the workspace grid's starting point, not an entry in it — it
+ *  carries no number and is never included in a workspace count. */
+const isLaunchpad = (f: Feature) => f.group !== "AI" && f.slug === "dashboard";
+
 function computeViews(): FeatureView[] {
   let ai = 0;
   let ws = 0;
   return FEATURES.map((f) => {
-    // Dashboard is the workspace grid's starting point, not an entry in it —
-    // it carries no number, and workspace numbering begins at the item after it.
-    if (f.group !== "AI" && f.slug === "dashboard") {
+    // Workspace numbering begins at the item after the dashboard.
+    if (isLaunchpad(f)) {
       return { ...f, num: "", href: `/features/${f.slug}` };
     }
     const num = f.group === "AI" ? pad(++ai) : pad(++ws);
@@ -345,7 +348,15 @@ function computeViews(): FeatureView[] {
 export const FEATURE_VIEWS: FeatureView[] = computeViews();
 
 export const AI_FEATURES: FeatureView[] = FEATURE_VIEWS.filter((f) => f.group === "AI");
+/** Every non-AI card on the /features grid, dashboard included (it still gets a card). */
 export const WORKSPACE_FEATURES: FeatureView[] = FEATURE_VIEWS.filter((f) => f.group !== "AI");
+
+/** Whether a feature counts toward workspace totals — every non-AI feature but the dashboard. */
+export const countsAsWorkspace = (f: Feature) => f.group !== "AI" && !isLaunchpad(f);
+
+/** How many workspaces exist — the figure behind every "N workspaces" on the
+ *  site. Excludes the dashboard, so it matches the highest workspace number. */
+export const WORKSPACE_COUNT = FEATURES.filter(countsAsWorkspace).length;
 
 export function getFeatureView(slug: string): FeatureView | undefined {
   return FEATURE_VIEWS.find((f) => f.slug === slug);
