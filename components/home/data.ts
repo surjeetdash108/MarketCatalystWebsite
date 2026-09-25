@@ -6,13 +6,11 @@
 // `tone()` into a var() from app/theme.css, so the palette stays
 // in one file.
 
-import { WORKSPACE_FEATURES } from "@/lib/features/features";
-
-/** How many workspaces exist, period — the same count /features derives
- *  from MarketCatalystUI's menu-items.ts. Every "N workspaces" figure on the
- *  landing page reads this instead of a hardcoded number, so it cannot drift
- *  the way it drifted from 16 to 17. */
-const WORKSPACE_COUNT = WORKSPACE_FEATURES.length;
+// How many workspaces exist, period — the same count /features derives from
+// MarketCatalystUI's menu-items.ts (dashboard excluded). Every "N workspaces"
+// figure on the landing page reads this instead of a hardcoded number, so it
+// cannot drift the way it drifted from 16 to 17.
+import { WORKSPACE_COUNT } from "@/lib/features/features";
 
 export type Tone = "up" | "down" | "amber" | "text" | "muted" | "faint" | "idle" | "line";
 

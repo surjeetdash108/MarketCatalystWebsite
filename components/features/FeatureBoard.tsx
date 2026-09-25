@@ -3,7 +3,7 @@
 import { useMemo, useState } from "react";
 import Link from "next/link";
 import type { FeatureGroup, FeatureView } from "@/lib/features/features";
-import { FEATURE_GROUPS } from "@/lib/features/features";
+import { FEATURE_GROUPS, countsAsWorkspace } from "@/lib/features/features";
 
 /**
  * The filterable grid of workspace cards on the /features index.
@@ -16,9 +16,15 @@ import { FEATURE_GROUPS } from "@/lib/features/features";
 export function FeatureBoard({ features }: { features: FeatureView[] }) {
   const [group, setGroup] = useState<"All" | FeatureGroup>("All");
 
+  // Chip figures count workspaces, not cards: the dashboard keeps its card
+  // but is never tallied, so "All" matches the "N workspaces" headline.
   const counts = useMemo(() => {
-    const c = new Map<string, number>();
-    for (const f of features) c.set(f.group, (c.get(f.group) ?? 0) + 1);
+    const c = new Map<string, number>([["All", 0]]);
+    for (const f of features) {
+      if (!countsAsWorkspace(f)) continue;
+      c.set(f.group, (c.get(f.group) ?? 0) + 1);
+      c.set("All", c.get("All")! + 1);
+    }
     return c;
   }, [features]);
 
@@ -28,7 +34,7 @@ export function FeatureBoard({ features }: { features: FeatureView[] }) {
   );
 
   const chips: { label: string; value: "All" | FeatureGroup; count: number }[] = [
-    { label: "All", value: "All", count: features.length },
+    { label: "All", value: "All", count: counts.get("All") ?? 0 },
     ...FEATURE_GROUPS.map((g) => ({ label: g, value: g, count: counts.get(g) ?? 0 })),
   ];
 
