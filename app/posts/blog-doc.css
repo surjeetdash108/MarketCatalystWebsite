@@ -442,8 +442,12 @@
 /* The document ground. White by default so a page whose own stylesheet sets no
    background does not inherit the board's cream; a document that DOES set one
    overrides this, because its rules are real selectors and this is :where(). */
-.post-doc, #mc-post-doc { background: #ffffff !important; }
-[data-theme="dark"] .post-doc, [data-theme="dark"] #mc-post-doc { background: #070d20 !important; }
+/* .post-doc, #mc-post-doc { background: #ffffff !important; }
+[data-theme="dark"] .post-doc, [data-theme="dark"] #mc-post-doc { background: #070d20 !important; } */
+.post-doc,
+#mc-post-doc {
+  background: #ffffff !important;
+}
 .post-doc h1,
 .post-doc .subtitle {
   max-width: none !important;
@@ -1013,17 +1017,19 @@
   margin-bottom: 8px;
 }
 :where(.mc-doc, .post-doc) .takeaway-list {
-  background: var(--surface-2, #f8fafc);
-  border: 1px solid var(--line, rgba(24,52,105,.13));
-  border-radius: 12px;
-  padding: 20px 24px 20px 42px;
-  margin: 24px 0;
-  font-size: 15px;
+  background: transparent;
+  border: none;
+  border-radius: 0;
+  padding: 0 0 0 20px;
+  margin: 0 0 22px;
+  font-size: 18px;
   line-height: 1.7;
 }
 :where(.mc-doc, .post-doc) .takeaway-list li {
-  margin-bottom: 12px;
-  color: var(--body, #33425f);
+  margin-bottom: 14px;
+  color: #2B2F36;
+  font-size: 18px;
+  line-height: 1.7;
 }
 :where(.mc-doc, .post-doc) .warning {
   background: rgba(176, 106, 0, 0.06);
@@ -1240,20 +1246,24 @@
 }
 
 /* ── Dark Theme Overrides ──────────────────────────────────────────────────── */
-[data-theme="dark"] :where(.mc-doc, .post-doc) main > .card,
-[data-theme="dark"] :where(.mc-doc, .post-doc) .card {
+/* Dark mode is only for /posts landing.
+   Individual /posts/[slug] articles are always light. */
+
+[data-theme="dark"] .mc-doc main > .card,
+[data-theme="dark"] .mc-doc .card {
   background: rgba(18, 29, 61, 0.6) !important;
   border-color: rgba(120, 160, 230, 0.16) !important;
 }
-[data-theme="dark"] :where(.mc-doc, .post-doc) .stat-box,
-[data-theme="dark"] :where(.mc-doc, .post-doc) .toc,
-[data-theme="dark"] :where(.mc-doc, .post-doc) .contract-box,
-[data-theme="dark"] :where(.mc-doc, .post-doc) .takeaway-list,
-[data-theme="dark"] :where(.mc-doc, .post-doc) .faq-item,
-[data-theme="dark"] :where(.mc-doc, .post-doc) .bar-chart,
-[data-theme="dark"] :where(.mc-doc, .post-doc) .vsa-item,
-[data-theme="dark"] :where(.mc-doc, .post-doc) .img-block,
-[data-theme="dark"] :where(.mc-doc, .post-doc) .image-plan {
+
+[data-theme="dark"] .mc-doc .stat-box,
+[data-theme="dark"] .mc-doc .toc,
+[data-theme="dark"] .mc-doc .contract-box,
+[data-theme="dark"] .mc-doc .takeaway-list,
+[data-theme="dark"] .mc-doc .faq-item,
+[data-theme="dark"] .mc-doc .bar-chart,
+[data-theme="dark"] .mc-doc .vsa-item,
+[data-theme="dark"] .mc-doc .img-block,
+[data-theme="dark"] .mc-doc .image-plan {
   background: rgba(11, 20, 48, 0.6) !important;
   border-color: rgba(120, 160, 230, 0.16) !important;
 }
