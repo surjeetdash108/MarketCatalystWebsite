@@ -12,6 +12,7 @@ import { APP_LOGIN_URL, APP_SIGNUP_URL } from "./app-url";
 export function Nav() {
   const pathname = usePathname();
   const isAbout = pathname === "/about" || pathname.startsWith("/about/");
+  const isFeatures = pathname === "/features" || pathname.startsWith("/features/");
   const isBlogs = pathname === "/posts" || pathname.startsWith("/posts/");
   const isFaqs = pathname === "/faqs" || pathname.startsWith("/faqs/");
 
@@ -26,6 +27,9 @@ export function Nav() {
       <div className="hw-nav-cta">
         <Link className={`hw-ghost${isAbout ? " active" : ""}`} href="/about">
           About us
+        </Link>
+        <Link className={`hw-ghost${isFeatures ? " active" : ""}`} href="/features">
+          Features
         </Link>
         <Link className={`hw-ghost${isBlogs ? " active" : ""}`} href="/posts">
           Research

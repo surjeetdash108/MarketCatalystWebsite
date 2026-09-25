@@ -26,7 +26,7 @@ export function ReaderShell({
   active,
   children,
 }: {
-  active?: "about" | "faqs";
+  active?: "about" | "features" | "faqs";
   children: ReactNode;
 }) {
   const { theme, toggle } = useReaderTheme();

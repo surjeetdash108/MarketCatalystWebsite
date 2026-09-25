@@ -6,6 +6,14 @@
 // `tone()` into a var() from app/theme.css, so the palette stays
 // in one file.
 
+import { WORKSPACE_FEATURES } from "@/lib/features/features";
+
+/** How many workspaces exist, period — the same count /features derives
+ *  from MarketCatalystUI's menu-items.ts. Every "N workspaces" figure on the
+ *  landing page reads this instead of a hardcoded number, so it cannot drift
+ *  the way it drifted from 16 to 17. */
+const WORKSPACE_COUNT = WORKSPACE_FEATURES.length;
+
 export type Tone = "up" | "down" | "amber" | "text" | "muted" | "faint" | "idle" | "line";
 
 const TONE_VAR: Record<Tone, string> = {
@@ -55,11 +63,11 @@ export const hud: Hud[] = ["S&P 500", "GOLD", "VIX", "BRENT CRUDE"].map((k) => (
 export const hudRead = "Loading the latest market figures…";
 
 // ── Marquee tape ────────────────────────────────────────────
-export type TapeItem = { sym: string; chg: string; tone: Tone };
+export type TapeItem = { sym: string; v: string; chg: string; tone: Tone };
 
-/** Placeholder symbols, shown with no move until the live quotes arrive. */
+/** Placeholder symbols, shown with no price or move until the live quotes arrive. */
 const tapeBase: TapeItem[] = ["AAPL", "MSFT", "NVDA", "GOOGL", "AMZN", "META", "TSLA", "AVGO", "JPM", "V", "XOM", "LLY"].map(
-  (sym) => ({ sym, chg: "—", tone: "faint" as Tone }),
+  (sym) => ({ sym, v: "—", chg: "—", tone: "faint" as Tone }),
 );
 
 /** Doubled so the marquee can wrap seamlessly at half its scroll width. */
@@ -70,7 +78,7 @@ export type Stat = { value: number; suffix: string; label: string; note: string 
 
 export const stats: Stat[] = [
   {
-    value: 16,
+    value: WORKSPACE_COUNT,
     suffix: "workspaces",
     label: "Every view in one scroll",
     note: "Movers, earnings, heatmap, macro, screener, themes, IPOs, recaps, portfolio and watchlist.",
@@ -118,7 +126,7 @@ export const plans: Plan[] = [
     blurb: "Explore every workspace with delayed data.",
     popular: false,
     cta: "Start free",
-    features: ["All 16 workspaces", "Delayed market data", "Daily EOD recap"],
+    features: [`All ${WORKSPACE_COUNT} workspaces`, "Delayed market data", "Daily EOD recap"],
   },
   {
     name: "Pro",
