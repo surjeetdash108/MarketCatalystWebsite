@@ -14,19 +14,26 @@ import { useEtClock, useReveal, useScrollChrome } from "@/components/chrome/chro
 
 /* ── the three sections, in the design's own vocabulary ───────────────────── */
 
-type Section = "Recap" | "Analysis" | "Educational";
-const SECTIONS: Section[] = ["Recap", "Analysis", "Educational"];
+type Section = "Recap" | "Analysis" | "Educational" | "News";
+const SECTIONS: Section[] = ["Recap", "Analysis", "Educational", "News"];
 
 /** Post.type is the stored zone; the design names them differently. */
 const SECTION_OF: Record<string, Section> = {
   recap: "Recap",
   research: "Analysis",
   educational: "Educational",
+  news: "News",
 };
 const TAG_CLASS: Record<Section, string> = {
+
   Recap: "mcb-tag-recap",
+
   "Analysis": "mcb-tag-desk",
+
   Educational: "mcb-tag-edu",
+
+  News: "mcb-tag-news",
+
 };
 
 const PER_PAGE = 6;

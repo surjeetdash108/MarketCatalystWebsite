@@ -198,6 +198,7 @@
 .mcb-tag-desk { --mcb-tag: var(--mc-up); --mcb-tag-rgb: var(--mc-up-rgb); }
 .mcb-tag-recap { --mcb-tag: var(--mc-amber); --mcb-tag-rgb: var(--mc-amber-rgb); }
 .mcb-tag-edu { --mcb-tag: var(--mc-info); --mcb-tag-rgb: var(--mc-info-rgb); }
+.mcb-tag-news { --mcb-tag: #60A5FA; --mcb-tag-rgb: 96, 165, 250; }
 /* The pick's tag is the solid variant — it is the one card that shouts. */
 .mcb-tag-solid {
   font-size: 10px;

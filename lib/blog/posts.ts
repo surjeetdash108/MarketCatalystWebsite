@@ -18,7 +18,7 @@ export type BlogFormat = "html" | "text" | "pdf" | "doc";
  * lands in (see components/blog/BlogBoard.tsx). `categories` is still stored
  * for backward-compat and for legacy docs that predate this field.
  */
-export type BlogType = "educational" | "recap" | "research";
+export type BlogType = "educational" | "recap" | "research" | "news";
 
 export type PostSeo = {
   metaTitle: string | null;
@@ -90,6 +90,7 @@ function toIso(value: Timestamp | undefined | null): string | null {
 function deriveTypeFromCategories(categories: unknown): BlogType {
   const cats = Array.isArray(categories) ? categories.map((c) => String(c).toLowerCase()) : [];
   const has = (kw: string) => cats.some((c) => c.includes(kw));
+  if (has("news")) return "news";
   if (has("recap")) return "recap";
   if (has("research")) return "research";
   return "educational";
