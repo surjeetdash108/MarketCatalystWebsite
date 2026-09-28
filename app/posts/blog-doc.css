@@ -107,8 +107,15 @@
    already imported by app/posts/view/page.tsx.
    ============================================================================ */
 
-/* ---- theme tokens (light default) ---- */
-.mc-doc {
+/* ---- theme tokens (light default) ----
+   Also bound to .post-doc: an authored-html post renders as .post-doc WITHOUT
+   .mc-doc, so it never received these and instead inherited the site shell's
+   dark :root tokens from iq.css (--surface-2:#161D28 and friends). Every
+   fallback below that reads var(--surface-2) — table headers, FAQ and VSA
+   boxes — then painted near-black behind dark text. :where() keeps the
+   .post-doc binding at zero specificity, so a post that defines its own
+   tokens still wins. */
+.mc-doc, :where(.post-doc) {
   --bg:#f5f8fd; --surface:#ffffff; --surface-2:#ffffff;
   --line:rgba(24,52,105,.13); --line-2:rgba(24,52,105,.24);
   --ink:#0b1430; --body:#33425f; --mute:#5a6b8c; --dim:#8291ad;
