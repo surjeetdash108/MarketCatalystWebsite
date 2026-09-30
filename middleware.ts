@@ -31,8 +31,13 @@ function buildCsp(nonce: string | null): string {
     // (callstack reconstruction, fast refresh) — never allow this in
     // production. apis.google.com and gstatic.com are Firebase Auth's helper
     // scripts for signInWithPopup (Google provider) — admin login only.
-    `script-src 'self' ${scriptInline} https://apis.google.com https://www.gstatic.com${isDev ? " 'unsafe-eval'" : ""}`,
-    "style-src 'self' 'unsafe-inline'",
+    // googletagmanager.com serves GTM and the GA4 tag it loads;
+    // tagmanager.google.com is GTM's Preview/debug mode.
+    `script-src 'self' ${scriptInline} https://apis.google.com https://www.gstatic.com https://www.googletagmanager.com https://tagmanager.google.com${isDev ? " 'unsafe-eval'" : ""}`,
+    "style-src 'self' 'unsafe-inline' https://tagmanager.google.com https://fonts.googleapis.com",
+    // Our own fonts are self-hosted via next/font; gstatic is only for the GTM
+    // Preview badge.
+    "font-src 'self' data: https://fonts.gstatic.com",
     // blob: carries the rasterised PDF pages on research posts — pdf.js draws
     // each page to a canvas and hands it to an <img> as an encoded blob. Without
     // it those images are blocked and the article renders as blank paper.
@@ -42,7 +47,8 @@ function buildCsp(nonce: string | null): string {
     // directly — that's just where the top-level OAuth consent popup
     // navigates, which isn't subject to our frame-src at all (popups are
     // separate top-level browsing contexts, not iframes).
-    `frame-src${firebaseAuthDomain ? ` https://${firebaseAuthDomain}` : ""}`,
+    // googletagmanager.com is GTM's <noscript> iframe fallback.
+    `frame-src https://www.googletagmanager.com${firebaseAuthDomain ? ` https://${firebaseAuthDomain}` : ""}`,
     // Research posts used to hand their PDF to the browser's plugin, which
     // needed Storage allowed as an object/frame source. They now rasterise the
     // pages themselves, so no plugin is involved and this can stay shut.
@@ -52,8 +58,9 @@ function buildCsp(nonce: string | null): string {
     // and pdf.js also constructs a blob worker on some fallback paths.
     "worker-src 'self' blob:",
     // Dev-mode HMR also needs a WebSocket connection back to the local dev
-    // server, which production never opens.
-    `connect-src 'self' https://identitytoolkit.googleapis.com https://securetoken.googleapis.com https://firestore.googleapis.com https://apis.google.com https://*.ingest.sentry.io https://*.ingest.us.sentry.io${isDev ? " ws://localhost:* http://localhost:*" : ""}`,
+    // server, which production never opens. The googletagmanager/analytics
+    // hosts are where GTM and GA4 send hits.
+    `connect-src 'self' https://identitytoolkit.googleapis.com https://securetoken.googleapis.com https://firestore.googleapis.com https://apis.google.com https://*.ingest.sentry.io https://*.ingest.us.sentry.io https://www.googletagmanager.com https://*.google-analytics.com https://*.analytics.google.com${isDev ? " ws://localhost:* http://localhost:*" : ""}`,
     "frame-ancestors 'none'",
     "base-uri 'self'",
     "form-action 'self'",

@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { fontVariables } from "@/lib/fonts";
 import { DEFAULT_OG_IMAGE } from "@/lib/seo/og";
+import { GoogleTagManager } from "@/components/analytics/GoogleTagManager";
 import "./globals.css";
 import "./theme.css";
 import "./chrome.css";
@@ -41,6 +42,7 @@ export default function RootLayout({
   return (
     <html lang="en" className={`${fontVariables} h-full antialiased`} suppressHydrationWarning>
       <body className="min-h-full flex flex-col">
+        <GoogleTagManager />
         {children}
       </body>
     </html>

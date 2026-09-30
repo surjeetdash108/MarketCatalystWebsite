@@ -74,6 +74,14 @@ env:
   # - variable: SENTRY_DSN
   #   value: ""
 
+  # Google Tag Manager container ID (GTM-XXXXXXX), created by the site owner
+  # in their own Google account; GA4 is added as a tag inside that container.
+  # Left commented out for the same reason as Sentry above: an empty value is
+  # rejected, and with no ID components/analytics/GoogleTagManager.tsx loads
+  # nothing. Uncomment with the real ID and redeploy to switch tracking on.
+  # - variable: NEXT_PUBLIC_GTM_ID
+  #   value: "GTM-XXXXXXX"
+
   # Salts the IP hash used by the Firestore-backed rate limiter (see
   # lib/security/rate-limit.ts) so raw IPs are never derivable from stored
   # bucket documents. Provision via Secret Manager once available:
