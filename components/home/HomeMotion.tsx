@@ -394,13 +394,23 @@ export function HomeMotion() {
     let geoKey = "";
 
     const onScroll = () => {
+      /* Every layout read happens here, before any style is written. This
+         runs every frame, and a read that follows a write in the same frame
+         forces the browser to lay the page out again on the spot (PageSpeed's
+         "forced reflow"). Read first, write after, and the layout from the
+         previous frame answers every question for free. */
       const y = window.scrollY;
       const vh = window.innerHeight;
+      const docH = d.documentElement.scrollHeight;
+      const tapeHalf = tapeEl && !reduce ? tapeEl.scrollWidth / 2 : 0;
+      const panelTops =
+        stackIdx && panels.length ? panels.map((p) => p.getBoundingClientRect().top) : null;
+
       vel = y - lastY;
       lastY = y;
 
       if (prog) {
-        const h = d.documentElement.scrollHeight - vh;
+        const h = docH - vh;
         prog.style.width = `${h > 0 ? (y / h) * 100 : 0}%`;
       }
       if (nav) nav.classList.toggle("is-stuck", y > 40);
@@ -409,7 +419,7 @@ export function HomeMotion() {
       if (panels.length && stacking) {
         // Sticky panels report their stuck position, so measure them once per
         // layout with position:static to get their true document offsets.
-        const key = `${window.innerWidth}x${vh}x${d.documentElement.scrollHeight}`;
+        const key = `${window.innerWidth}x${vh}x${docH}`;
         if (!geo || geoKey !== key) {
           geoKey = key;
           const saved = panels.map((p) => [p.style.position, p.style.transform] as const);
@@ -466,20 +476,19 @@ export function HomeMotion() {
         });
       }
 
-      if (stackIdx && panels.length) {
+      if (stackIdx && panelTops) {
         let active = 0;
-        panels.forEach((p, i) => {
-          if (p.getBoundingClientRect().top <= vh * 0.2) active = i;
+        panelTops.forEach((top, i) => {
+          if (top <= vh * 0.2) active = i;
         });
         stackIdx.textContent = `${String(active + 1).padStart(2, "0")} / ${String(panels.length).padStart(2, "0")}`;
       }
 
       if (tapeEl && !reduce) {
         tapeX -= 0.38 + vel * 0.12;
-        const half = tapeEl.scrollWidth / 2;
-        if (half) {
-          if (tapeX <= -half) tapeX += half;
-          if (tapeX > 0) tapeX -= half;
+        if (tapeHalf) {
+          if (tapeX <= -tapeHalf) tapeX += tapeHalf;
+          if (tapeX > 0) tapeX -= tapeHalf;
         }
         tapeEl.style.transform = `translate3d(${tapeX.toFixed(1)}px, 0, 0) skewY(${(-vel * 0.016).toFixed(2)}deg)`;
       }
