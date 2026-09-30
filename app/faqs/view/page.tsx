@@ -4,6 +4,7 @@ import { notFound, redirect } from "next/navigation";
 import { getFaqById } from "@/lib/faq/faqs";
 import { ReaderShell } from "@/components/chrome/ReaderShell";
 import { APP_SIGNUP_URL } from "@/components/marketing/app-url";
+import { pageMetadata } from "@/lib/seo/og";
 import "../../pages.css";
 
 function firstParam(v: string | string[] | undefined): string | undefined {
@@ -19,11 +20,11 @@ export async function generateMetadata({
   if (!id) return {};
   const faq = await getFaqById(id);
   if (!faq) return {};
-  return {
+  return pageMetadata({
     title: `${faq.question} — MarketCatalyst FAQ`,
     description: faq.answer.slice(0, 160),
-    alternates: { canonical: `/faqs/view?id=${faq.id}` },
-  };
+    path: `/faqs/view?id=${faq.id}`,
+  });
 }
 
 // A single answer, deep-linkable. Same chrome as the board it came from —

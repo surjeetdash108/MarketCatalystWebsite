@@ -5,14 +5,15 @@
  * white text — invisible on the light/paper theme's near-white background
  * (see app/theme.css `[data-theme="light"]`). Rendering "Market"/"Catalyst"
  * as real text instead, colored from the same `--mc-text`/`--mc-up` tokens
- * the rest of the nav uses, makes it theme-aware for free. `/logo-mark.png`
+ * the rest of the nav uses, makes it theme-aware for free. `/logo-mark.webp`
  * is the icon cropped out of that original file (colorful gradient bars, so
- * it reads fine on both themes unlike the wordmark did).
+ * it reads fine on both themes unlike the wordmark did), at 66x60 - twice
+ * the 30px it is drawn at, for high-density screens.
  */
 export function BrandMark() {
   return (
     <>
-      <img src="/logo-mark.png" alt="" className="mc-brand-logo" />
+      <img src="/logo-mark.webp" alt="MarketCatalyst logo" width={66} height={60} className="mc-brand-logo" />
       <span className="mc-brand-word">
         Market<span className="mc-brand-word-accent">Catalyst</span>
       </span>

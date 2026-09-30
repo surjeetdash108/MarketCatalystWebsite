@@ -37,3 +37,6 @@ next-env.d.ts
 
 # Vendored from pdfjs-dist by scripts/copy-pdf-worker.mjs on every build.
 public/pdfjs/
+
+# root-level folders starting with _
+/_*/

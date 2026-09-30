@@ -8,10 +8,14 @@ import { PostDocx } from "@/components/blog/PostDocx";
 import { PostHtmlDoc } from "@/components/blog/PostHtmlDoc";
 import { ArticleHero } from "@/components/blog/ArticleHero";
 import { resolvePostDesign } from "@/lib/blog/post-design";
+// blog-doc.css reads tokens from the older iq-* design system, so articles
+// load it alongside; public pages no longer get it from the root layout.
+import "../../iq.css";
 // The article's own baseline. Every rule is :where()-wrapped, so an uploaded
 // design still wins — this only covers what that design does not mention.
 import "../blog-doc.css";
 import { buildArticleJsonLd } from "@/lib/seo/jsonld";
+import { DEFAULT_OG_IMAGE } from "@/lib/seo/og";
 
 /**
  * Statically generated, one page per PUBLISHED post, revalidated on a timer.
@@ -63,9 +67,10 @@ export async function generateMetadata({
     alternates: { canonical },
     openGraph: {
       type: "article",
+      url: canonical,
       title,
       description,
-      images: image ? [image] : undefined,
+      images: image ? [image] : [DEFAULT_OG_IMAGE],
       publishedTime: post.publishedAt ?? undefined,
       modifiedTime: post.updatedAt,
     },

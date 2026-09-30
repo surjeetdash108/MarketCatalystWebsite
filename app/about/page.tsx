@@ -3,14 +3,15 @@ import Link from "next/link";
 import { APP_SIGNUP_URL } from "@/components/marketing/app-url";
 import { ReaderShell } from "@/components/chrome/ReaderShell";
 import { MarketChart } from "@/components/chrome/MarketChart";
+import { pageMetadata } from "@/lib/seo/og";
 import "../pages.css";
 
-export const metadata: Metadata = {
+export const metadata: Metadata = pageMetadata({
   title: "About — MarketCatalyst",
   description:
     "MarketCatalyst is a market-intelligence platform: institutional-grade data, attributed to source, with the interpretation delivered alongside it.",
-  alternates: { canonical: "/about" },
-};
+  path: "/about",
+});
 
 /**
  * Headline figures.
@@ -113,13 +114,15 @@ export default function AboutPage() {
 
           <div className="mcp-inner mcp-hero-grid">
             <div className="mc-rev">
-              <div className="mcp-kicker">
-                <i />
-                <span>About MarketCatalyst</span>
-              </div>
-              <h1 className="mcp-h1">
-                Coverage is solved.{" "}
-                <span className="mc-serif">Comprehension is not.</span>
+              <h1 className="mcp-h1-group">
+                <span className="mcp-kicker">
+                  <i />
+                  <span>About MarketCatalyst</span>
+                </span>
+                <span className="mcp-h1">
+                  Coverage is solved.{" "}
+                  <span className="mc-serif">Comprehension is not.</span>
+                </span>
               </h1>
               <p className="mcp-lede">
                 MarketCatalyst is a market-intelligence platform for people who have to form a view,

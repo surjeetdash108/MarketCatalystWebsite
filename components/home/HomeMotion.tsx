@@ -8,7 +8,8 @@ import { useEffect, useRef } from "react";
 // One client component owns every piece of motion on the page so the
 // sections themselves can stay server-rendered:
 //
-//   1. intro loader (count to 100, then wipe up) + hero reveal
+//   1. intro loader (counts to 100 as the page loads, then wipes up)
+//      + hero reveal
 //   2. the hero product shot, scaled to fit and revealed under a
 //      cursor-tracked spotlight (static strip on touch devices)
 //   3. ET clock, counters, in-view reveals, coverage spotlight
@@ -80,11 +81,32 @@ export function HomeMotion() {
       const from = readTriple("--mc-down-rgb");
       const to = readTriple("--mc-up-rgb");
 
+      /* The count follows the page rather than a clock. It climbs towards 90
+         while the fonts and the hero photograph load, and only runs out to
+         100 once both are ready - so on a warm cache or a fast connection it
+         is gone in about half a second, and on a slow one it never lifts onto
+         blank type. MIN_MS stops it flashing past as a glitch; MAX_MS lifts it
+         regardless, so a slow image loads in view rather than behind it.
+         Between 0 and 90 it is still an easing curve: browsers do not report
+         a real percentage, only when things are done. */
+      const MIN_MS = 400;
+      const MAX_MS = 3000;
+      const WAIT_CEIL = 0.9; // where the count idles until the page is ready
+      const WAIT_TAU = 700; // ms; how quickly it approaches that ceiling
+      const OUTRO_MS = 250; // the run from wherever it is to 100
+
+      let ready = false;
+      const heroImg = d.querySelector<HTMLImageElement>("#mc-dash img");
+      const fontsReady = d.fonts?.ready ?? Promise.resolve();
+      const heroReady = heroImg ? heroImg.decode().catch(() => undefined) : Promise.resolve();
+      Promise.all([fontsReady, heroReady]).then(() => {
+        ready = true;
+      });
+
       const t0 = performance.now();
-      const dur = 2200;
-      const tick = (t: number) => {
-        const p = clamp01((t - t0) / dur);
-        const e = 1 - Math.pow(1 - p, 2);
+      let outroFrom = 0;
+      let outroT0 = -1;
+      const paint = (e: number) => {
         if (countRef.current) {
           countRef.current.textContent = String(Math.round(e * 100)).padStart(3, "0");
           // Red at 000, green at 100: the counter reads like a ticker coming
@@ -116,12 +138,27 @@ export function HomeMotion() {
           s3.setProperty("--mc-bg-blur", `${5 + (1 - e) * 30}px`);
           s3.setProperty("--mc-bg-fade", String(0.14 + e * 0.5));
         }
-        if (p < 1) raf.current = requestAnimationFrame(tick);
-        else timers.push(setTimeout(finish, 320));
+      };
+      const tick = (t: number) => {
+        const elapsed = t - t0;
+        if (outroT0 < 0) {
+          const e = WAIT_CEIL * (1 - Math.exp(-elapsed / WAIT_TAU));
+          paint(e);
+          if ((ready && elapsed >= MIN_MS) || elapsed >= MAX_MS) {
+            outroFrom = e;
+            outroT0 = t;
+          }
+          raf.current = requestAnimationFrame(tick);
+          return;
+        }
+        const q = clamp01((t - outroT0) / OUTRO_MS);
+        paint(outroFrom + (1 - outroFrom) * (1 - Math.pow(1 - q, 2)));
+        if (q < 1) raf.current = requestAnimationFrame(tick);
+        else timers.push(setTimeout(finish, 150));
       };
       raf.current = requestAnimationFrame(tick);
       // Never trap the page behind the loader if a frame never lands.
-      timers.push(setTimeout(finish, 5200));
+      timers.push(setTimeout(finish, MAX_MS + OUTRO_MS + 400));
     }
 
     // ── 2. hero spotlight (cursor, or finger on touch) ─────────────
@@ -357,13 +394,23 @@ export function HomeMotion() {
     let geoKey = "";
 
     const onScroll = () => {
+      /* Every layout read happens here, before any style is written. This
+         runs every frame, and a read that follows a write in the same frame
+         forces the browser to lay the page out again on the spot (PageSpeed's
+         "forced reflow"). Read first, write after, and the layout from the
+         previous frame answers every question for free. */
       const y = window.scrollY;
       const vh = window.innerHeight;
+      const docH = d.documentElement.scrollHeight;
+      const tapeHalf = tapeEl && !reduce ? tapeEl.scrollWidth / 2 : 0;
+      const panelTops =
+        stackIdx && panels.length ? panels.map((p) => p.getBoundingClientRect().top) : null;
+
       vel = y - lastY;
       lastY = y;
 
       if (prog) {
-        const h = d.documentElement.scrollHeight - vh;
+        const h = docH - vh;
         prog.style.width = `${h > 0 ? (y / h) * 100 : 0}%`;
       }
       if (nav) nav.classList.toggle("is-stuck", y > 40);
@@ -372,7 +419,7 @@ export function HomeMotion() {
       if (panels.length && stacking) {
         // Sticky panels report their stuck position, so measure them once per
         // layout with position:static to get their true document offsets.
-        const key = `${window.innerWidth}x${vh}x${d.documentElement.scrollHeight}`;
+        const key = `${window.innerWidth}x${vh}x${docH}`;
         if (!geo || geoKey !== key) {
           geoKey = key;
           const saved = panels.map((p) => [p.style.position, p.style.transform] as const);
@@ -429,20 +476,19 @@ export function HomeMotion() {
         });
       }
 
-      if (stackIdx && panels.length) {
+      if (stackIdx && panelTops) {
         let active = 0;
-        panels.forEach((p, i) => {
-          if (p.getBoundingClientRect().top <= vh * 0.2) active = i;
+        panelTops.forEach((top, i) => {
+          if (top <= vh * 0.2) active = i;
         });
         stackIdx.textContent = `${String(active + 1).padStart(2, "0")} / ${String(panels.length).padStart(2, "0")}`;
       }
 
       if (tapeEl && !reduce) {
         tapeX -= 0.38 + vel * 0.12;
-        const half = tapeEl.scrollWidth / 2;
-        if (half) {
-          if (tapeX <= -half) tapeX += half;
-          if (tapeX > 0) tapeX -= half;
+        if (tapeHalf) {
+          if (tapeX <= -tapeHalf) tapeX += tapeHalf;
+          if (tapeX > 0) tapeX -= tapeHalf;
         }
         tapeEl.style.transform = `translate3d(${tapeX.toFixed(1)}px, 0, 0) skewY(${(-vel * 0.016).toFixed(2)}deg)`;
       }
@@ -473,8 +519,22 @@ export function HomeMotion() {
       <div className="mc-loader" ref={loaderRef} aria-hidden="true">
         <div className="mc-loader-bg" ref={bgRef} aria-hidden="true">
           {/* Decorative and aria-hidden two levels up, so no alt text. High
-              fetch priority: it's the first paint the site shows at all. */}
-          <img src="/prelanding.jpg" alt="" fetchPriority="high" decoding="async" />
+              fetch priority: it's the first paint the site shows at all.
+              Drawn under a 38px blur, so 1280px is the most it ever needs;
+              `sizes` is the width `object-fit: cover` renders it at. */}
+          <picture>
+            <source
+              type="image/avif"
+              srcSet="/prelanding-640.avif 640w, /prelanding-1280.avif 1280w"
+              sizes="max(100vw, 178vh)"
+            />
+            <source
+              type="image/webp"
+              srcSet="/prelanding-640.webp 640w, /prelanding-1280.webp 1280w"
+              sizes="max(100vw, 178vh)"
+            />
+            <img src="/prelanding-1280.jpg" alt="" fetchPriority="high" decoding="async" />
+          </picture>
         </div>
         <div className="mc-loader-scrim" aria-hidden="true" />
         <div className="mc-loader-centre" ref={wordRef}>

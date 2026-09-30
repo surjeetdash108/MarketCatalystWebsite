@@ -1,4 +1,5 @@
 import type { NextConfig } from "next";
+import { DUPLICATE_POSTS } from "./lib/seo/duplicate-posts";
 
 const siteUrl = process.env.NEXT_PUBLIC_SITE_URL;
 const siteHost = siteUrl ? new URL(siteUrl).host : undefined;
@@ -6,6 +7,13 @@ const siteHost = siteUrl ? new URL(siteUrl).host : undefined;
 const nextConfig: NextConfig = {
   // Don't advertise the framework in responses.
   poweredByHeader: false,
+
+  // Stamped once per build, so the sitemap can give the authored pages (home,
+  // about, features, legal...) a lastmod that moves when a deploy ships and
+  // stays put between deploys, rather than on every server cold start.
+  env: {
+    BUILD_TIME: new Date().toISOString(),
+  },
 
   // firebase-admin pulls in jose (ESM-only) via jwks-rsa, which breaks when
   // bundled for the server by Turbopack/webpack (`ERR_REQUIRE_ESM`). Keeping
@@ -40,6 +48,16 @@ const nextConfig: NextConfig = {
       // cookie-authenticated (CSRF-relevant), unlike a bearer-token API.
       allowedOrigins: siteHost ? [siteHost] : undefined,
     },
+  },
+
+  // Blog posts published more than once 301 to their original; the list and
+  // why it exists are in lib/seo/duplicate-posts.ts.
+  async redirects() {
+    return DUPLICATE_POSTS.map(([copy, original]) => ({
+      source: `/posts/${copy}`,
+      destination: `/posts/${original}`,
+      statusCode: 301 as const,
+    }));
   },
 
   async headers() {

@@ -3,14 +3,15 @@ import Link from "next/link";
 import { APP_SIGNUP_URL } from "@/components/marketing/app-url";
 import { ReaderShell } from "@/components/chrome/ReaderShell";
 import { ContactForm } from "@/components/forms/ContactForm";
+import { pageMetadata } from "@/lib/seo/og";
 import "../pages.css";
 
-export const metadata: Metadata = {
+export const metadata: Metadata = pageMetadata({
   title: "Contact — MarketCatalyst",
   description:
     "Get in touch with the MarketCatalyst team — product questions, partnerships, press and support.",
-  alternates: { canonical: "/contact" },
-};
+  path: "/contact",
+});
 
 /**
  * The routes a message can take, stated plainly so nobody has to guess which
@@ -72,13 +73,15 @@ export default function ContactPage() {
 
           <div className="mcp-inner mcp-hero-grid">
             <div className="mc-rev">
-              <div className="mcp-kicker">
-                <i />
-                <span>Contact</span>
-              </div>
-              <h1 className="mcp-h1">
-                Ask us anything{" "}
-                <span className="mc-serif">you would ask the data.</span>
+              <h1 className="mcp-h1-group">
+                <span className="mcp-kicker">
+                  <i />
+                  <span>Contact MarketCatalyst</span>
+                </span>
+                <span className="mcp-h1">
+                  Ask us anything{" "}
+                  <span className="mc-serif">you would ask the data.</span>
+                </span>
               </h1>
               <p className="mcp-lede">
                 Questions about coverage, a partnership idea, or press — send a note and it reaches

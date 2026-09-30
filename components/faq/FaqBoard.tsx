@@ -58,12 +58,14 @@ export function FaqBoard({ faqs }: { faqs: Faq[] }) {
         <div className="mcp-inner mcp-hero-grid">
           <div>
           <div className="mc-rev">
-            <div className="mcp-kicker">
-              <i />
-              <span>Support</span>
-            </div>
-            <h1 className="mcp-h1">
-              Questions, <span className="mc-serif">answered.</span>
+            <h1 className="mcp-h1-group">
+              <span className="mcp-kicker">
+                <i />
+                <span>MarketCatalyst FAQs</span>
+              </span>
+              <span className="mcp-h1">
+                Questions, <span className="mc-serif">answered.</span>
+              </span>
             </h1>
             <p className="mcp-lede">
               Everything about the MarketCatalyst terminal — where its data comes from, what the
