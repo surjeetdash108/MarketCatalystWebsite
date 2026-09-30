@@ -18,11 +18,11 @@ export function Hero({ tape }: { tape: LiveTape | null }) {
           which nothing under a 1px blur can tell apart. */}
       <div className="mc-dash" id="mc-dash">
         <picture>
-          {/* Mobile viewports: cap at 100vw so phones load hero-desk-1280.webp (~85KB) instead of 2560w (~190KB) */}
+          {/* Mobile viewports: phones load 640w or 750w WebP (~27-35KB instead of 85KB) */}
           <source
             media="(max-width: 768px)"
             type="image/webp"
-            srcSet="/hero-desk-1280.webp"
+            srcSet="/hero-desk-640.webp 640w, /hero-desk-750.webp 750w"
             sizes="100vw"
           />
           {/* Desktop viewports */}
@@ -37,7 +37,7 @@ export function Hero({ tape }: { tape: LiveTape | null }) {
               shows. It is the largest paint in the hero, hence the high fetch
               priority. */}
           <img
-            src="/hero-desk.jpg"
+            src="/hero-desk-640.webp"
             alt="MarketCatalyst dashboard showing market data"
             fetchPriority="high"
             decoding="async"
@@ -75,7 +75,7 @@ export function Hero({ tape }: { tape: LiveTape | null }) {
               <br /><br />
 
               Cut through the noise with Daily and Weekly recaps, powered by our{" "}
-              <em className="mc-serif">'What Matters Now' AI synthesis</em>. Dive deeper into any ticker with 13F filings, insider flows, earnings transcripts, and historical reaction overlays.
+              <em className="mc-serif">&lsquo;What Matters Now&rsquo; AI synthesis</em>. Dive deeper into any ticker with 13F filings, insider flows, earnings transcripts, and historical reaction overlays.
               <br /><br />
 
               Build your edge with advanced screeners, ETF tools, and dynamic watchlists. No scattered sources—everything is seamlessly integrated into one platform.

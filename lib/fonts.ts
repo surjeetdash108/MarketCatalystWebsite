@@ -1,17 +1,12 @@
 // Font families for the marketing site.
 //
-// The design-token system in `app/iq.css` defines three CSS variables that
-// every ported component and stylesheet rule actually reads:
-//   --f-display -> var(--font-space-grotesk, 'Space Grotesk', sans-serif)
-//   --f-body    -> var(--font-geist-sans,    'Inter', sans-serif)
-//   --f-mono    -> var(--font-jetbrains-mono,'JetBrains Mono', monospace)
+// The site uses a unified typography pairing:
+//   Space Grotesk: display, body, and UI headings
+//   IBM Plex Mono: tickers, metrics, labels, numbers
+//   Newsreader: italic editorial accents
 //
-// `iq.css` also ships `.iq-root[data-font="..."]` overrides for Inter, DM
-// Sans, Plus Jakarta Sans, IBM Plex Sans, Outfit and Manrope, but nothing in
-// the ported marketing page (or this repo) ever sets a `data-font` attribute,
-// so loading those extra families would just cost bytes with zero visual
-// effect. Only the three families actually referenced are loaded here.
-import { Space_Grotesk, Geist, JetBrains_Mono, IBM_Plex_Mono, Newsreader } from "next/font/google";
+// Self-hosted via next/font because the site CSP blocks external font stylesheets.
+import { Space_Grotesk, IBM_Plex_Mono, Newsreader } from "next/font/google";
 
 export const spaceGrotesk = Space_Grotesk({
   variable: "--font-space-grotesk",
@@ -19,16 +14,6 @@ export const spaceGrotesk = Space_Grotesk({
   display: "swap",
 });
 
-export const geistSans = Geist({
-  variable: "--font-geist-sans",
-  subsets: ["latin"],
-  display: "swap",
-});
-
-// Landing page (app/page.tsx) type pairing: Space Grotesk for display/body,
-// IBM Plex Mono for every ticker/label/figure, Newsreader italic for the
-// editorial accents inside headlines. Self-hosted via next/font because the
-// site CSP blocks external font stylesheets (fonts.googleapis.com).
 // 400 is deliberately not loaded. At 400 the mono labels read thin and grey
 // on the near-black ground; with no 400 face, CSS font matching resolves every
 // 400 (and lighter) request to 500, so the whole site gets the medium cut
@@ -40,20 +25,14 @@ export const ibmPlexMono = IBM_Plex_Mono({
   display: "swap",
 });
 
+// Only italic is used on the site (.mc-serif, headline accents).
 export const newsreader = Newsreader({
   variable: "--font-newsreader",
   subsets: ["latin"],
-  style: ["italic", "normal"],
-  display: "swap",
-});
-
-// Same trick as IBM Plex Mono above: no 400, so regular requests land on 500.
-export const jetbrainsMono = JetBrains_Mono({
-  variable: "--font-jetbrains-mono",
-  subsets: ["latin"],
-  weight: ["500", "600", "700"],
+  style: ["italic"],
   display: "swap",
 });
 
 /** Combined className to apply on <html> so every --font-* variable is available. */
-export const fontVariables = `${spaceGrotesk.variable} ${geistSans.variable} ${jetbrainsMono.variable} ${ibmPlexMono.variable} ${newsreader.variable}`;
+export const fontVariables = `${spaceGrotesk.variable} ${ibmPlexMono.variable} ${newsreader.variable}`;
+

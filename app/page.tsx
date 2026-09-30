@@ -3,9 +3,19 @@ import "./home.css";
 import { SiteNav } from "@/components/chrome/SiteNav";
 import { Hero } from "@/components/home/Hero";
 import { HomeMotion } from "@/components/home/HomeMotion";
-import { Coverage, FinalCta, PricingPlans, WorkspaceStack } from "@/components/home/Sections";
+import dynamicImport from "next/dynamic";
+import { Coverage, FinalCta } from "@/components/home/Sections";
 import { Tape } from "@/components/home/Tape";
 import { SiteFooter } from "@/components/chrome/SiteFooter";
+
+const WorkspaceStack = dynamicImport(
+  () => import("@/components/home/Sections").then((m) => m.WorkspaceStack),
+  { ssr: true },
+);
+const PricingPlans = dynamicImport(
+  () => import("@/components/home/Sections").then((m) => m.PricingPlans),
+  { ssr: true },
+);
 import { getLiveTape } from "@/lib/market/tape";
 import { buildOrganizationJsonLd, buildWebSiteJsonLd, serializeJsonLd } from "@/lib/seo/jsonld";
 

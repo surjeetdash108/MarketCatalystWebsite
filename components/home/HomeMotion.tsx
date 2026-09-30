@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useRef } from "react";
+import { useEffect } from "react";
 
 // ============================================================
 // LANDING PAGE CHOREOGRAPHY
@@ -25,15 +25,6 @@ import { useEffect, useRef } from "react";
 const STACK_MIN_HEIGHT = 420;
 
 export function HomeMotion() {
-  // Driven straight through the DOM rather than React state: the intro counter
-  // ticks once per frame, and re-rendering the tree 60x a second for it would
-  // be pure waste.
-  const loaderRef = useRef<HTMLDivElement | null>(null);
-  const countRef = useRef<HTMLDivElement | null>(null);
-  const wordRef = useRef<HTMLDivElement | null>(null);
-  const bgRef = useRef<HTMLDivElement | null>(null);
-  const raf = useRef<number | null>(null);
-
   useEffect(() => {
     const d = document;
     const reduce = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
@@ -61,7 +52,6 @@ export function HomeMotion() {
     const finish = () => {
       if (finished) return;
       finished = true;
-      loaderRef.current?.classList.add("is-out");
       revealHero();
     };
 
@@ -197,6 +187,7 @@ export function HomeMotion() {
           if (veil) veil.style.opacity = "0.22";
         }
         target = RADIUS;
+        startSpot();
       };
       const onLeave = () => {
         target = 0;
@@ -238,14 +229,25 @@ export function HomeMotion() {
         hero.addEventListener("pointercancel", onUp, { passive: true });
       }
 
+      let spotActive = false;
       const loop = () => {
         hx += (tx - hx) * 0.16;
         hy += (ty - hy) * 0.16;
         r2 += (target - r2) * 0.12;
         if (r2 > 0.5) paint();
-        spotRaf = requestAnimationFrame(loop);
+        if (target > 0 || r2 > 0.5) {
+          spotRaf = requestAnimationFrame(loop);
+        } else {
+          spotActive = false;
+        }
       };
-      loop();
+
+      const startSpot = () => {
+        if (!spotActive) {
+          spotActive = true;
+          spotRaf = requestAnimationFrame(loop);
+        }
+      };
 
       cleanups.push(() => {
         cancelAnimationFrame(spotRaf);
@@ -365,23 +367,66 @@ export function HomeMotion() {
     const tapeEl = d.getElementById("mc-tape");
 
     let tapeX = 0;
+    let tapeHalf = 0;
+    const updateTapeHalf = () => {
+      tapeHalf = tapeEl && !reduce ? tapeEl.scrollWidth / 2 : 0;
+    };
+    updateTapeHalf();
+
     let lastY = window.scrollY;
     let vel = 0;
     let geo: { top: number; h: number }[] | null = null;
-    let geoKey = "";
+
+    const measureGeo = () => {
+      const vh = window.innerHeight;
+      const stacking = vh >= STACK_MIN_HEIGHT;
+      if (!panels.length || !stacking) {
+        geo = null;
+        panels.forEach((p) => {
+          p.style.transform = "";
+          p.style.filter = "";
+          p.style.position = "";
+          p.style.top = "";
+        });
+        return;
+      }
+
+      // If at top of page, no panels are stuck, so avoid forced style invalidation
+      if (window.scrollY === 0) {
+        geo = panels.map((p) => ({
+          top: p.getBoundingClientRect().top,
+          h: p.offsetHeight,
+        }));
+      } else {
+        const saved = panels.map((p) => [p.style.position, p.style.transform] as const);
+        panels.forEach((p) => {
+          p.style.position = "static";
+          p.style.transform = "none";
+        });
+        geo = panels.map((p) => ({
+          top: p.getBoundingClientRect().top + window.scrollY,
+          h: p.offsetHeight,
+        }));
+        panels.forEach((p, i) => {
+          p.style.position = saved[i][0] || "sticky";
+          p.style.transform = saved[i][1];
+        });
+      }
+
+      const stickTop = vh * 0.12;
+      panels.forEach((p, i) => {
+        const h = geo?.[i].h ?? 0;
+        const fits = h <= vh - stickTop;
+        p.style.top = `${Math.round(fits ? stickTop : Math.min(stickTop, vh - h - 12))}px`;
+      });
+    };
+
+    measureGeo();
 
     const onScroll = () => {
-      /* Every layout read happens here, before any style is written. This
-         runs every frame, and a read that follows a write in the same frame
-         forces the browser to lay the page out again on the spot (PageSpeed's
-         "forced reflow"). Read first, write after, and the layout from the
-         previous frame answers every question for free. */
       const y = window.scrollY;
       const vh = window.innerHeight;
       const docH = d.documentElement.scrollHeight;
-      const tapeHalf = tapeEl && !reduce ? tapeEl.scrollWidth / 2 : 0;
-      const panelTops =
-        stackIdx && panels.length ? panels.map((p) => p.getBoundingClientRect().top) : null;
 
       vel = y - lastY;
       lastY = y;
@@ -393,42 +438,7 @@ export function HomeMotion() {
       if (nav) nav.classList.toggle("is-stuck", y > 40);
 
       const stacking = vh >= STACK_MIN_HEIGHT;
-      if (panels.length && stacking) {
-        // Sticky panels report their stuck position, so measure them once per
-        // layout with position:static to get their true document offsets.
-        const key = `${window.innerWidth}x${vh}x${docH}`;
-        if (!geo || geoKey !== key) {
-          geoKey = key;
-          const saved = panels.map((p) => [p.style.position, p.style.transform] as const);
-          panels.forEach((p) => {
-            p.style.position = "static";
-            p.style.transform = "none";
-          });
-          geo = panels.map((p) => ({ top: p.getBoundingClientRect().top + window.scrollY, h: p.offsetHeight }));
-          panels.forEach((p, i) => {
-            p.style.position = saved[i][0] || "sticky";
-            p.style.transform = saved[i][1];
-          });
-
-          /* Where each card pins, decided per card rather than by breakpoint.
-
-             A card SHORTER than the viewport pins near the top, which is the
-             desktop look. A card TALLER than the viewport cannot: pinning its
-             top would freeze it with its own bottom still below the fold, so
-             the reader never reaches the end of it before the next card slides
-             over. Those pin by their BOTTOM instead - a negative offset - so
-             the whole card has been read by the time it locks.
-
-             This is what lets the effect run on a phone at all; it used to be
-             switched off under 861px because a single `top` could not serve
-             both cases. */
-          const stickTop = vh * 0.12;
-          panels.forEach((p, i) => {
-            const h = geo?.[i].h ?? 0;
-            const fits = h <= vh - stickTop;
-            p.style.top = `${Math.round(fits ? stickTop : Math.min(stickTop, vh - h - 12))}px`;
-          });
-        }
+      if (panels.length && stacking && geo) {
         panels.forEach((p, i) => {
           const next = geo?.[i + 1];
           if (!next) {
@@ -441,26 +451,21 @@ export function HomeMotion() {
           p.style.transform = `scale(${(1 - overlap * 0.05).toFixed(4)}) translateY(${(-overlap * 18).toFixed(1)}px)`;
           p.style.filter = `brightness(${(1 - overlap * 0.3).toFixed(3)})`;
         });
-      } else if (panels.length) {
-        // Too short to stack: drop every inline override so the stylesheet's
-        // plain vertical list takes over cleanly.
-        geo = null;
-        panels.forEach((p) => {
-          p.style.transform = "";
-          p.style.filter = "";
-          p.style.position = "";
-          p.style.top = "";
-        });
-      }
 
-      if (stackIdx && panelTops) {
-        let active = 0;
-        panelTops.forEach((top, i) => {
-          if (top <= vh * 0.2) active = i;
-        });
-        stackIdx.textContent = `${String(active + 1).padStart(2, "0")} / ${String(panels.length).padStart(2, "0")}`;
+        if (stackIdx) {
+          let active = 0;
+          panels.forEach((p, i) => {
+            const top = p.getBoundingClientRect().top;
+            if (top <= vh * 0.2) active = i;
+          });
+          stackIdx.textContent = `${String(active + 1).padStart(2, "0")} / ${String(panels.length).padStart(2, "0")}`;
+        }
       }
+    };
 
+    // Dedicated lightweight ticker loop: ONLY moves tape horizontally on GPU, zero layout reads
+    let tickerRaf = 0;
+    const tickTape = () => {
       if (tapeEl && !reduce) {
         tapeX -= 0.38 + vel * 0.12;
         if (tapeHalf) {
@@ -468,24 +473,41 @@ export function HomeMotion() {
           if (tapeX > 0) tapeX -= tapeHalf;
         }
         tapeEl.style.transform = `translate3d(${tapeX.toFixed(1)}px, 0, 0) skewY(${(-vel * 0.016).toFixed(2)}deg)`;
+        if (vel !== 0) vel *= 0.86;
+      }
+      tickerRaf = requestAnimationFrame(tickTape);
+    };
+    if (tapeEl && !reduce) {
+      tickTape();
+    }
+
+    let scrollRaf = 0;
+    const handleScroll = () => {
+      if (!scrollRaf) {
+        scrollRaf = requestAnimationFrame(() => {
+          onScroll();
+          scrollRaf = 0;
+        });
       }
     };
 
-    let loopRaf = 0;
-    const loop = () => {
+    window.addEventListener("scroll", handleScroll, { passive: true });
+
+    const handleResize = () => {
+      updateTapeHalf();
+      measureGeo();
       onScroll();
-      if (!reduce) vel *= 0.86;
-      loopRaf = requestAnimationFrame(loop);
     };
-    loop();
-    window.addEventListener("resize", onScroll);
+    window.addEventListener("resize", handleResize);
+
     cleanups.push(() => {
-      cancelAnimationFrame(loopRaf);
-      window.removeEventListener("resize", onScroll);
+      cancelAnimationFrame(tickerRaf);
+      if (scrollRaf) cancelAnimationFrame(scrollRaf);
+      window.removeEventListener("scroll", handleScroll);
+      window.removeEventListener("resize", handleResize);
     });
 
     return () => {
-      if (raf.current) cancelAnimationFrame(raf.current);
       timers.forEach(clearTimeout);
       cleanups.forEach((fn) => fn());
     };

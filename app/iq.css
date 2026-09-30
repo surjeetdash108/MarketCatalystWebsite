@@ -28,11 +28,9 @@
   --down-dim: #FF547018;
   --warn: #FFB547;
   --warn-dim: #FFB54718;
-  /* One font across the whole site: headings use the same Geist family as body
-     (was Space Grotesk). Only --f-mono stays distinct, for code/tickers. */
-  --f-display: var(--font-geist-sans, 'Geist', system-ui, sans-serif);
-  --f-body: var(--font-geist-sans, 'Geist', system-ui, sans-serif);
-  --f-mono: var(--font-jetbrains-mono, 'JetBrains Mono', ui-monospace, monospace);
+  --f-display: var(--font-space-grotesk, 'Space Grotesk', system-ui, sans-serif);
+  --f-body: var(--font-space-grotesk, 'Space Grotesk', system-ui, sans-serif);
+  --f-mono: var(--font-ibm-plex-mono, 'IBM Plex Mono', ui-monospace, monospace);
   --r-sm: 6px;
   --r: 10px;
   --r-lg: 14px;
