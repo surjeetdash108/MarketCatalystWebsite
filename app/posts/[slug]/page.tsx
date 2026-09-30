@@ -64,6 +64,7 @@ export async function generateMetadata({
     alternates: { canonical },
     openGraph: {
       type: "article",
+      url: canonical,
       title,
       description,
       images: image ? [image] : [DEFAULT_OG_IMAGE],

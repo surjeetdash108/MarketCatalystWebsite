@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { getPublishedPosts } from "@/lib/blog/posts";
 import { BlogIndex } from "@/components/blog/BlogIndex";
 import { getWeeklyReads } from "@/lib/blog/stats";
+import { pageMetadata } from "@/lib/seo/og";
 import "../blog.css";
 
 // Rendered per-request (this runs on App Hosting, not a static export) so the
@@ -9,11 +10,12 @@ import "../blog.css";
 // is small and the query is cheap.
 export const dynamic = "force-dynamic";
 
-export const metadata: Metadata = {
+export const metadata: Metadata = pageMetadata({
   title: "Blog · MarketCatalyst",
-  description: "Daily recaps, research and guides to how the market actually works.",
-  alternates: { canonical: "/posts" },
-};
+  description:
+    "Daily recaps, research and guides to how the market actually works.",
+  path: "/posts",
+});
 
 /* ── Server-side helpers ──────────────────────────────────────────────── */
 

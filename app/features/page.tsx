@@ -3,14 +3,16 @@ import { ReaderShell } from "@/components/chrome/ReaderShell";
 import { MarketChart } from "@/components/chrome/MarketChart";
 import { FeatureBoard } from "@/components/features/FeatureBoard";
 import { AI_FEATURES, WORKSPACE_COUNT, WORKSPACE_FEATURES } from "@/lib/features/features";
+import { pageMetadata } from "@/lib/seo/og";
 import "../pages.css";
 import "../features.css";
 
-export const metadata: Metadata = {
+export const metadata: Metadata = pageMetadata({
   title: "Features — MarketCatalyst",
-  description: `${WORKSPACE_COUNT} research workspaces plus the AI layer that reads every one of them — markets, research, recaps and your own portfolio, each explained.`,
-  alternates: { canonical: "/features" },
-};
+  description:
+    `${WORKSPACE_COUNT} research workspaces plus the AI layer that reads every one of them — markets, research, recaps and your own portfolio, each explained.`,
+  path: "/features",
+});
 
 // Fully static: the feature list is content, not data, so there is nothing
 // here that needs a request to resolve.

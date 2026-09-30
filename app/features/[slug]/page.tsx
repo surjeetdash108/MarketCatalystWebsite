@@ -4,6 +4,7 @@ import { notFound } from "next/navigation";
 import { ReaderShell } from "@/components/chrome/ReaderShell";
 import { APP_SIGNUP_URL } from "@/components/marketing/app-url";
 import { FEATURE_VIEWS, getFeatureView, prevNextFeature } from "@/lib/features/features";
+import { pageMetadata } from "@/lib/seo/og";
 import "../../pages.css";
 import "../../features.css";
 
@@ -21,11 +22,11 @@ export async function generateMetadata({
   const { slug } = await params;
   const f = getFeatureView(slug);
   if (!f) return {};
-  return {
+  return pageMetadata({
     title: `${f.title} — MarketCatalyst Features`,
     description: f.blurb,
-    alternates: { canonical: `/features/${f.slug}` },
-  };
+    path: `/features/${f.slug}`,
+  });
 }
 
 export default async function FeatureDetailPage({

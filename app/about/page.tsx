@@ -3,14 +3,15 @@ import Link from "next/link";
 import { APP_SIGNUP_URL } from "@/components/marketing/app-url";
 import { ReaderShell } from "@/components/chrome/ReaderShell";
 import { MarketChart } from "@/components/chrome/MarketChart";
+import { pageMetadata } from "@/lib/seo/og";
 import "../pages.css";
 
-export const metadata: Metadata = {
+export const metadata: Metadata = pageMetadata({
   title: "About — MarketCatalyst",
   description:
     "MarketCatalyst is a market-intelligence platform: institutional-grade data, attributed to source, with the interpretation delivered alongside it.",
-  alternates: { canonical: "/about" },
-};
+  path: "/about",
+});
 
 /**
  * Headline figures.
