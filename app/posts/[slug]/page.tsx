@@ -12,6 +12,7 @@ import { resolvePostDesign } from "@/lib/blog/post-design";
 // design still wins — this only covers what that design does not mention.
 import "../blog-doc.css";
 import { buildArticleJsonLd } from "@/lib/seo/jsonld";
+import { DEFAULT_OG_IMAGE } from "@/lib/seo/og";
 
 /**
  * Statically generated, one page per PUBLISHED post, revalidated on a timer.
@@ -65,7 +66,7 @@ export async function generateMetadata({
       type: "article",
       title,
       description,
-      images: image ? [image] : undefined,
+      images: image ? [image] : [DEFAULT_OG_IMAGE],
       publishedTime: post.publishedAt ?? undefined,
       modifiedTime: post.updatedAt,
     },

@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { fontVariables } from "@/lib/fonts";
+import { DEFAULT_OG_IMAGE } from "@/lib/seo/og";
 import "./globals.css";
 import "./theme.css";
 import "./chrome.css";
@@ -21,12 +22,14 @@ export const metadata: Metadata = {
     title: "MarketCatalyst — Market Intelligence Terminal",
     description:
       "From ticker to thesis in under 60 seconds. Earnings, movers, analyst actions, insider flows and your portfolio — all in one terminal.",
+    images: [DEFAULT_OG_IMAGE],
   },
   twitter: {
     card: "summary_large_image",
     title: "MarketCatalyst — Market Intelligence Terminal",
     description:
       "From ticker to thesis in under 60 seconds. Earnings, movers, analyst actions, insider flows and your portfolio — all in one terminal.",
+    images: [DEFAULT_OG_IMAGE],
   },
 };
 
