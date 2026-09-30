@@ -7,6 +7,7 @@ import { Coverage, FinalCta, PricingPlans, WorkspaceStack } from "@/components/h
 import { Tape } from "@/components/home/Tape";
 import { SiteFooter } from "@/components/chrome/SiteFooter";
 import { getLiveTape } from "@/lib/market/tape";
+import { buildOrganizationJsonLd, buildWebSiteJsonLd, serializeJsonLd } from "@/lib/seo/jsonld";
 
 // Rendered per request so the first paint carries the current market figures.
 // Not ISR: on App Hosting the background regeneration never completes (Cloud
@@ -27,6 +28,12 @@ export default async function Home() {
 
   return (
     <div className="mc-page">
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{
+          __html: serializeJsonLd([buildOrganizationJsonLd(), buildWebSiteJsonLd()]),
+        }}
+      />
       {/* With scripting off the loader would never lift and the masked hero
           copy would never animate in, so neutralise both. */}
       <noscript>

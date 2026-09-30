@@ -3,6 +3,7 @@ import { getPublicFaqs } from "@/lib/faq/faqs";
 import { ReaderShell } from "@/components/chrome/ReaderShell";
 import { FaqBoard } from "@/components/faq/FaqBoard";
 import { pageMetadata } from "@/lib/seo/og";
+import { buildFaqPageJsonLd, serializeJsonLd } from "@/lib/seo/jsonld";
 import "../pages.css";
 
 // Rendered per-request (App Hosting, not a static export) so the build never
@@ -21,6 +22,12 @@ export default async function FaqsIndexPage() {
 
   return (
     <ReaderShell active="faqs">
+      {faqs.length > 0 && (
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{ __html: serializeJsonLd(buildFaqPageJsonLd(faqs)) }}
+        />
+      )}
       <FaqBoard faqs={faqs} />
     </ReaderShell>
   );
