@@ -8,7 +8,8 @@ import { useEffect, useRef } from "react";
 // One client component owns every piece of motion on the page so the
 // sections themselves can stay server-rendered:
 //
-//   1. intro loader (count to 100, then wipe up) + hero reveal
+//   1. intro loader (counts to 100 as the page loads, then wipes up)
+//      + hero reveal
 //   2. the hero product shot, scaled to fit and revealed under a
 //      cursor-tracked spotlight (static strip on touch devices)
 //   3. ET clock, counters, in-view reveals, coverage spotlight
@@ -80,11 +81,32 @@ export function HomeMotion() {
       const from = readTriple("--mc-down-rgb");
       const to = readTriple("--mc-up-rgb");
 
+      /* The count follows the page rather than a clock. It climbs towards 90
+         while the fonts and the hero photograph load, and only runs out to
+         100 once both are ready - so on a warm cache or a fast connection it
+         is gone in about half a second, and on a slow one it never lifts onto
+         blank type. MIN_MS stops it flashing past as a glitch; MAX_MS lifts it
+         regardless, so a slow image loads in view rather than behind it.
+         Between 0 and 90 it is still an easing curve: browsers do not report
+         a real percentage, only when things are done. */
+      const MIN_MS = 400;
+      const MAX_MS = 3000;
+      const WAIT_CEIL = 0.9; // where the count idles until the page is ready
+      const WAIT_TAU = 700; // ms; how quickly it approaches that ceiling
+      const OUTRO_MS = 250; // the run from wherever it is to 100
+
+      let ready = false;
+      const heroImg = d.querySelector<HTMLImageElement>("#mc-dash img");
+      const fontsReady = d.fonts?.ready ?? Promise.resolve();
+      const heroReady = heroImg ? heroImg.decode().catch(() => undefined) : Promise.resolve();
+      Promise.all([fontsReady, heroReady]).then(() => {
+        ready = true;
+      });
+
       const t0 = performance.now();
-      const dur = 2200;
-      const tick = (t: number) => {
-        const p = clamp01((t - t0) / dur);
-        const e = 1 - Math.pow(1 - p, 2);
+      let outroFrom = 0;
+      let outroT0 = -1;
+      const paint = (e: number) => {
         if (countRef.current) {
           countRef.current.textContent = String(Math.round(e * 100)).padStart(3, "0");
           // Red at 000, green at 100: the counter reads like a ticker coming
@@ -116,12 +138,27 @@ export function HomeMotion() {
           s3.setProperty("--mc-bg-blur", `${5 + (1 - e) * 30}px`);
           s3.setProperty("--mc-bg-fade", String(0.14 + e * 0.5));
         }
-        if (p < 1) raf.current = requestAnimationFrame(tick);
-        else timers.push(setTimeout(finish, 320));
+      };
+      const tick = (t: number) => {
+        const elapsed = t - t0;
+        if (outroT0 < 0) {
+          const e = WAIT_CEIL * (1 - Math.exp(-elapsed / WAIT_TAU));
+          paint(e);
+          if ((ready && elapsed >= MIN_MS) || elapsed >= MAX_MS) {
+            outroFrom = e;
+            outroT0 = t;
+          }
+          raf.current = requestAnimationFrame(tick);
+          return;
+        }
+        const q = clamp01((t - outroT0) / OUTRO_MS);
+        paint(outroFrom + (1 - outroFrom) * (1 - Math.pow(1 - q, 2)));
+        if (q < 1) raf.current = requestAnimationFrame(tick);
+        else timers.push(setTimeout(finish, 150));
       };
       raf.current = requestAnimationFrame(tick);
       // Never trap the page behind the loader if a frame never lands.
-      timers.push(setTimeout(finish, 5200));
+      timers.push(setTimeout(finish, MAX_MS + OUTRO_MS + 400));
     }
 
     // ── 2. hero spotlight (cursor, or finger on touch) ─────────────
