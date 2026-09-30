@@ -49,6 +49,23 @@ const nextConfig: NextConfig = {
     },
   },
 
+  // Blog posts published more than once. The backend de-duplicates a repeated
+  // title by suffixing -2, -3..., so re-uploading an article creates a second
+  // live copy competing with the first in search. Each copy 301s to the
+  // original; the copies should also be unpublished in the blog admin. Add
+  // future duplicates here as [copy slug, original slug].
+  async redirects() {
+    const duplicatePosts: [string, string][] = [
+      ["inside-the-hack-where-openai-s-own-ai-agents-went-rogue-2", "inside-the-hack-where-openai-s-own-ai-agents-went-rogue"],
+      ["inside-the-hack-where-openai-s-own-ai-agents-went-rogue-3", "inside-the-hack-where-openai-s-own-ai-agents-went-rogue"],
+    ];
+    return duplicatePosts.map(([copy, original]) => ({
+      source: `/posts/${copy}`,
+      destination: `/posts/${original}`,
+      statusCode: 301 as const,
+    }));
+  },
+
   async headers() {
     return [
       {
