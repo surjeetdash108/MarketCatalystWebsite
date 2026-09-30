@@ -65,14 +65,12 @@ export function HomeMotion() {
       revealHero();
     };
 
+    // Intro 0-100 loader commented out for now: show homepage directly
+    finish();
+    /*
     if (reduce) {
       finish();
     } else {
-      /* The two colours the counter travels between are theme tokens, not
-         literals — read the `*-rgb` triples off :root once and interpolate
-         between them, so a re-brand in app/theme.css carries the loader with
-         it. If a triple is missing for any reason the ramp is simply skipped
-         and the counter keeps the colour the stylesheet gave it. */
       const readTriple = (name: string) => {
         const raw = getComputedStyle(d.documentElement).getPropertyValue(name).trim();
         const parts = raw.split(/[\s,]+/).map(Number);
@@ -81,19 +79,11 @@ export function HomeMotion() {
       const from = readTriple("--mc-down-rgb");
       const to = readTriple("--mc-up-rgb");
 
-      /* The count follows the page rather than a clock. It climbs towards 90
-         while the fonts and the hero photograph load, and only runs out to
-         100 once both are ready - so on a warm cache or a fast connection it
-         is gone in about half a second, and on a slow one it never lifts onto
-         blank type. MIN_MS stops it flashing past as a glitch; MAX_MS lifts it
-         regardless, so a slow image loads in view rather than behind it.
-         Between 0 and 90 it is still an easing curve: browsers do not report
-         a real percentage, only when things are done. */
       const MIN_MS = 400;
       const MAX_MS = 3000;
-      const WAIT_CEIL = 0.9; // where the count idles until the page is ready
-      const WAIT_TAU = 700; // ms; how quickly it approaches that ceiling
-      const OUTRO_MS = 250; // the run from wherever it is to 100
+      const WAIT_CEIL = 0.9;
+      const WAIT_TAU = 700;
+      const OUTRO_MS = 250;
 
       let ready = false;
       const heroImg = d.querySelector<HTMLImageElement>("#mc-dash img");
@@ -109,30 +99,17 @@ export function HomeMotion() {
       const paint = (e: number) => {
         if (countRef.current) {
           countRef.current.textContent = String(Math.round(e * 100)).padStart(3, "0");
-          // Red at 000, green at 100: the counter reads like a ticker coming
-          // back up rather than a neutral progress number.
           if (from && to) {
             const mix = from.map((c, i) => Math.round(c + (to[i] - c) * e));
             countRef.current.style.color = `rgb(${mix.join(" ")})`;
           }
         }
-        // The wordmark resolves out of a blur as the count fills, so the two
-        // read as one gesture. Blur and opacity only — the type never moves.
-        // An earlier pass also eased letter-spacing and scale, which made the
-        // word converge inwards from the sides; the letters are meant to sit
-        // still and simply come into focus.
         if (wordRef.current) {
           const s2 = wordRef.current.style;
           s2.setProperty("--mc-word-blur", `${(1 - e) * 16}px`);
           s2.setProperty("--mc-word-fade", String(0.25 + e * 0.75));
-          // The tagline shares the timing but never blurs — it only fades up,
-          // a beat behind the wordmark so it lands last.
           s2.setProperty("--mc-tag-fade", String(clamp01((e - 0.15) / 0.85)));
         }
-        // The backdrop photograph softens out of the same blur ramp as the
-        // wordmark, so the scene reads as one gesture coming into focus —
-        // but it keeps a floor on the blur so the ticker detail never
-        // resolves sharp enough to compete with the type sitting over it.
         if (bgRef.current) {
           const s3 = bgRef.current.style;
           s3.setProperty("--mc-bg-blur", `${5 + (1 - e) * 30}px`);
@@ -157,9 +134,9 @@ export function HomeMotion() {
         else timers.push(setTimeout(finish, 150));
       };
       raf.current = requestAnimationFrame(tick);
-      // Never trap the page behind the loader if a frame never lands.
       timers.push(setTimeout(finish, MAX_MS + OUTRO_MS + 400));
     }
+    */
 
     // ── 2. hero spotlight (cursor, or finger on touch) ─────────────
     // The backdrop used to be a DOM mock that had to be measured and
@@ -516,12 +493,9 @@ export function HomeMotion() {
 
   return (
     <>
+      {/* Intro 0-100 loader commented out for now:
       <div className="mc-loader" ref={loaderRef} aria-hidden="true">
         <div className="mc-loader-bg" ref={bgRef} aria-hidden="true">
-          {/* Decorative and aria-hidden two levels up, so no alt text. High
-              fetch priority: it's the first paint the site shows at all.
-              Drawn under a 38px blur, so 1280px is the most it ever needs;
-              `sizes` is the width `object-fit: cover` renders it at. */}
           <picture>
             <source
               type="image/webp"
@@ -546,6 +520,7 @@ export function HomeMotion() {
           000
         </div>
       </div>
+      */}
       <div className="mc-prog" aria-hidden="true">
         <i id="mc-prog-bar" />
       </div>
