@@ -12,7 +12,7 @@
 export function BrandMark() {
   return (
     <>
-      <img src="/logo-mark.png" alt="" className="mc-brand-logo" />
+      <img src="/logo-mark.png" alt="MarketCatalyst logo" className="mc-brand-logo" />
       <span className="mc-brand-word">
         Market<span className="mc-brand-word-accent">Catalyst</span>
       </span>

@@ -16,13 +16,20 @@ export function Hero({ tape }: { tape: LiveTape | null }) {
           the same job in CSS at every viewport. Served AVIF first and WebP
           second, with the JPEG as the floor - 149KB / 234KB / 369KB against a
           25MB original, which nothing under a 1px blur can tell apart. */}
-      <div className="mc-dash" id="mc-dash" aria-hidden="true">
+      <div className="mc-dash" id="mc-dash">
         <picture>
           <source srcSet="/hero-desk.avif" type="image/avif" />
           <source srcSet="/hero-desk.webp" type="image/webp" />
-          {/* Decorative, and the parent is aria-hidden - so no alt text. It is
-              the largest paint in the hero, hence the high fetch priority. */}
-          <img src="/hero-desk.jpg" alt="" fetchPriority="high" decoding="async" />
+          {/* Described rather than decorative: it is the product shot, and the
+              alt text is how search engines and screen readers know what it
+              shows. It is the largest paint in the hero, hence the high fetch
+              priority. */}
+          <img
+            src="/hero-desk.jpg"
+            alt="MarketCatalyst dashboard showing market data"
+            fetchPriority="high"
+            decoding="async"
+          />
         </picture>
       </div>
       <div className="mc-veil" id="mc-veil" aria-hidden="true" />
