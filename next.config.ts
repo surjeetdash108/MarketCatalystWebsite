@@ -7,6 +7,13 @@ const nextConfig: NextConfig = {
   // Don't advertise the framework in responses.
   poweredByHeader: false,
 
+  // Stamped once per build, so the sitemap can give the authored pages (home,
+  // about, features, legal...) a lastmod that moves when a deploy ships and
+  // stays put between deploys, rather than on every server cold start.
+  env: {
+    BUILD_TIME: new Date().toISOString(),
+  },
+
   // firebase-admin pulls in jose (ESM-only) via jwks-rsa, which breaks when
   // bundled for the server by Turbopack/webpack (`ERR_REQUIRE_ESM`). Keeping
   // it as a real external `require()` at runtime — rather than bundled —
