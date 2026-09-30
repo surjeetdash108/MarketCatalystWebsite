@@ -5,8 +5,6 @@ import { GoogleTagManager } from "@/components/analytics/GoogleTagManager";
 import "./globals.css";
 import "./theme.css";
 import "./chrome.css";
-import "./iq.css";
-import "./landing.css";
 
 export const metadata: Metadata = {
   metadataBase: new URL("https://marketcatalyst.ai"),

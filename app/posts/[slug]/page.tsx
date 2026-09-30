@@ -8,6 +8,9 @@ import { PostDocx } from "@/components/blog/PostDocx";
 import { PostHtmlDoc } from "@/components/blog/PostHtmlDoc";
 import { ArticleHero } from "@/components/blog/ArticleHero";
 import { resolvePostDesign } from "@/lib/blog/post-design";
+// blog-doc.css reads tokens from the older iq-* design system, so articles
+// load it alongside; public pages no longer get it from the root layout.
+import "../../iq.css";
 // The article's own baseline. Every rule is :where()-wrapped, so an uploaded
 // design still wins — this only covers what that design does not mention.
 import "../blog-doc.css";
