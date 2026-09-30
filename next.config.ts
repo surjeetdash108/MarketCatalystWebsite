@@ -1,4 +1,5 @@
 import type { NextConfig } from "next";
+import { DUPLICATE_POSTS } from "./lib/seo/duplicate-posts";
 
 const siteUrl = process.env.NEXT_PUBLIC_SITE_URL;
 const siteHost = siteUrl ? new URL(siteUrl).host : undefined;
@@ -49,17 +50,10 @@ const nextConfig: NextConfig = {
     },
   },
 
-  // Blog posts published more than once. The backend de-duplicates a repeated
-  // title by suffixing -2, -3..., so re-uploading an article creates a second
-  // live copy competing with the first in search. Each copy 301s to the
-  // original; the copies should also be unpublished in the blog admin. Add
-  // future duplicates here as [copy slug, original slug].
+  // Blog posts published more than once 301 to their original; the list and
+  // why it exists are in lib/seo/duplicate-posts.ts.
   async redirects() {
-    const duplicatePosts: [string, string][] = [
-      ["inside-the-hack-where-openai-s-own-ai-agents-went-rogue-2", "inside-the-hack-where-openai-s-own-ai-agents-went-rogue"],
-      ["inside-the-hack-where-openai-s-own-ai-agents-went-rogue-3", "inside-the-hack-where-openai-s-own-ai-agents-went-rogue"],
-    ];
-    return duplicatePosts.map(([copy, original]) => ({
+    return DUPLICATE_POSTS.map(([copy, original]) => ({
       source: `/posts/${copy}`,
       destination: `/posts/${original}`,
       statusCode: 301 as const,
