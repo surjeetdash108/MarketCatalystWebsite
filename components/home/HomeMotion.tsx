@@ -524,11 +524,6 @@ export function HomeMotion() {
               `sizes` is the width `object-fit: cover` renders it at. */}
           <picture>
             <source
-              type="image/avif"
-              srcSet="/prelanding-640.avif 640w, /prelanding-1280.avif 1280w"
-              sizes="max(100vw, 178vh)"
-            />
-            <source
               type="image/webp"
               srcSet="/prelanding-640.webp 640w, /prelanding-1280.webp 1280w"
               sizes="max(100vw, 178vh)"
