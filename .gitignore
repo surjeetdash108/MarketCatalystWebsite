@@ -41,3 +41,4 @@ public/pdfjs/
 
 # root-level folders starting with _
 /_*/
+package.json
