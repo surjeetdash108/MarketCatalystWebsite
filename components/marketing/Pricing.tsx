@@ -47,7 +47,7 @@ export function Pricing() {
           </div>
           <p className="mqp-d">Everything in PRO plus</p>
           <ul className="mqp-feat">
-            <li>Everything in Pro</li>
+            {/* <li>Everything in Pro</li> */}
             <li>Multi-portfolio &amp; 13F tracking</li>
             <li>Custom alert rules</li>
             <li>API &amp; data export</li>

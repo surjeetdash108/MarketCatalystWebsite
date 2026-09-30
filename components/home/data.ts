@@ -141,7 +141,6 @@ export const plans: Plan[] = [
     popular: false,
     cta: "Go Elite",
     features: [
-      "Everything in Pro",
       "Multi-portfolio & 13F tracking",
       "Custom alert rules",
       "API & data export",
