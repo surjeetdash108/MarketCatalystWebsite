@@ -18,9 +18,16 @@ export function Hero({ tape }: { tape: LiveTape | null }) {
           which nothing under a 1px blur can tell apart. */}
       <div className="mc-dash" id="mc-dash">
         <picture>
-          {/* `sizes` is the width `object-fit: cover` renders the 3:2 shot
-              at: the full width, or 1.5x the height on a tall screen. */}
+          {/* Mobile viewports: cap at 100vw so phones load hero-desk-1280.webp (~85KB) instead of 2560w (~190KB) */}
           <source
+            media="(max-width: 768px)"
+            type="image/webp"
+            srcSet="/hero-desk-1280.webp"
+            sizes="100vw"
+          />
+          {/* Desktop viewports */}
+          <source
+            media="(min-width: 769px)"
             type="image/webp"
             srcSet="/hero-desk-1280.webp 1280w, /hero-desk-1920.webp 1920w, /hero-desk-2560.webp 2560w"
             sizes="max(100vw, 150vh)"
@@ -49,26 +56,20 @@ export function Hero({ tape }: { tape: LiveTape | null }) {
               The small label leads the same heading so the H1 says what the
               site is, not only the slogan: search engines read it as "AI
               Stock Market Research Platform - Every market view, revealed
-              inside." It fades in with the lede rather than masking in. */}
+              inside." */}
           <h1 className="mc-h1">
-            <span className="mc-h1-kicker mc-fade" data-fade="0">
+            <span className="mc-h1-kicker">
               <i aria-hidden="true" />
               AI Stock Market Research Platform
             </span>
+            <span>Every market view,</span>
             <span>
-              <span className="mc-mask" data-mask="0">
-                Every market view,
-              </span>
-            </span>
-            <span>
-              <span className="mc-mask" data-mask="110">
-                revealed <em className="mc-serif">inside</em>.
-              </span>
+              revealed <em className="mc-serif">inside</em>.
             </span>
           </h1>
 
           <div className="mc-hero-row">
-            <p className="mc-lede mc-fade"data-fade="320"style={{ maxWidth: "1100px" }}>
+            <p className="mc-lede" style={{ maxWidth: "1100px" }}>
               <b>The entire market, narrated.</b> Keep your pulse on the tape with{" "}
               <em className="mc-serif">Live Heatmaps</em>, breaking news feeds, and real-time sector performance. Plan your week using comprehensive Earnings, Economic, and IPO calendars.
               <br /><br />
@@ -80,7 +81,7 @@ export function Hero({ tape }: { tape: LiveTape | null }) {
               Build your edge with advanced screeners, ETF tools, and dynamic watchlists. No scattered sources—everything is seamlessly integrated into one platform.
               <b> And plenty more waiting <em className="mc-serif">inside.</em></b>
             </p>
-            <div className="mc-actions mc-fade" data-fade="420">
+            <div className="mc-actions">
               <a className="mc-cta" href={APP_SIGNUP_URL}>
                 Get me inside <i>→</i>
               </a>
@@ -88,7 +89,7 @@ export function Hero({ tape }: { tape: LiveTape | null }) {
           </div>
         </div>
 
-        <div className="mc-hud-wrap mc-fade" data-fade="520">
+        <div className="mc-hud-wrap">
           <HeroHud initial={tape} />
 
           <div className="mc-cue">
