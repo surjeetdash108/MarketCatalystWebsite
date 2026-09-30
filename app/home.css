@@ -248,6 +248,33 @@
   padding-bottom: .16em;
   margin-bottom: -.16em;
 }
+/* The descriptive lead line inside the hero H1, set like the .mcp-kicker labels
+   on the inner pages. Everything the slogan lines set (size, tracking,
+   leading, the clip) is reset here. */
+.mc-h1 > span.mc-h1-kicker {
+  display: inline-flex;
+  align-items: center;
+  gap: 9px;
+  overflow: visible;
+  padding: 0;
+  margin: 0 0 22px;
+  font-family: var(--mc-font-mono);
+  font-size: 12px;
+  font-weight: 500;
+  line-height: 1.2;
+  letter-spacing: .22em;
+  text-transform: uppercase;
+  white-space: normal;
+  color: var(--mc-up);
+}
+.mc-h1-kicker i {
+  display: block;
+  width: 5px;
+  height: 5px;
+  border-radius: var(--mc-r-pill);
+  background: var(--mc-up);
+  animation: mcBlink 2s infinite;
+}
 .mc-mask {
   display: block;
   transform: translateY(105%);

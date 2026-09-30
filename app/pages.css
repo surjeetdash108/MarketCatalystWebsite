@@ -94,6 +94,15 @@
   background: var(--mc-up);
   animation: mcBlink 2s infinite;
 }
+/* The page's H1 wraps its kicker label and its headline, so the heading says
+   what the page is ("About MarketCatalyst") as well as carrying the slogan.
+   The wrapper itself adds nothing; each part keeps its own styling. */
+.mcp-h1-group {
+  margin: 0;
+  font: inherit;
+  letter-spacing: normal;
+}
+.mcp-h1-group > .mcp-h1 { display: block; }
 .mcp-h1 {
   margin-top: 22px;
   max-width: 18ch;

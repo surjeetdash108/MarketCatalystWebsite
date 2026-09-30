@@ -50,8 +50,17 @@ export function Hero({ tape }: { tape: LiveTape | null }) {
           {/* Two lines, and exactly two: each masked span is its own block, so
               the break falls at the comma by construction rather than wherever
               the measure happens to run out. The type is sized in the CSS so
-              the longer of the two never wraps again. */}
+              the longer of the two never wraps again.
+
+              The small label leads the same heading so the H1 says what the
+              site is, not only the slogan: search engines read it as "AI
+              Stock Market Research Platform - Every market view, revealed
+              inside." It fades in with the lede rather than masking in. */}
           <h1 className="mc-h1">
+            <span className="mc-h1-kicker mc-fade" data-fade="0">
+              <i aria-hidden="true" />
+              AI Stock Market Research Platform
+            </span>
             <span>
               <span className="mc-mask" data-mask="0">
                 Every market view,

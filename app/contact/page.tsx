@@ -73,13 +73,15 @@ export default function ContactPage() {
 
           <div className="mcp-inner mcp-hero-grid">
             <div className="mc-rev">
-              <div className="mcp-kicker">
-                <i />
-                <span>Contact</span>
-              </div>
-              <h1 className="mcp-h1">
-                Ask us anything{" "}
-                <span className="mc-serif">you would ask the data.</span>
+              <h1 className="mcp-h1-group">
+                <span className="mcp-kicker">
+                  <i />
+                  <span>Contact MarketCatalyst</span>
+                </span>
+                <span className="mcp-h1">
+                  Ask us anything{" "}
+                  <span className="mc-serif">you would ask the data.</span>
+                </span>
               </h1>
               <p className="mcp-lede">
                 Questions about coverage, a partnership idea, or press — send a note and it reaches

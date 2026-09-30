@@ -114,13 +114,15 @@ export default function AboutPage() {
 
           <div className="mcp-inner mcp-hero-grid">
             <div className="mc-rev">
-              <div className="mcp-kicker">
-                <i />
-                <span>About MarketCatalyst</span>
-              </div>
-              <h1 className="mcp-h1">
-                Coverage is solved.{" "}
-                <span className="mc-serif">Comprehension is not.</span>
+              <h1 className="mcp-h1-group">
+                <span className="mcp-kicker">
+                  <i />
+                  <span>About MarketCatalyst</span>
+                </span>
+                <span className="mcp-h1">
+                  Coverage is solved.{" "}
+                  <span className="mc-serif">Comprehension is not.</span>
+                </span>
               </h1>
               <p className="mcp-lede">
                 MarketCatalyst is a market-intelligence platform for people who have to form a view,

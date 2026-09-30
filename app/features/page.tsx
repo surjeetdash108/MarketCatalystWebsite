@@ -30,12 +30,14 @@ export default function FeaturesIndexPage() {
 
           <div className="mcp-inner mcp-hero-grid">
             <div className="mc-rev">
-              <div className="mcp-kicker">
-                <i />
-                <span>Features · {WORKSPACE_COUNT} workspaces + AI</span>
-              </div>
-              <h1 className="mcp-h1">
-                Everything the terminal does, laid out <span className="mc-serif">inside.</span>
+              <h1 className="mcp-h1-group">
+                <span className="mcp-kicker">
+                  <i />
+                  <span>Features · {WORKSPACE_COUNT} workspaces + AI</span>
+                </span>
+                <span className="mcp-h1">
+                  Everything the terminal does, laid out <span className="mc-serif">inside.</span>
+                </span>
               </h1>
               <p className="mcp-lede">
                 Markets, research, recaps and your own workspace — each one read by AI. Pick a
