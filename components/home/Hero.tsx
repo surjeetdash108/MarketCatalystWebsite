@@ -14,12 +14,23 @@ export function Hero({ tape }: { tape: LiveTape | null }) {
           A photograph rather than the DOM mock it replaced: the mock had to be
           transform-fitted to the stage by JS, where `object-fit: cover` does
           the same job in CSS at every viewport. Served AVIF first and WebP
-          second, with the JPEG as the floor - 149KB / 234KB / 369KB against a
-          25MB original, which nothing under a 1px blur can tell apart. */}
+          second, with the JPEG as the floor - 106KB / 190KB / 379KB at full
+          width against a 25MB original, which nothing under a 1px blur can
+          tell apart. */}
       <div className="mc-dash" id="mc-dash">
         <picture>
-          <source srcSet="/hero-desk.avif" type="image/avif" />
-          <source srcSet="/hero-desk.webp" type="image/webp" />
+          {/* `sizes` is the width `object-fit: cover` renders the 3:2 shot
+              at: the full width, or 1.5x the height on a tall screen. */}
+          <source
+            type="image/avif"
+            srcSet="/hero-desk-1280.avif 1280w, /hero-desk-1920.avif 1920w, /hero-desk-2560.avif 2560w"
+            sizes="max(100vw, 150vh)"
+          />
+          <source
+            type="image/webp"
+            srcSet="/hero-desk-1280.webp 1280w, /hero-desk-1920.webp 1920w, /hero-desk-2560.webp 2560w"
+            sizes="max(100vw, 150vh)"
+          />
           {/* Described rather than decorative: it is the product shot, and the
               alt text is how search engines and screen readers know what it
               shows. It is the largest paint in the hero, hence the high fetch

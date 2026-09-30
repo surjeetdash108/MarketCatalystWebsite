@@ -473,8 +473,22 @@ export function HomeMotion() {
       <div className="mc-loader" ref={loaderRef} aria-hidden="true">
         <div className="mc-loader-bg" ref={bgRef} aria-hidden="true">
           {/* Decorative and aria-hidden two levels up, so no alt text. High
-              fetch priority: it's the first paint the site shows at all. */}
-          <img src="/prelanding.jpg" alt="" fetchPriority="high" decoding="async" />
+              fetch priority: it's the first paint the site shows at all.
+              Drawn under a 38px blur, so 1280px is the most it ever needs;
+              `sizes` is the width `object-fit: cover` renders it at. */}
+          <picture>
+            <source
+              type="image/avif"
+              srcSet="/prelanding-640.avif 640w, /prelanding-1280.avif 1280w"
+              sizes="max(100vw, 178vh)"
+            />
+            <source
+              type="image/webp"
+              srcSet="/prelanding-640.webp 640w, /prelanding-1280.webp 1280w"
+              sizes="max(100vw, 178vh)"
+            />
+            <img src="/prelanding-1280.jpg" alt="" fetchPriority="high" decoding="async" />
+          </picture>
         </div>
         <div className="mc-loader-scrim" aria-hidden="true" />
         <div className="mc-loader-centre" ref={wordRef}>

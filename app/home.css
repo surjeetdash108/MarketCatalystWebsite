@@ -40,6 +40,11 @@
   --mc-bg-blur: 38px;
   --mc-bg-fade: .14;
 }
+.mc-loader-bg picture {
+  display: block;
+  width: 100%;
+  height: 100%;
+}
 .mc-loader-bg img {
   width: 100%;
   height: 100%;
