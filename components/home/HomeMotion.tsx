@@ -421,7 +421,12 @@ export function HomeMotion() {
       });
     };
 
-    measureGeo();
+    // Defer initial measurement off the main hydration thread to avoid blocking tasks
+    if (typeof requestIdleCallback !== "undefined") {
+      requestIdleCallback(() => measureGeo());
+    } else {
+      setTimeout(measureGeo, 100);
+    }
 
     const onScroll = () => {
       const y = window.scrollY;
@@ -463,9 +468,14 @@ export function HomeMotion() {
       }
     };
 
-    // Dedicated lightweight ticker loop: ONLY moves tape horizontally on GPU, zero layout reads
+    // Dedicated lightweight ticker loop: ONLY moves tape horizontally on GPU when visible
     let tickerRaf = 0;
+    let isTapeVisible = false;
     const tickTape = () => {
+      if (!isTapeVisible) {
+        tickerRaf = 0;
+        return;
+      }
       if (tapeEl && !reduce) {
         tapeX -= 0.38 + vel * 0.12;
         if (tapeHalf) {
@@ -477,8 +487,16 @@ export function HomeMotion() {
       }
       tickerRaf = requestAnimationFrame(tickTape);
     };
+
     if (tapeEl && !reduce) {
-      tickTape();
+      const tapeIo = new IntersectionObserver(([entry]) => {
+        isTapeVisible = entry.isIntersecting;
+        if (isTapeVisible && !tickerRaf) {
+          tickerRaf = requestAnimationFrame(tickTape);
+        }
+      });
+      tapeIo.observe(tapeEl);
+      cleanups.push(() => tapeIo.disconnect());
     }
 
     let scrollRaf = 0;

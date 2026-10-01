@@ -1,3 +1,4 @@
+import path from "node:path";
 import type { NextConfig } from "next";
 import { DUPLICATE_POSTS } from "./lib/seo/duplicate-posts";
 
@@ -41,6 +42,7 @@ const nextConfig: NextConfig = {
   },
 
   experimental: {
+    inlineCss: true,
     serverActions: {
       // Pin to the exact prod hostname rather than leaving this wildcarded —
       // Server Actions already verify Origin/Referer against this list
@@ -48,6 +50,22 @@ const nextConfig: NextConfig = {
       // cookie-authenticated (CSRF-relevant), unlike a bearer-token API.
       allowedOrigins: siteHost ? [siteHost] : undefined,
     },
+  },
+  turbopack: {
+    root: __dirname,
+    resolveAlias: {
+      "next/dist/build/polyfills/polyfill-module": "./lib/polyfills/empty.js",
+    },
+  },
+  webpack: (config, { isServer }) => {
+    if (!isServer) {
+      config.resolve = config.resolve || {};
+      config.resolve.alias = {
+        ...config.resolve.alias,
+        "next/dist/build/polyfills/polyfill-module$": path.resolve(__dirname, "lib/polyfills/empty.js"),
+      };
+    }
+    return config;
   },
 
   // Blog posts published more than once 301 to their original; the list and

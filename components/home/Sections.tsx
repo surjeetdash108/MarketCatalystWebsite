@@ -38,8 +38,8 @@ export function WorkspaceStack() {
         </div>
       </div>
 
-      {workspaces.map((w) => (
-        <WorkspacePanel key={w.num} w={w} />
+      {workspaces.map((w, i) => (
+        <WorkspacePanel key={w.num} idx={i} />
       ))}
     </section>
   );

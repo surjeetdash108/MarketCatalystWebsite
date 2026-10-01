@@ -2,32 +2,20 @@
 
 import { useCallback, useRef, useState } from "react";
 import { tone } from "./data";
-import type { Workspace } from "./workspaces";
+import { workspaces as allWorkspaces, type Workspace } from "./workspaces";
 import { ScreenerChart } from "./ScreenerChart";
 
 /** The screener's real filter groups (app/screener page) — fixed chrome, not sample data. */
 const SCREENER_FILTER_GROUPS = ["Relative Strength", "Growth", "Technical rating", "Liquidity & cap"];
 
-/**
- * One stacked workspace panel — copy on the left, a working terminal window
- * on the right.
- *
- * The window is genuinely interactive rather than a screenshot: the three tabs
- * switch the table, and a row can be picked to read its detail. That is
- * deliberate. The product's claim is that the AI read follows the view you are
- * in, so the landing page proves it by changing the read when you change the
- * tab — you can feel the argument instead of being told it.
- *
- * The table is a miniature of the real screen: its tabs and column headers
- * are the app's own, while every figure is a seeded sample rendered blurred
- * (see workspaces.ts) — the shape is real, the numbers are not claimed to be.
- *
- * Client-side and stateful, but the data is a module constant compiled into
- * the page: switching tabs costs no network and no layout thrash, which
- * matters because these panels animate under a scroll-driven transform
- * (HomeMotion.tsx) and a paint stall here would show up as jank.
- */
-export function WorkspacePanel({ w }: { w: Workspace }) {
+export function WorkspacePanel({
+  w: wProp,
+  idx,
+}: {
+  w?: Workspace;
+  idx?: number;
+}) {
+  const w = wProp ?? (idx !== undefined ? allWorkspaces[idx] : allWorkspaces[0]);
   const [active, setActive] = useState(0);
   /** Index of the pinned row within the active tab, or null. */
   const [picked, setPicked] = useState<number | null>(null);
@@ -183,9 +171,7 @@ export function WorkspacePanel({ w }: { w: Workspace }) {
                           <span>RSI</span>
                           <span>Earnings</span>
                         </div>
-                        <div className="mc-scr-canvas mc-blur" aria-hidden="true">
-                          <ScreenerChart seed={`${w.name}|${tab.label}|${activeRow.id}`} />
-                        </div>
+                        <ScreenerChart seed={`${w.name}|${tab.label}|${activeRow.id}`} />
                       </div>
                     </div>
                   </div>
@@ -262,11 +248,32 @@ export function WorkspacePanel({ w }: { w: Workspace }) {
             {/* The Screener already has a chart doing this job — a second,
                 unrelated sparkline underneath would just be noise. */}
             {!isScreener && (
-              <div className="mc-spark" aria-hidden="true">
-                {w.spark.map((s, i) => (
-                  <i key={i} style={{ height: s.h, background: tone(s.tone) }} />
-                ))}
-              </div>
+              <svg className="mc-spark" viewBox="0 0 220 32" preserveAspectRatio="none" aria-hidden="true">
+                <path
+                  d={w.spark
+                    .map((s, i) => {
+                      if (s.tone === "up") return "";
+                      const h = Math.max(2, (parseFloat(s.h) / 100) * 32);
+                      const x = i * 10;
+                      const y = 32 - h;
+                      return `M${x} ${y.toFixed(1)}h6v${h.toFixed(1)}h-6Z `;
+                    })
+                    .join("")}
+                  fill="var(--mc-spark-idle)"
+                />
+                <path
+                  d={w.spark
+                    .map((s, i) => {
+                      if (s.tone !== "up") return "";
+                      const h = Math.max(2, (parseFloat(s.h) / 100) * 32);
+                      const x = i * 10;
+                      const y = 32 - h;
+                      return `M${x} ${y.toFixed(1)}h6v${h.toFixed(1)}h-6Z `;
+                    })
+                    .join("")}
+                  fill="var(--mc-up)"
+                />
+              </svg>
             )}
           </div>
         </div>

@@ -18,29 +18,40 @@ export function Hero({ tape }: { tape: LiveTape | null }) {
           which nothing under a 1px blur can tell apart. */}
       <div className="mc-dash" id="mc-dash">
         <picture>
-          {/* Mobile viewports: phones load 640w or 750w WebP (~27-35KB instead of 85KB) */}
+          {/* Mobile viewports: phones load 480w, 640w or 750w AVIF / WebP (~8-17KB) */}
+          <source
+            media="(max-width: 768px)"
+            type="image/avif"
+            srcSet="/hero-desk-480.avif 480w, /hero-desk-640.avif 640w, /hero-desk-750.avif 750w"
+            sizes="100vw"
+          />
           <source
             media="(max-width: 768px)"
             type="image/webp"
-            srcSet="/hero-desk-640.webp 640w, /hero-desk-750.webp 750w"
+            srcSet="/hero-desk-480.webp 480w, /hero-desk-640.webp 640w, /hero-desk-750.webp 750w"
             sizes="100vw"
           />
           {/* Desktop viewports */}
+          <source
+            media="(min-width: 769px)"
+            type="image/avif"
+            srcSet="/hero-desk-1280.avif 1280w, /hero-desk-1920.avif 1920w, /hero-desk-2560.avif 2560w"
+            sizes="max(100vw, 150vh)"
+          />
           <source
             media="(min-width: 769px)"
             type="image/webp"
             srcSet="/hero-desk-1280.webp 1280w, /hero-desk-1920.webp 1920w, /hero-desk-2560.webp 2560w"
             sizes="max(100vw, 150vh)"
           />
-          {/* Described rather than decorative: it is the product shot, and the
-              alt text is how search engines and screen readers know what it
-              shows. It is the largest paint in the hero, hence the high fetch
-              priority. */}
+          {/* Backing image has opacity: 0 and is revealed on touch/hover spotlight.
+              Low fetch priority & lazy loading ensure critical fonts and LCP copy render first. */}
           <img
-            src="/hero-desk-640.webp"
+            src="/hero-desk-480.webp"
             alt="MarketCatalyst dashboard showing market data"
-            fetchPriority="high"
+            fetchPriority="low"
             decoding="async"
+            loading="lazy"
           />
         </picture>
       </div>

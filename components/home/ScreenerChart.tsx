@@ -59,36 +59,86 @@ export function ScreenerChart({ seed }: { seed: string }) {
   const avgV = bars.reduce((s, b) => s + b.v, 0) / n;
   const volTop = padT + priceH + volGap;
   const VY = (v: number) => volTop + volH * (1 - v / maxV);
+  const ww = Math.max(1.1, cw * 0.6);
+
+  // Batched path definitions to eliminate 120+ DOM nodes and reduce nesting depth
+  const gridPath = [0, 1, 2, 3, 4]
+    .map((g) => {
+      const yy = (padT + (priceH * g) / 4).toFixed(1);
+      return `M2 ${yy}H${(W - axisW).toFixed(1)}`;
+    })
+    .join(" ");
+
+  let upWicks = "";
+  let upBodies = "";
+  let upVols = "";
+  let dnWicks = "";
+  let dnBodies = "";
+  let dnVols = "";
+
+  for (let i = 0; i < n; i++) {
+    const b = bars[i];
+    const x = X(i);
+    const isUp = b.c >= b.o;
+    const xStr = x.toFixed(1);
+    const yhStr = Y(b.h).toFixed(1);
+    const ylStr = Y(b.l).toFixed(1);
+    const wick = `M${xStr} ${yhStr}V${ylStr} `;
+
+    const bt = Y(Math.max(b.o, b.c));
+    const bb = Y(Math.min(b.o, b.c));
+    const rx = (x - ww / 2).toFixed(1);
+    const ry = bt.toFixed(1);
+    const rw = ww.toFixed(1);
+    const rh = Math.max(1, bb - bt).toFixed(1);
+    const body = `M${rx} ${ry}h${rw}v${rh}h-${rw}Z `;
+
+    const vy = VY(b.v);
+    const vh = Math.max(1, volTop + volH - vy).toFixed(1);
+    const vol = `M${rx} ${vy.toFixed(1)}h${rw}v${vh}h-${rw}Z `;
+
+    if (isUp) {
+      upWicks += wick;
+      upBodies += body;
+      upVols += vol;
+    } else {
+      dnWicks += wick;
+      dnBodies += body;
+      dnVols += vol;
+    }
+  }
 
   return (
-    <svg viewBox={`0 0 ${W} ${H}`} width="100%" height="100%" style={{ display: "block" }} aria-hidden="true">
+    <svg
+      viewBox={`0 0 ${W} ${H}`}
+      width="100%"
+      height="100%"
+      className="mc-scr-canvas mc-blur"
+      style={{ display: "block" }}
+      aria-hidden="true"
+    >
+      <path d={gridPath} stroke="var(--mc-line)" strokeWidth={1} />
       {[0, 1, 2, 3, 4].map((g) => {
         const yy = padT + (priceH * g) / 4;
         const val = mx - (rng_ * g) / 4;
         return (
-          <g key={g}>
-            <line x1={2} x2={W - axisW} y1={yy} y2={yy} stroke="var(--mc-line)" strokeWidth={1} />
-            <text x={W - axisW + 4} y={yy + 3} fill="var(--mc-text-2)" fontSize={9} fontFamily="var(--mc-font-mono)">
-              ${val.toFixed(val > 100 ? 0 : 2)}
-            </text>
-          </g>
+          <text
+            key={g}
+            x={W - axisW + 4}
+            y={yy + 3}
+            fill="var(--mc-text-2)"
+            fontSize={9}
+            fontFamily="var(--mc-font-mono)"
+          >
+            ${val.toFixed(val > 100 ? 0 : 2)}
+          </text>
         );
       })}
 
-      {bars.map((b, i) => {
-        const x = X(i);
-        const isUp = b.c >= b.o;
-        const col = isUp ? "var(--mc-up)" : "var(--mc-down)";
-        const bt = Y(Math.max(b.o, b.c));
-        const bb = Y(Math.min(b.o, b.c));
-        const ww = Math.max(1.1, cw * 0.6);
-        return (
-          <g key={i}>
-            <line x1={x} x2={x} y1={Y(b.h)} y2={Y(b.l)} stroke={col} strokeWidth={1} />
-            <rect x={x - ww / 2} y={bt} width={ww} height={Math.max(1, bb - bt)} fill={col} />
-          </g>
-        );
-      })}
+      {upWicks && <path d={upWicks} stroke="var(--mc-up)" strokeWidth={1} />}
+      {upBodies && <path d={upBodies} fill="var(--mc-up)" />}
+      {dnWicks && <path d={dnWicks} stroke="var(--mc-down)" strokeWidth={1} />}
+      {dnBodies && <path d={dnBodies} fill="var(--mc-down)" />}
 
       <line
         x1={2}
@@ -99,22 +149,9 @@ export function ScreenerChart({ seed }: { seed: string }) {
         strokeWidth={1}
         strokeDasharray="3 3"
       />
-      {bars.map((b, i) => {
-        const x = X(i);
-        const isUp = b.c >= b.o;
-        const ww = Math.max(1.1, cw * 0.6);
-        return (
-          <rect
-            key={i}
-            x={x - ww / 2}
-            y={VY(b.v)}
-            width={ww}
-            height={Math.max(1, volTop + volH - VY(b.v))}
-            fill={isUp ? "var(--mc-up)" : "var(--mc-down)"}
-            opacity={0.55}
-          />
-        );
-      })}
+
+      {upVols && <path d={upVols} fill="var(--mc-up)" opacity={0.55} />}
+      {dnVols && <path d={dnVols} fill="var(--mc-down)" opacity={0.55} />}
     </svg>
   );
 }
