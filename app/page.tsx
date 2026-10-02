@@ -38,12 +38,6 @@ export default async function Home() {
 
   return (
     <div className="mc-page">
-      <script
-        type="application/ld+json"
-        dangerouslySetInnerHTML={{
-          __html: serializeJsonLd([buildOrganizationJsonLd(), buildWebSiteJsonLd()]),
-        }}
-      />
       {/* With scripting off the loader would never lift and the masked hero
           copy would never animate in, so neutralise both. */}
       <noscript>

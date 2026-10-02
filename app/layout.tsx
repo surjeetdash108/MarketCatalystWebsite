@@ -32,6 +32,51 @@ export const metadata: Metadata = {
   },
 };
 
+const schemaOrgJsonLd = {
+  "@context": "https://schema.org",
+  "@graph": [
+    {
+      "@type": "Organization",
+      "@id": "https://marketcatalyst.ai/#organization",
+      "name": "MarketCatalyst",
+      "url": "https://marketcatalyst.ai/",
+      "description":
+        "MarketCatalyst is an AI-powered market intelligence platform for market research, combining market data, news, earnings, analyst actions, macroeconomic events, filings, ownership data, screeners and AI-powered market summaries in one platform.",
+      "logo": {
+        "@type": "ImageObject",
+        "@id": "https://marketcatalyst.ai/#logo",
+        "url": "https://marketcatalyst.ai/logo.png",
+      },
+    },
+    {
+      "@type": "WebSite",
+      "@id": "https://marketcatalyst.ai/#website",
+      "url": "https://marketcatalyst.ai/",
+      "name": "MarketCatalyst",
+      "description":
+        "AI-powered market intelligence and stock market research platform.",
+      "publisher": {
+        "@id": "https://marketcatalyst.ai/#organization",
+      },
+      "inLanguage": "en-US",
+    },
+    {
+      "@type": "SoftwareApplication",
+      "@id": "https://marketcatalyst.ai/#software",
+      "name": "MarketCatalyst",
+      "url": "https://marketcatalyst.ai/",
+      "applicationCategory": "FinanceApplication",
+      "applicationSubCategory": "Investment Research",
+      "operatingSystem": "Web",
+      "description":
+        "AI-powered market intelligence platform providing market research, market data, news, earnings analysis, analyst actions, macroeconomic data, screeners, ownership data, ETF research, market recaps, portfolios and watchlists.",
+      "publisher": {
+        "@id": "https://marketcatalyst.ai/#organization",
+      },
+    },
+  ],
+};
+
 export default function RootLayout({
   children,
 }: Readonly<{
@@ -39,6 +84,12 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en" className={`${fontVariables} h-full antialiased`} suppressHydrationWarning>
+      <head>
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{ __html: JSON.stringify(schemaOrgJsonLd) }}
+        />
+      </head>
       <body className="min-h-full flex flex-col">
         <GoogleTagManager />
         {children}
