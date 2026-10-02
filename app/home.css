@@ -204,6 +204,7 @@
 }
 .mc-hero-grid {
   position: relative;
+  top: -68px;
   display: flex;
   flex-wrap: wrap;
   align-items: flex-end;
@@ -358,7 +359,7 @@
    The hero clips its overflow, so past roughly the hero's bottom padding
    (56-96px) the scroll cue starts to get cut off. */
 .mc-hud-wrap {
-  --mc-hud-drop: 0px;
+  --mc-hud-drop: -40px;
   flex: 0 1 470px;
   min-width: 0;
   position: relative;
