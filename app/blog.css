@@ -199,6 +199,8 @@
 .mcb-tag-recap { --mcb-tag: var(--mc-amber); --mcb-tag-rgb: var(--mc-amber-rgb); }
 .mcb-tag-edu { --mcb-tag: var(--mc-info); --mcb-tag-rgb: var(--mc-info-rgb); }
 .mcb-tag-news { --mcb-tag: #60A5FA; --mcb-tag-rgb: 96, 165, 250; }
+/* Editor's choice, beside the section tag on the featured post's feed card. */
+.mcb-tag-ec { --mcb-tag: var(--mc-amber); --mcb-tag-rgb: var(--mc-amber-rgb); margin-left: 6px; }
 /* The pick's tag is the solid variant — it is the one card that shouts. */
 .mcb-tag-solid {
   font-size: 10px;

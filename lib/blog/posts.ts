@@ -70,6 +70,9 @@ export type Post = {
    *  be reproduced exactly — and so a post stored before `css` existed can have
    *  its stylesheet recovered from it rather than re-uploaded. */
   documentHtml: string | null;
+  /** Featured by the admin console as Editor's choice. A flag on the post
+   *  itself (set by the backend's BlogsAdminService), not a separate pointer. */
+  editorsChoice: boolean;
   seo: PostSeo;
   publishedAt: string | null;
   createdAt: string;
@@ -146,6 +149,7 @@ function mapPost(id: string, data: FirebaseFirestore.DocumentData): Post {
         : typeof data.pdfUrl === "string"
           ? "pdf"
           : null,
+    editorsChoice: data.editorsChoice === true,
     seo: {
       metaTitle: data.seo?.metaTitle ?? null,
       metaDescription: data.seo?.metaDescription ?? null,

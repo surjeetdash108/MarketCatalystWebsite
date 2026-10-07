@@ -236,8 +236,14 @@ export function BlogIndex({
     return c;
   }, [sorted]);
 
+  /** The admin's Editor's choice. `sorted` holds only published posts, so a
+   *  flagged draft never surfaces; should more than one published post carry
+   *  the flag, the newest wins (`sorted` is newest-first). */
+  const choice = useMemo(() => sorted.find((p) => p.editorsChoice) ?? null, [sorted]);
+
   /**
-   * Editor's pick: the most-read post of the section in view.
+   * The featured slot: the admin's Editor's choice whenever it belongs to the
+   * section in view, otherwise the most-read post of that section.
    *
    * With nothing read yet the newest stands in, so the slot is never empty on
    * a quiet week — `sorted` is already newest-first, so the fallback needs no
@@ -246,8 +252,10 @@ export function BlogIndex({
   const pick = useMemo(() => {
     const pool = activeSec === "all" ? sorted : sorted.filter((p) => sectionOf(p) === activeSec);
     if (pool.length === 0) return null;
+    if (choice && pool.includes(choice)) return choice;
     return [...pool].sort((a, b) => (reads[b.slug] ?? 0) - (reads[a.slug] ?? 0))[0];
-  }, [sorted, activeSec, reads]);
+  }, [sorted, activeSec, reads, choice]);
+  const pickIsChoice = !!pick && pick === choice;
 
   /* ── section + search, applied together ───────────────────────────────── */
   const filtered = useMemo(
@@ -406,7 +414,9 @@ export function BlogIndex({
         <section className="mcb-pick-sec">
           <div className="mcb-inner">
             <div className="mcb-sec-row">
-              <h2 className="mcb-kicker">Editor&rsquo;s pick</h2>
+              {/* "Choice" only when a person chose it; the automatic
+                  most-read fallback keeps its original label. */}
+              <h2 className="mcb-kicker">{pickIsChoice ? "Editor’s choice" : "Editor’s pick"}</h2>
               <span className="mcb-rule" />
             </div>
 
@@ -540,6 +550,7 @@ export function BlogIndex({
                     >
                       <div className="mcb-post-body">
                         <span className={`mcb-tag ${TAG_CLASS[sectionOf(p)]}`}>{sectionOf(p)}</span>
+                        {p === choice && <span className="mcb-tag mcb-tag-ec">★ Editor&rsquo;s choice</span>}
                         <h3 className="mcb-post-h">
                           <Marked text={p.title} rx={rx} />
                         </h3>
