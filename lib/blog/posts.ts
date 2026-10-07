@@ -78,8 +78,14 @@ export type Post = {
 
 const POSTS = "posts";
 
-function toIso(value: Timestamp | undefined | null): string | null {
-  return value ? value.toDate().toISOString() : null;
+function toIso(value: unknown): string | null {
+  if (!value) return null;
+  if (typeof value === "string") return value;
+  if (typeof (value as { toDate?: () => Date }).toDate === "function") {
+    return (value as { toDate: () => Date }).toDate().toISOString();
+  }
+  if (value instanceof Date) return value.toISOString();
+  return null;
 }
 
 /**
