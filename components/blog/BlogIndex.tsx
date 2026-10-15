@@ -14,8 +14,8 @@ import { useEtClock, useReveal, useScrollChrome } from "@/components/chrome/chro
 
 /* ── the three sections, in the design's own vocabulary ───────────────────── */
 
-type Section = "Recap" | "Analysis" | "Educational" | "News";
-const SECTIONS: Section[] = ["Recap", "Analysis", "Educational", "News"];
+type Section = "Recap" | "Analysis" | "Educational" | "News" | "Earnings";
+const SECTIONS: Section[] = ["Recap", "Analysis", "Educational", "News", "Earnings"];
 
 /** Post.type is the stored zone; the design names them differently. */
 const SECTION_OF: Record<string, Section> = {
@@ -23,6 +23,7 @@ const SECTION_OF: Record<string, Section> = {
   research: "Analysis",
   educational: "Educational",
   news: "News",
+  earnings: "Earnings",
 };
 const TAG_CLASS: Record<Section, string> = {
 
@@ -33,6 +34,8 @@ const TAG_CLASS: Record<Section, string> = {
   Educational: "mcb-tag-edu",
 
   News: "mcb-tag-news",
+
+  Earnings: "mcb-tag-earnings",
 
 };
 

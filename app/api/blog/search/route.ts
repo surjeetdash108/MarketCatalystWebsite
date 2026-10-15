@@ -34,6 +34,7 @@ const SECTION_LABEL: Record<string, string> = {
   research: "Analysis",
   educational: "Educational",
   news: "News",
+  earnings: "Earnings",
 };
 
 /* ── HTML / Markdown entity map ──────────────────────────────────────── */
