@@ -14,7 +14,7 @@ import "../../iq.css";
 // The article's own baseline. Every rule is :where()-wrapped, so an uploaded
 // design still wins — this only covers what that design does not mention.
 import "../blog-doc.css";
-import { buildArticleJsonLd, summarizeForSeo } from "@/lib/seo/jsonld";
+import { buildArticleJsonLd, resolvePostSeoDescription } from "@/lib/seo/jsonld";
 import { DEFAULT_OG_IMAGE } from "@/lib/seo/og";
 
 /**
@@ -57,7 +57,7 @@ export async function generateMetadata({
   if (!post) return {};
 
   const title = post.seo.metaTitle || post.title;
-  const description = summarizeForSeo(post.seo.metaDescription || post.excerpt, 119);
+  const description = resolvePostSeoDescription(post, 119);
   const canonical = post.seo.canonicalUrl || `/posts/${post.slug}`;
   const image = post.seo.ogImageUrl || post.coverImageUrl || undefined;
 
