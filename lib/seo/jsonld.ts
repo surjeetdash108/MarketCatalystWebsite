@@ -194,10 +194,31 @@ export function buildArticleJsonLd(post: Post) {
     image,
     datePublished: post.publishedAt ?? undefined,
     dateModified: post.updatedAt,
-    mainEntityOfPage: url,
+    mainEntityOfPage: {
+      "@type": "WebPage",
+      "@id": url,
+    },
     author: {
       "@type": "Organization",
       name: "MarketCatalyst",
+      url: siteUrl(),
+    },
+    publisher: {
+      "@type": "Organization",
+      "@id": `${siteUrl()}/#organization`,
+      name: "MarketCatalyst",
+      url: siteUrl(),
+      logo: {
+        "@type": "ImageObject",
+        "@id": `${siteUrl()}/#logo`,
+        url: `${siteUrl()}/logo.png`,
+      },
+    },
+    isPartOf: {
+      "@type": "WebSite",
+      "@id": `${siteUrl()}/#website`,
+      name: "MarketCatalyst",
+      url: siteUrl(),
     },
   };
 }

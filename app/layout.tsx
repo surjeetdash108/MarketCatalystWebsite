@@ -39,7 +39,7 @@ const schemaOrgJsonLd = {
       "@type": "Organization",
       "@id": "https://marketcatalyst.ai/#organization",
       "name": "MarketCatalyst",
-      "url": "https://marketcatalyst.ai/",
+      "url": "https://marketcatalyst.ai",
       "description":
         "MarketCatalyst is an AI-powered market intelligence platform for market research, combining market data, news, earnings, analyst actions, macroeconomic events, filings, ownership data, screeners and AI-powered market summaries in one platform.",
       "logo": {
@@ -51,7 +51,7 @@ const schemaOrgJsonLd = {
     {
       "@type": "WebSite",
       "@id": "https://marketcatalyst.ai/#website",
-      "url": "https://marketcatalyst.ai/",
+      "url": "https://marketcatalyst.ai",
       "name": "MarketCatalyst",
       "description":
         "AI-powered market intelligence and stock market research platform.",
@@ -64,7 +64,7 @@ const schemaOrgJsonLd = {
       "@type": "SoftwareApplication",
       "@id": "https://marketcatalyst.ai/#software",
       "name": "MarketCatalyst",
-      "url": "https://marketcatalyst.ai/",
+      "url": "https://marketcatalyst.ai",
       "applicationCategory": "FinanceApplication",
       "applicationSubCategory": "Investment Research",
       "operatingSystem": "Web",

@@ -17,7 +17,6 @@ const PricingPlans = dynamicImport(
   { ssr: true },
 );
 import { getLiveTape } from "@/lib/market/tape";
-import { buildOrganizationJsonLd, buildWebSiteJsonLd, serializeJsonLd } from "@/lib/seo/jsonld";
 
 // Rendered per request so the first paint carries the current market figures.
 // Not ISR: on App Hosting the background regeneration never completes (Cloud
