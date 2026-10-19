@@ -57,7 +57,7 @@ export async function generateMetadata({
   if (!post) return {};
 
   const title = post.seo.metaTitle || post.title;
-  const description = resolvePostSeoDescription(post, 119);
+  const description = resolvePostSeoDescription(post);
   const canonical = post.seo.canonicalUrl || `/posts/${post.slug}`;
   const image = post.seo.ogImageUrl || post.coverImageUrl || undefined;
 

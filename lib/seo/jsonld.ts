@@ -169,7 +169,7 @@ export function summarizeForSeo(text: string | null | undefined, maxChars = 119)
  */
 export function resolvePostSeoDescription(
   post: { slug?: string; seo?: { metaDescription?: string | null }; excerpt?: string | null },
-  maxChars = 119
+  maxChars = 160
 ): string | undefined {
   if (post.slug && curatedDescriptions[post.slug]) {
     return curatedDescriptions[post.slug];
@@ -185,7 +185,7 @@ export function buildArticleJsonLd(post: Post) {
     "@context": "https://schema.org",
     "@type": "BlogPosting",
     headline: post.seo.metaTitle || post.title,
-    description: resolvePostSeoDescription(post, 119),
+    description: resolvePostSeoDescription(post),
     // A PDF post renders its pages as images, so the page carries no readable
     // body text. The extracted text is published here instead — it is the same
     // article the images show, which is what articleBody is for, and without it
