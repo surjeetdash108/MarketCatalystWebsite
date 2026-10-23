@@ -235,7 +235,9 @@
    BOLD TEXT INSIDE BULLETS
    ========================================================= */
 
-.privacy-card strong {
+.privacy-card strong,
+.privacy-card p strong,
+.privacy-card ul li strong {
   font-weight: 600;
   color: var(--mc-text);
 }
@@ -319,6 +321,22 @@
 
 .privacy-table tr:last-child td {
   border-bottom: none;
+}
+
+.privacy-card code {
+  font-family: var(--mc-font-mono);
+  font-size: .9em;
+  background: var(--mc-bg-card-alt);
+  border: 1px solid var(--mc-line);
+  border-radius: var(--mc-r-xs);
+  padding: 1px 5px;
+  color: var(--mc-text);
+}
+
+@media (max-width: 720px) {
+  .privacy-toc ol {
+    grid-template-rows: none !important;
+  }
 }
 
 /* =========================================================

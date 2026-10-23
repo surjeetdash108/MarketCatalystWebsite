@@ -287,6 +287,71 @@
 }
 
 /* =========================================================
+   STRONG & BOLD WORDS (e.g. "Changes.", "Third-party data.")
+   ========================================================= */
+
+.terms-card strong,
+.terms-card p strong,
+.terms-card ul li strong {
+  color: var(--mc-text);
+  font-weight: 600;
+}
+
+.terms-card code {
+  font-family: var(--mc-font-mono);
+  font-size: .9em;
+  background: var(--mc-bg-card-alt);
+  border: 1px solid var(--mc-line);
+  border-radius: var(--mc-r-xs);
+  padding: 1px 5px;
+  color: var(--mc-text);
+}
+
+.terms-table-wrap {
+  overflow-x: auto;
+  margin: 1.2em 0;
+  border: 1px solid var(--mc-line);
+  border-radius: var(--mc-r-md);
+}
+
+.terms-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 14px;
+  line-height: 1.55;
+}
+
+.terms-table th {
+  background: var(--mc-bg-card-alt);
+  color: var(--mc-text);
+  font-family: var(--mc-font-mono);
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: .08em;
+  text-transform: uppercase;
+  text-align: left;
+  padding: 10px 14px;
+  border-bottom: 1px solid var(--mc-line);
+}
+
+.terms-table td {
+  color: var(--mc-text-muted);
+  padding: 10px 14px;
+  border-bottom: 1px solid var(--mc-line);
+  vertical-align: top;
+}
+
+.terms-table tr:last-child td {
+  border-bottom: none;
+}
+
+@media (max-width: 720px) {
+  .terms-toc ol {
+    grid-template-rows: none !important;
+  }
+}
+
+/* =========================================================
    MOBILE
    ========================================================= */
 
