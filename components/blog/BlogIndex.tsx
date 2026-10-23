@@ -41,9 +41,6 @@ const TAG_CLASS: Record<Section, string> = {
 
 const PER_PAGE = 6;
 
-/** Where a "send me the recap" mail goes until there is a real list behind it. */
-const RECAP_INBOX = "hello@marketcatalyst.ai";
-
 function sectionOf(p: Post): Section {
   return SECTION_OF[p.type] ?? "Educational";
 }
@@ -117,7 +114,7 @@ export function BlogIndex({
   const [page, setPage] = useState(1);
   const [view, setView] = useState<"list" | "grid">("list");
   const [email, setEmail] = useState("");
-  const [subState, setSubState] = useState<"idle" | "sent" | "error">("idle");
+  const [subState, setSubState] = useState<"idle" | "sending" | "sent" | "error" | "failed">("idle");
 
   const rootRef = useRef<HTMLDivElement>(null);
 
@@ -307,21 +304,28 @@ export function BlogIndex({
   const href = (p: Post) => `/posts/${encodeURIComponent(p.slug)}`;
 
   /* ── newsletter ────────────────────────────────────────────────────────
-     A mailto until there is a list to POST to: it is honest about what
-     happens next, and it cannot silently drop an address the way a form
-     wired to nothing would. */
-  const sendRecap = () => {
+     Saves the address server-side (POST /api/newsletter → Firestore). It used
+     to open a mailto: link, which did nothing for anyone without a desktop
+     mail app while the button still said "Request sent". "Sent" now shows
+     only once the server has stored the address. */
+  const sendRecap = async () => {
     const value = email.trim();
     if (!/^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(value)) {
       setSubState("error");
       return;
     }
-    const subject = encodeURIComponent("Subscribe me to the MarketCatalyst daily recap");
-    const body = encodeURIComponent(
-      `Please add ${value} to the MarketCatalyst daily recap list.\n\nSent from marketcatalyst.ai/posts`,
-    );
-    window.location.href = `mailto:${RECAP_INBOX}?subject=${subject}&body=${body}`;
-    setSubState("sent");
+    if (subState === "sending") return;
+    setSubState("sending");
+    try {
+      const res = await fetch("/api/newsletter", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ email: value, source: "posts" }),
+      });
+      setSubState(res.ok ? "sent" : res.status === 400 ? "error" : "failed");
+    } catch {
+      setSubState("failed");
+    }
   };
 
   /* ── shared chrome behaviour ───────────────────────────────────────────
@@ -617,7 +621,7 @@ export function BlogIndex({
               <p>Indices, movers, and the reason behind each.</p>
               <input
                 type="email"
-                className={subState === "error" ? "is-bad" : undefined}
+                className={subState === "error" || subState === "failed" ? "is-bad" : undefined}
                 placeholder="you@firm.com"
                 aria-label="Email address"
                 value={email}
@@ -628,19 +632,21 @@ export function BlogIndex({
                 onKeyDown={(e) => {
                   if (e.key === "Enter") {
                     e.preventDefault();
-                    sendRecap();
+                    void sendRecap();
                   }
                 }}
               />
-              <button type="button" onClick={sendRecap}>
-                {subState === "sent" ? "Request sent ✓" : "Get the recap"}
+              <button type="button" onClick={() => void sendRecap()} disabled={subState === "sending"}>
+                {subState === "sent" ? "You're on the list ✓" : subState === "sending" ? "Signing you up…" : "Get the recap"}
               </button>
-              <p className={`mcb-note${subState === "sent" ? " is-ok" : subState === "error" ? " is-bad" : ""}`}>
+              <p className={`mcb-note${subState === "sent" ? " is-ok" : subState === "error" || subState === "failed" ? " is-bad" : ""}`}>
                 {subState === "error"
                   ? "Enter a valid email address."
-                  : subState === "sent"
-                    ? "Your mail app is open — hit send to confirm."
-                    : "Free. Unsubscribe anytime."}
+                  : subState === "failed"
+                    ? "Couldn't sign you up just now — please try again in a minute."
+                    : subState === "sent"
+                      ? "Thanks — you're subscribed to the daily recap."
+                      : "Free. Unsubscribe anytime."}
               </p>
             </div>
 
