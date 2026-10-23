@@ -32,10 +32,11 @@ export function Footer() {
           <Link href="/about">About us</Link>
           <Link href="/contact">Contact us</Link>
           <Link href="/posts">Research</Link>
-          <Link href="/faqs">FAQs</Link>
+          <Link href="/careers">Careers</Link>
         </div>
         <div className="hw-footer-col">
           <div className="hw-footer-h">Legal</div>
+          <Link href="/faqs">FAQs</Link>
           <Link href="/legal/terms">Terms of service</Link>
           <Link href="/legal/privacy">Privacy policy</Link>
         </div>

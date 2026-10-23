@@ -2,6 +2,7 @@ import type { MetadataRoute } from "next";
 import { getPublishedPosts, type Post } from "@/lib/blog/posts";
 import { FEATURE_VIEWS } from "@/lib/features/features";
 import { DUPLICATE_POSTS } from "@/lib/seo/duplicate-posts";
+import { jobs } from "@/content/careers";
 
 /* Built on request, not at deploy. Prerendered, the sitemap froze at the last
    deploy and every post published after it was missing (7 of the newest 10
@@ -86,5 +87,21 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     priority: 0.6,
   }));
 
-  return [...staticRoutes, ...featureRoutes, ...postRoutes];
+  const careersPostingDate = new Date("2026-10-23");
+  const careersRoutes: MetadataRoute.Sitemap = [
+    {
+      url: `${base}/careers`,
+      lastModified: careersPostingDate,
+      changeFrequency: "weekly",
+      priority: 0.6,
+    },
+    ...jobs.map((job) => ({
+      url: `${base}/careers/${job.slug}`,
+      lastModified: careersPostingDate,
+      changeFrequency: "weekly" as const,
+      priority: 0.6,
+    })),
+  ];
+
+  return [...staticRoutes, ...careersRoutes, ...featureRoutes, ...postRoutes];
 }
