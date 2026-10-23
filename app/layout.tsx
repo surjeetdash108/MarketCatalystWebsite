@@ -30,6 +30,13 @@ export const metadata: Metadata = {
       "From ticker to thesis in under 60 seconds. Earnings, movers, analyst actions, insider flows and your portfolio — all in one terminal.",
     images: [DEFAULT_OG_IMAGE],
   },
+  icons: {
+    icon: [
+      { url: "/icon.png", sizes: "32x32", type: "image/png" },
+      { url: "/favicon.ico", sizes: "any" },
+    ],
+    apple: "/apple-icon.png",
+  },
 };
 
 const schemaOrgJsonLd = {
