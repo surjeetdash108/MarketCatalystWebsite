@@ -1301,3 +1301,61 @@
   background: rgba(255, 255, 255, 0.08) !important;
 }
 
+
+/* "Keep reading": links to neighbouring posts under an article (see
+   components/blog/RelatedPosts.tsx). Site chrome, not part of the document, so
+   it sits outside .post-doc / .mc-doc and takes its colours from the shell's
+   theme tokens. Its measure matches .post-doc-back so it lines up with the
+   article above it. */
+.post-related {
+  max-width: 1180px;
+  margin: 40px auto 0;
+  padding: 28px clamp(16px, 4vw, 32px) 56px;
+  border-top: 1px solid var(--mc-line, rgba(0, 0, 0, 0.1));
+}
+.post-related-h {
+  margin: 0 0 16px;
+  font-family: var(--mc-font-mono, ui-monospace, monospace);
+  font-size: 11px;
+  font-weight: 400;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--mc-text-muted, #5b6470);
+}
+.post-related-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+  gap: 12px;
+}
+.post-related-link {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  height: 100%;
+  padding: 14px 16px;
+  border: 1px solid var(--mc-line, rgba(0, 0, 0, 0.1));
+  border-radius: 12px;
+  text-decoration: none;
+  color: var(--mc-text, #12151a);
+  background: var(--mc-bg-card, transparent);
+  transition: border-color 0.25s ease, color 0.25s ease;
+}
+.post-related-link:hover {
+  border-color: var(--mc-up, #15803d);
+  color: var(--mc-up, #15803d);
+}
+.post-related-kind {
+  font-family: var(--mc-font-mono, ui-monospace, monospace);
+  font-size: 10.5px;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--mc-text-muted, #5b6470);
+}
+.post-related-title {
+  font-size: 15px;
+  line-height: 1.35;
+  font-weight: 600;
+}

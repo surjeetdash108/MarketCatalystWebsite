@@ -92,6 +92,10 @@ export default function RootLayout({
   return (
     <html lang="en" className={`${fontVariables} h-full antialiased`} suppressHydrationWarning>
       <head>
+        {/* Feed discovery for readers and aggregators. A plain <link> rather than
+            metadata `alternates.types`: every page that sets its own `alternates`
+            (for its canonical) would replace the parent's, dropping this. */}
+        <link rel="alternate" type="application/rss+xml" title="MarketCatalyst" href="/feed.xml" />
         <script
           type="application/ld+json"
           dangerouslySetInnerHTML={{ __html: JSON.stringify(schemaOrgJsonLd) }}

@@ -2,6 +2,7 @@ import "server-only";
 import { FieldValue, Timestamp } from "firebase-admin/firestore";
 import { adminFirestore } from "@/lib/firebase/admin";
 import { ensureUniqueSlug, releaseSlug } from "./slug";
+import { DUPLICATE_POSTS } from "@/lib/seo/duplicate-posts";
 import type { CreatePostInput, UpdatePostInput } from "@/lib/validation/blog";
 
 export type PostStatus = "draft" | "published";
@@ -178,6 +179,94 @@ export async function getPublishedPosts(): Promise<Post[]> {
   const posts = snap.docs.map((doc) => mapPost(doc.id, doc.data()));
   posts.sort((a, b) => (b.publishedAt ?? b.createdAt).localeCompare(a.publishedAt ?? a.createdAt));
   return posts;
+}
+
+/**
+ * A post without its heavy fields. `documentHtml` (the whole uploaded page,
+ * <head> included) and `css` are what made /posts ship 11 MB: they rode along
+ * to the browser inside every card. Listings, feeds and sitemaps need none of
+ * them.
+ */
+export type PostSummary = Omit<Post, "content" | "css" | "documentHtml">;
+
+/** `PostSummary` plus the body, for callers that derive something from it (reading time, a card blurb) server-side. */
+export type PostListing = PostSummary & { content: string };
+
+/** Every field a summary needs. Firestore `select()` leaves the rest on the server. */
+const SUMMARY_FIELDS = [
+  "title", "slug", "excerpt", "status", "type", "rank", "authorId", "author", "editorId",
+  "categories", "tags", "coverImageUrl", "pdfUrl", "pdfName", "pdfPages", "pdfAspect",
+  "sourceKind", "format", "editorsChoice", "seo", "publishedAt", "createdAt", "updatedAt",
+];
+
+/** A copy of the post without the named fields (the heavy ones). */
+function omit<K extends keyof Post>(post: Post, keys: K[]): Omit<Post, K> {
+  const copy: Partial<Post> = { ...post };
+  for (const key of keys) delete copy[key];
+  return copy as Omit<Post, K>;
+}
+
+function newestFirst<T extends { publishedAt: string | null; createdAt: string }>(posts: T[]): T[] {
+  return posts.sort((a, b) => (b.publishedAt ?? b.createdAt).localeCompare(a.publishedAt ?? a.createdAt));
+}
+
+/**
+ * Published posts for the /posts board: summary fields plus `content`, but never
+ * `documentHtml` or `css`. Same visibility and sort rules as getPublishedPosts.
+ */
+export async function getPublishedPostListings(): Promise<PostListing[]> {
+  const snap = await adminFirestore
+    .collection(POSTS)
+    .where("status", "==", "published")
+    .select(...SUMMARY_FIELDS, "content")
+    .get();
+  const posts = snap.docs.map((doc) => omit(mapPost(doc.id, doc.data()), ["css", "documentHtml"]));
+  return newestFirst(posts);
+}
+
+/** Published posts as light summaries: no body, no stylesheet, no uploaded document. */
+export async function getPublishedPostSummaries(): Promise<PostSummary[]> {
+  const snap = await adminFirestore
+    .collection(POSTS)
+    .where("status", "==", "published")
+    .select(...SUMMARY_FIELDS)
+    .get();
+  const posts = snap.docs.map((doc) => omit(mapPost(doc.id, doc.data()), ["content", "css", "documentHtml"]));
+  return newestFirst(posts);
+}
+
+/* Shared by the sitemap, the feeds, the related-posts block and the 404 page.
+   Every request would otherwise read every published post, a list that grows by
+   5-6 a day. Held in memory for five minutes instead: new posts appear within
+   that, and crawlers re-read these on a scale of hours anyway. Failures are not
+   cached, so the next request simply tries again. */
+const SUMMARIES_TTL_MS = 5 * 60 * 1000;
+let cachedSummaries: { at: number; posts: PostSummary[] } | null = null;
+/** Concurrent requests share one Firestore read rather than each starting one. */
+let summariesInFlight: Promise<PostSummary[]> | null = null;
+
+export async function getCachedPostSummaries(): Promise<PostSummary[]> {
+  if (cachedSummaries && Date.now() - cachedSummaries.at < SUMMARIES_TTL_MS) return cachedSummaries.posts;
+  summariesInFlight ??= getPublishedPostSummaries()
+    .then((posts) => {
+      cachedSummaries = { at: Date.now(), posts };
+      return posts;
+    })
+    .finally(() => {
+      summariesInFlight = null;
+    });
+  return summariesInFlight;
+}
+
+const duplicateSlugs = new Set(DUPLICATE_POSTS.map(([copy]) => copy));
+
+/**
+ * The cached summaries minus duplicate copies. A copy 301s to its original, so
+ * anything that links to or lists posts (sitemap, feeds, related-post links, the
+ * 404 page) must leave it out or it would point crawlers at a redirect.
+ */
+export async function getLivePostSummaries(): Promise<PostSummary[]> {
+  return (await getCachedPostSummaries()).filter((p) => !duplicateSlugs.has(p.slug));
 }
 
 export async function getPublishedPostBySlug(slug: string): Promise<Post | null> {

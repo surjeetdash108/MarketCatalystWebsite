@@ -67,8 +67,35 @@ function buildCsp(nonce: string | null): string {
   ].join("; ");
 }
 
+/* The site's canonical host, from the same variable the sitemap, canonicals and
+   Server Actions use. Undefined in a local build without it, which turns the
+   www redirect below off. */
+const canonicalHost = (() => {
+  try {
+    return process.env.NEXT_PUBLIC_SITE_URL ? new URL(process.env.NEXT_PUBLIC_SITE_URL).host : undefined;
+  } catch {
+    return undefined;
+  }
+})();
+
 export function middleware(request: NextRequest) {
   const { pathname } = request.nextUrl;
+
+  /* www.<site> answered 200 with a full copy of the site, so crawl budget and
+     Search Console reports were split across two hosts (the canonical tag only
+     limited the damage). Send every www request to the same path on the apex,
+     permanently. The host is read from x-forwarded-host first because behind
+     App Hosting's proxy `host` can be the backend's own address. */
+  if (canonicalHost) {
+    const host = (request.headers.get("x-forwarded-host") ?? request.headers.get("host") ?? "")
+      .split(",")[0]
+      .trim()
+      .toLowerCase();
+    if (host === `www.${canonicalHost}`) {
+      const to = new URL(`${pathname}${request.nextUrl.search}`, `https://${canonicalHost}`);
+      return NextResponse.redirect(to, 301);
+    }
+  }
 
   /* Articles moved from /posts/view?slug=<slug> to the statically generated
      /posts/<slug>. Redirected HERE rather than from the page component: a

@@ -1,6 +1,6 @@
 import "server-only";
 import { adminFirestore } from "@/lib/firebase/admin";
-import { isoWeek } from "@/app/api/blog/track/route";
+import { isoWeek } from "@/lib/blog/iso-week";
 
 /**
  * How often each post was opened this week.

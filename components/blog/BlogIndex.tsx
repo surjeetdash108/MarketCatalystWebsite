@@ -3,6 +3,7 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import Link from "next/link";
 import type { Post } from "@/lib/blog/posts";
+import { PER_PAGE, SECTIONS, postsHref, sectionOfType, type Section } from "@/lib/blog/sections";
 import { readerId } from "@/lib/blog/reader-id";
 import { useDebounce } from "@/hooks/useDebounce";
 import { buildMatcher, fold, normaliseQuery, testIn } from "@/lib/blog/search-match";
@@ -14,17 +15,9 @@ import { useEtClock, useReveal, useScrollChrome } from "@/components/chrome/chro
 
 /* ── the three sections, in the design's own vocabulary ───────────────────── */
 
-type Section = "Recap" | "Analysis" | "Educational" | "News" | "Earnings";
-const SECTIONS: Section[] = ["Recap", "Analysis", "Educational", "News", "Earnings"];
-
-/** Post.type is the stored zone; the design names them differently. */
-const SECTION_OF: Record<string, Section> = {
-  recap: "Recap",
-  research: "Analysis",
-  educational: "Educational",
-  news: "News",
-  earnings: "Earnings",
-};
+// The section list, the type -> section map, PER_PAGE and the listing URLs live
+// in lib/blog/sections.ts: the server needs the same ones to render and
+// canonicalise ?section= / ?page= views.
 const TAG_CLASS: Record<Section, string> = {
 
   Recap: "mcb-tag-recap",
@@ -39,10 +32,8 @@ const TAG_CLASS: Record<Section, string> = {
 
 };
 
-const PER_PAGE = 6;
-
-function sectionOf(p: Post): Section {
-  return SECTION_OF[p.type] ?? "Educational";
+function sectionOf(p: Pick<Post, "type">): Section {
+  return sectionOfType(p.type);
 }
 
 function initials(name: string): string {
@@ -78,15 +69,29 @@ const fmtTime = (iso: string) =>
 
 /** Sort key: published where it exists, created otherwise — a published post
  *  with no publishedAt must not fall to the bottom of the list. */
-const when = (p: Post) => p.publishedAt ?? p.createdAt;
+const when = (p: Pick<Post, "publishedAt" | "createdAt">) => p.publishedAt ?? p.createdAt;
 
 /* ── Types ────────────────────────────────────────────────────────────── */
 
-/** Extended post type with server-pre-computed display values. */
-export type IndexPost = Post & {
+/**
+ * What the board needs of a post, and nothing more. Every field here is
+ * serialised into the page for EVERY post in the archive, so adding one is a
+ * cost multiplied by the archive size (this type used to be the whole `Post`,
+ * which is how the page reached 11 MB).
+ */
+export type IndexPost = Pick<
+  Post,
+  "id" | "slug" | "title" | "excerpt" | "type" | "author" | "editorsChoice" | "publishedAt" | "createdAt"
+> & {
+  /** Pre-computed on the server from the article body. */
   readMin?: number;
   heroPreview?: string;
 };
+
+/** A plain left-click we can handle in place; anything else (new tab, new window, download) is the browser's. */
+function isPlainClick(e: React.MouseEvent): boolean {
+  return !e.defaultPrevented && e.button === 0 && !e.metaKey && !e.ctrlKey && !e.shiftKey && !e.altKey;
+}
 
 /** What /api/blog/search says about one matching post. */
 type Hit = {
@@ -102,16 +107,22 @@ type Hit = {
 export function BlogIndex({
   posts,
   reads = {},
+  initialSection = "all",
+  initialPage = 1,
 }: {
   posts: IndexPost[];
   /** slug → times opened this week, from blog_stats. */
   reads?: Record<string, number>;
+  /** The section and page the URL asked for (?section=, ?page=), so a crawler
+   *  or a shared link lands on that view rather than on page 1. */
+  initialSection?: Section | "all";
+  initialPage?: number;
 }) {
   const { theme, toggle: toggleTheme } = useReaderTheme();
 
-  const [activeSec, setActiveSec] = useState<Section | "all">("all");
+  const [activeSec, setActiveSec] = useState<Section | "all">(initialSection);
   const [query, setQuery] = useState("");
-  const [page, setPage] = useState(1);
+  const [page, setPage] = useState(initialPage);
   const [view, setView] = useState<"list" | "grid">("list");
   const [email, setEmail] = useState("");
   const [subState, setSubState] = useState<"idle" | "sending" | "sent" | "error" | "failed">("idle");
@@ -195,7 +206,7 @@ export function BlogIndex({
    * Count the open. sendBeacon because the click is navigating away — a fetch
    * started here would usually be cancelled before it left the browser.
    */
-  const countOpen = useCallback((p: Post) => {
+  const countOpen = useCallback((p: IndexPost) => {
     const id = readerId();
     if (!id) return;
     const payload = JSON.stringify({ readerId: id, section: sectionOf(p), slug: p.slug });
@@ -301,7 +312,34 @@ export function BlogIndex({
     return base.filter((p) => !rx || testIn(fold(p.title), rx)).slice(0, 4);
   }, [sorted, reads, rx]);
 
-  const href = (p: Post) => `/posts/${encodeURIComponent(p.slug)}`;
+  const href = (p: IndexPost) => `/posts/${encodeURIComponent(p.slug)}`;
+
+  /* ── pager and section pills are links ─────────────────────────────────
+     They used to be <button>s with no href, so a crawler saw no way past page
+     1 or into a section and 148 posts were reachable only from the sitemap.
+     Each is now an <a> to its own URL (see postsHref); a plain click is still
+     handled in place, so the board does not reload. The address bar follows
+     with replaceState, and only while there is no search running (the URL
+     names a listing view, not a query). It is skipped on the first run so the
+     landing URL, with whatever campaign parameters it carried, is left alone. */
+  const goTo = (e: React.MouseEvent, sec: Section | "all", n: number) => {
+    if (!isPlainClick(e)) return;
+    e.preventDefault();
+    if (sec !== activeSec) chooseSection(sec);
+    setPage(n);
+  };
+  const urlSynced = useRef(false);
+  useEffect(() => {
+    if (!urlSynced.current) {
+      urlSynced.current = true;
+      return;
+    }
+    if (q) return;
+    const target = postsHref(activeSec, current);
+    if (window.location.pathname + window.location.search !== target) {
+      window.history.replaceState(null, "", target);
+    }
+  }, [activeSec, current, q]);
 
   /* ── newsletter ────────────────────────────────────────────────────────
      Saves the address server-side (POST /api/newsletter → Firestore). It used
@@ -362,24 +400,24 @@ export function BlogIndex({
           </h1>
 
           <div className="mcb-filters mc-rev mc-rev-sm" data-delay="140">
-            <button
-              type="button"
+            <a
               className="mcb-pill"
-              aria-pressed={activeSec === "all"}
-              onClick={() => chooseSection("all")}
+              href={postsHref("all", 1)}
+              aria-current={activeSec === "all" ? "true" : undefined}
+              onClick={(e) => goTo(e, "all", 1)}
             >
               All posts <b>{counts.all}</b>
-            </button>
+            </a>
             {SECTIONS.map((sec) => (
-              <button
+              <a
                 key={sec}
-                type="button"
                 className="mcb-pill"
-                aria-pressed={activeSec === sec}
-                onClick={() => chooseSection(sec)}
+                href={postsHref(sec, 1)}
+                aria-current={activeSec === sec ? "true" : undefined}
+                onClick={(e) => goTo(e, sec, 1)}
               >
                 {sec} <b>{counts[sec]}</b>
-              </button>
+              </a>
             ))}
 
             <div className="mcb-search">
@@ -462,41 +500,54 @@ export function BlogIndex({
               <span className="mcb-rule" />
               <div className="mcb-tools">
                 <nav className="mcb-pager" aria-label="Pagination">
-                  <button
-                    type="button"
-                    className="mcb-pgbtn"
-                    onClick={() => setPage(current - 1)}
-                    disabled={current <= 1}
-                    aria-label="Previous page"
-                  >
-                    ‹
-                  </button>
+                  {current <= 1 ? (
+                    <span className="mcb-pgbtn" aria-disabled="true" aria-label="Previous page">
+                      ‹
+                    </span>
+                  ) : (
+                    <a
+                      className="mcb-pgbtn"
+                      href={postsHref(activeSec, current - 1)}
+                      rel="prev"
+                      aria-label="Previous page"
+                      onClick={(e) => goTo(e, activeSec, current - 1)}
+                    >
+                      ‹
+                    </a>
+                  )}
                   {pageNumbers(current, pages).map((n, i) =>
                     n === "…" ? (
                       <span className="mcb-gap" key={`gap${i}`}>
                         …
                       </span>
                     ) : (
-                      <button
+                      <a
                         key={n}
-                        type="button"
                         className="mcb-pgbtn"
-                        onClick={() => setPage(n)}
+                        href={postsHref(activeSec, n)}
+                        onClick={(e) => goTo(e, activeSec, n)}
                         aria-current={n === current ? "page" : undefined}
+                        aria-label={`Page ${n}`}
                       >
                         {n}
-                      </button>
+                      </a>
                     ),
                   )}
-                  <button
-                    type="button"
-                    className="mcb-pgbtn"
-                    onClick={() => setPage(current + 1)}
-                    disabled={current >= pages}
-                    aria-label="Next page"
-                  >
-                    ›
-                  </button>
+                  {current >= pages ? (
+                    <span className="mcb-pgbtn" aria-disabled="true" aria-label="Next page">
+                      ›
+                    </span>
+                  ) : (
+                    <a
+                      className="mcb-pgbtn"
+                      href={postsHref(activeSec, current + 1)}
+                      rel="next"
+                      aria-label="Next page"
+                      onClick={(e) => goTo(e, activeSec, current + 1)}
+                    >
+                      ›
+                    </a>
+                  )}
                 </nav>
                 <div className="mcb-views" role="group" aria-label="Layout">
                   <button
