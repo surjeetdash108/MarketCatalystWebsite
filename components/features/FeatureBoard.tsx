@@ -16,8 +16,8 @@ import { FEATURE_GROUPS, countsAsWorkspace } from "@/lib/features/features";
 export function FeatureBoard({ features }: { features: FeatureView[] }) {
   const [group, setGroup] = useState<"All" | FeatureGroup>("All");
 
-  // Chip figures count workspaces, not cards: the dashboard keeps its card
-  // but is never tallied, so "All" matches the "N workspaces" headline.
+  // Chip figures count workspaces (every non-AI card), so "All" matches the
+  // "N workspaces" headline.
   const counts = useMemo(() => {
     const c = new Map<string, number>([["All", 0]]);
     for (const f of features) {

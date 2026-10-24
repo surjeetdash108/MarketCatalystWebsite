@@ -2,6 +2,23 @@
 
 import { useState } from "react";
 
+// What the visitor sees when the server, the origin check or the network
+// failed — nothing they can fix by retyping, so point them at the mailbox.
+const SEND_FAILED = "Couldn't send — please email hello@marketcatalyst.ai instead.";
+
+/** Maps a failed /api/contact response to the one thing worth telling the visitor. */
+async function errorMessageFor(response: Response): Promise<string> {
+  if (response.status === 400) {
+    // The route passes the schema's own message through ("Message must be plain text").
+    const data: { message?: unknown } | null = await response.json().catch(() => null);
+    return typeof data?.message === "string" && data.message
+      ? data.message
+      : "Please check your details and try again.";
+  }
+  if (response.status === 429) return "Too many attempts — please wait a few minutes and try again.";
+  return SEND_FAILED;
+}
+
 /**
  * The contact form, wearing the mcp-* surface the rest of the reading pages
  * use. Colours come from app/theme.css tokens, so it themes itself light/dark
@@ -17,6 +34,7 @@ export function ContactForm() {
   const [company, setCompany] = useState("");
   const [message, setMessage] = useState("");
   const [status, setStatus] = useState<"idle" | "submitting" | "sent" | "error">("idle");
+  const [errorMessage, setErrorMessage] = useState(SEND_FAILED);
 
   async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
@@ -30,6 +48,7 @@ export function ContactForm() {
       });
 
       if (!response.ok) {
+        setErrorMessage(await errorMessageFor(response));
         setStatus("error");
         return;
       }
@@ -40,6 +59,7 @@ export function ContactForm() {
       setCompany("");
       setMessage("");
     } catch {
+      setErrorMessage(SEND_FAILED);
       setStatus("error");
     }
   }
@@ -138,7 +158,7 @@ export function ContactForm() {
 
         {status === "error" && (
           <p className="mcp-form-err" role="alert">
-            Something went wrong — please try again in a moment.
+            {errorMessage}
           </p>
         )}
 
