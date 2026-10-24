@@ -68,14 +68,22 @@ const nextConfig: NextConfig = {
     return config;
   },
 
-  // Blog posts published more than once 301 to their original; the list and
-  // why it exists are in lib/seo/duplicate-posts.ts.
   async redirects() {
-    return DUPLICATE_POSTS.map(([copy, original]) => ({
-      source: `/posts/${copy}`,
-      destination: `/posts/${original}`,
-      statusCode: 301 as const,
-    }));
+    return [
+      // Blog posts published more than once 301 to their original; the list and
+      // why it exists are in lib/seo/duplicate-posts.ts.
+      ...DUPLICATE_POSTS.map(([copy, original]) => ({
+        source: `/posts/${copy}`,
+        destination: `/posts/${original}`,
+        statusCode: 301 as const,
+      })),
+      // The blog moved from /blog to /posts. Done here, in one hop and as a real
+      // 301, rather than by permanentRedirect() in app/blog/*: a redirect issued
+      // from a rendered page streams back as 200 plus a <meta refresh> (see the
+      // note in middleware.ts), and /blog/ used to take two hops to reach /posts.
+      { source: "/blog", destination: "/posts", statusCode: 301 as const },
+      { source: "/blog/:slug", destination: "/posts/:slug", statusCode: 301 as const },
+    ];
   },
 
   async headers() {

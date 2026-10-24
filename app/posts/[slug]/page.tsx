@@ -1,12 +1,14 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
+import { Suspense } from "react";
 import { getPublishedPostBySlug, getPublishedPosts } from "@/lib/blog/posts";
 import { PostBody } from "@/components/blog/PostBody";
 import { PostPdf } from "@/components/blog/PostPdf";
 import { PostDocx } from "@/components/blog/PostDocx";
 import { PostHtmlDoc } from "@/components/blog/PostHtmlDoc";
 import { ArticleHero } from "@/components/blog/ArticleHero";
+import { RelatedPosts } from "@/components/blog/RelatedPosts";
 import { resolvePostDesign } from "@/lib/blog/post-design";
 // blog-doc.css reads tokens from the older iq-* design system, so articles
 // load it alongside; public pages no longer get it from the root layout.
@@ -14,8 +16,7 @@ import "../../iq.css";
 // The article's own baseline. Every rule is :where()-wrapped, so an uploaded
 // design still wins — this only covers what that design does not mention.
 import "../blog-doc.css";
-import { buildArticleJsonLd, resolvePostSeoDescription } from "@/lib/seo/jsonld";
-import { DEFAULT_OG_IMAGE } from "@/lib/seo/og";
+import { buildArticleJsonLd, postOgImageUrl, resolvePostSeoDescription } from "@/lib/seo/jsonld";
 
 /**
  * Statically generated, one page per PUBLISHED post, revalidated on a timer.
@@ -59,7 +60,15 @@ export async function generateMetadata({
   const title = post.seo.metaTitle || post.title;
   const description = resolvePostSeoDescription(post);
   const canonical = post.seo.canonicalUrl || `/posts/${post.slug}`;
+  // A post's own image if it has one; otherwise a card generated from its
+  // headline, so posts no longer all share /og-image.jpg in link previews.
   const image = post.seo.ogImageUrl || post.coverImageUrl || undefined;
+  const generated = {
+    url: postOgImageUrl(post.slug),
+    width: 1200,
+    height: 630,
+    alt: title,
+  };
 
   return {
     title,
@@ -70,11 +79,16 @@ export async function generateMetadata({
       url: canonical,
       title,
       description,
-      images: image ? [image] : [DEFAULT_OG_IMAGE],
+      images: image ? [image] : [generated],
       publishedTime: post.publishedAt ?? undefined,
       modifiedTime: post.updatedAt,
     },
-    twitter: { card: "summary_large_image", title, description },
+    twitter: {
+      card: "summary_large_image",
+      title,
+      description,
+      images: [image ?? generated.url],
+    },
   };
 }
 
@@ -177,7 +191,14 @@ export default async function PostPage({
           </div>
         )}
 
-        <PostHtmlDoc html={post.content} design={design} />
+        <PostHtmlDoc html={post.content} design={design} keepFirstH1={hasOwnHeadline} />
+
+        {/* Links to neighbouring posts, so no article is a dead end for readers
+            or crawlers. Suspense so a cold post-list read never delays the
+            article itself. */}
+        <Suspense fallback={null}>
+          <RelatedPosts slug={post.slug} />
+        </Suspense>
       </div>
     );
   }
@@ -267,10 +288,14 @@ export default async function PostPage({
         {/* html never reaches here — it returned above as its own document. */}
         {!isDoc && (
           <div className="post-content mc-doc">
-            <PostBody markdown={post.content} />
+            <PostBody markdown={post.content} keepFirstH1={hasOwnHeadline} />
           </div>
         )}
       </article>
+
+      <Suspense fallback={null}>
+        <RelatedPosts slug={post.slug} />
+      </Suspense>
     </div>
   );
 }

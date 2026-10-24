@@ -70,14 +70,19 @@
   cursor: pointer;
   transition: border-color .3s ease, color .3s ease, background .3s ease;
 }
+/* The pills are <a href="/posts?section=...">, so crawlers can follow them. An
+   anchor needs the box a button gets for free. */
+a.mcb-pill { display: inline-block; line-height: normal; text-decoration: none; }
 .mcb-pill:hover { border-color: var(--mc-up); color: var(--mc-up); }
-.mcb-pill[aria-pressed="true"] {
+.mcb-pill[aria-pressed="true"],
+.mcb-pill[aria-current="true"] {
   border-color: var(--mc-up);
   background: rgb(var(--mc-up-rgb) / .12);
   color: var(--mc-up);
 }
 .mcb-pill b { font-weight: 400; color: var(--mc-text-muted); }
-.mcb-pill[aria-pressed="true"] b { color: var(--mc-up); }
+.mcb-pill[aria-pressed="true"] b,
+.mcb-pill[aria-current="true"] b { color: var(--mc-up); }
 
 .mcb-search {
   display: flex;
@@ -282,8 +287,11 @@
   cursor: pointer;
   transition: border-color .25s ease, color .25s ease, background .25s ease;
 }
-.mcb-pgbtn:hover:not(:disabled) { border-color: var(--mc-up); color: var(--mc-up); }
-.mcb-pgbtn:disabled { opacity: .4; cursor: default; }
+/* Pager entries are <a href="/posts?page=N"> (and a <span> at either end). */
+a.mcb-pgbtn { text-decoration: none; }
+.mcb-pgbtn:hover:not(:disabled):not([aria-disabled="true"]) { border-color: var(--mc-up); color: var(--mc-up); }
+.mcb-pgbtn:disabled,
+.mcb-pgbtn[aria-disabled="true"] { opacity: .4; cursor: default; }
 .mcb-pgbtn[aria-current="page"] {
   border-color: var(--mc-up);
   background: rgb(var(--mc-up-rgb) / .12);

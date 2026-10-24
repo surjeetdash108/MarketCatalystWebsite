@@ -5,12 +5,15 @@ function siteUrl(): string {
 }
 
 export default function robots(): MetadataRoute.Robots {
+  const base = siteUrl();
   return {
     rules: {
       userAgent: "*",
       allow: "/",
       disallow: ["/admin", "/api"],
     },
-    sitemap: `${siteUrl()}/sitemap.xml`,
+    // The news sitemap and the RSS feed are push channels for new posts; Google
+    // reads an RSS 2.0 feed as a sitemap, so both are listed here.
+    sitemap: [`${base}/sitemap.xml`, `${base}/news-sitemap.xml`, `${base}/feed.xml`],
   };
 }

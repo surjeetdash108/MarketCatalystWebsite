@@ -177,13 +177,29 @@ export function resolvePostSeoDescription(
   return summarizeForSeo(post.seo?.metaDescription || post.excerpt, maxChars);
 }
 
+/** Zones that are reporting on events rather than teaching or opining. */
+const NEWS_TYPES = new Set(["news", "recap", "earnings"]);
+
+/**
+ * The generated 1200x630 card for a post (app/posts/[slug]/og/route.tsx): the
+ * image a post uses for link previews and schema when it has no cover of its
+ * own, so no two posts share one picture.
+ */
+export function postOgImageUrl(slug: string): string {
+  return `${siteUrl()}/posts/${encodeURIComponent(slug)}/og`;
+}
+
 export function buildArticleJsonLd(post: Post) {
   const url = post.seo.canonicalUrl || `${siteUrl()}/posts/${post.slug}`;
-  const image = post.seo.ogImageUrl || post.coverImageUrl || undefined;
+  // Article rich results and Discover need an image on every article. This was
+  // `undefined` for any post without a cover, i.e. all 270 of them in the audit.
+  const image = post.seo.ogImageUrl || post.coverImageUrl || postOgImageUrl(post.slug);
 
   return {
     "@context": "https://schema.org",
-    "@type": "BlogPosting",
+    // Recaps, news and earnings are news reporting; Google News and Top Stories
+    // read NewsArticle. Research and educational pieces stay BlogPosting.
+    "@type": NEWS_TYPES.has(post.type) ? "NewsArticle" : "BlogPosting",
     headline: post.seo.metaTitle || post.title,
     description: resolvePostSeoDescription(post),
     // A PDF post renders its pages as images, so the page carries no readable

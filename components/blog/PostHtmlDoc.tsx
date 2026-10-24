@@ -6,6 +6,7 @@ import { PostThemeBinding } from "./PostThemeBinding";
 // import { PostToc } from "./PostToc";
 // import { TocSpy } from "./TocSpy";
 import { buildToc } from "@/lib/blog/toc";
+import { demoteH1 } from "@/lib/blog/headings";
 import type { PostDesign } from "@/lib/blog/post-design";
 
 /**
@@ -124,9 +125,14 @@ function wrapTables(html: string): string {
 export function PostHtmlDoc({
   html,
   design,
+  keepFirstH1 = true,
 }: {
   html: string;
   design: PostDesign;
+  /** The document's first <h1> is the page headline (the article page printed
+   *  none). False when the page already printed the title as an <h1>, so every
+   *  <h1> inside the document is demoted. See lib/blog/headings.ts. */
+  keepFirstH1?: boolean;
 }) {
   const { theme, rootAttrs } = design;
 
@@ -137,7 +143,7 @@ export function PostHtmlDoc({
   // buildToc only ADDS ids; it changes nothing else about the markup, so a post
   // renders identically whether or not the overview ends up being shown.
   const { html: withIds, toc } = buildToc(sanitized);
-  const body = wrapTables(withIds);
+  const body = wrapTables(demoteH1(withIds, keepFirstH1));
 
   /* Three sections, not two: this is an overview, and a two-item list beside a
      long article tells the reader less than the article's own headings already

@@ -1330,3 +1330,42 @@ svg.mc-spark { width: 100%; height: 100%; box-sizing: border-box; }
 /* No-JS fallback lives in a <noscript><style> block in app/page.tsx: with
    scripting off the loader would never lift and the masked hero copy would
    never animate in, so both are neutralised there. */
+
+/* ---- Latest posts (components/home/LatestPosts.tsx) ---------------- */
+.mc-latest-posts {
+  position: relative;
+  padding: clamp(48px, 7vh, 88px) var(--mc-gutter);
+  border-top: 1px solid var(--mc-line);
+}
+.mc-latest-all { text-decoration: none; transition: color .25s ease; }
+.mc-latest-all:hover { color: var(--mc-up); }
+.mc-latest-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 300px), 1fr));
+  gap: 12px;
+}
+.mc-latest-link {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  height: 100%;
+  padding: 16px 18px;
+  border: 1px solid var(--mc-line);
+  border-radius: 14px;
+  background: var(--mc-bg-card);
+  color: var(--mc-text);
+  text-decoration: none;
+  transition: border-color .3s ease, color .3s ease;
+}
+.mc-latest-link:hover { border-color: var(--mc-up); color: var(--mc-up); }
+.mc-latest-kind {
+  font-family: var(--mc-font-mono);
+  font-size: 10.5px;
+  letter-spacing: .14em;
+  text-transform: uppercase;
+  color: var(--mc-text-muted);
+}
+.mc-latest-title { font-size: 15.5px; line-height: 1.35; font-weight: 500; }

@@ -31,6 +31,17 @@ const ALLOWED_TAGS = [
  */
 const STRUCTURAL = ["div", "section", "figure", "figcaption", "span", "p", "table", "th", "td", "tr", "thead", "tbody", "small"];
 
+/**
+ * Outbound links written as http:// are served as https://. Every major
+ * publisher and wire service answers on https, and an http link out of an https
+ * page is a mixed-content downgrade the audit flagged (e.g. prnewswire links in
+ * earnings posts). A site that truly has no https would show a certificate
+ * error here, which is the rare case this accepts.
+ */
+function upgradeHttp(href: string): string {
+  return href.replace(/^\s*http:\/\//i, "https://");
+}
+
 const ALLOWED_ATTRIBUTES: sanitizeHtml.IOptions["allowedAttributes"] = {
   a: ["href", "rel", "target"],
   img: ["src", "alt"],
@@ -47,7 +58,14 @@ export function sanitizePostHtml(html: string): string {
     allowedAttributes: ALLOWED_ATTRIBUTES,
     allowedSchemes: ["http", "https", "mailto"],
     transformTags: {
-      a: sanitizeHtml.simpleTransform("a", { rel: "noopener noreferrer nofollow" }),
+      a: (tagName, attribs) => ({
+        tagName,
+        attribs: {
+          ...attribs,
+          ...(attribs.href ? { href: upgradeHttp(attribs.href) } : {}),
+          rel: "noopener noreferrer nofollow",
+        },
+      }),
     },
   });
 }
@@ -190,7 +208,10 @@ export function sanitizeRichPostHtml(html: string): string {
       "*": (tagName, attribs) => {
         const next = { ...attribs };
         if (next.style) next.style = stripRemoteRefs(next.style);
-        if (tagName === "a") next.rel = "noopener noreferrer nofollow";
+        if (tagName === "a") {
+          next.rel = "noopener noreferrer nofollow";
+          if (next.href) next.href = upgradeHttp(next.href);
+        }
         return { tagName, attribs: next };
       },
     },
