@@ -42,6 +42,26 @@ function upgradeHttp(href: string): string {
   return href.replace(/^\s*http:\/\//i, "https://");
 }
 
+/**
+ * Internal links (marketcatalyst.ai, app.marketcatalyst.ai, or relative paths)
+ * should not have rel="noopener noreferrer nofollow" injected, so search engines
+ * and browsers treat internal links naturally.
+ */
+function isInternalHref(href?: string): boolean {
+  if (!href) return false;
+  const trimmed = href.trim();
+  if (trimmed.startsWith("/") || trimmed.startsWith("#") || trimmed.startsWith("?")) {
+    return true;
+  }
+  try {
+    const url = new URL(trimmed);
+    const host = url.hostname.toLowerCase();
+    return host === "marketcatalyst.ai" || host.endsWith(".marketcatalyst.ai");
+  } catch {
+    return false;
+  }
+}
+
 const ALLOWED_ATTRIBUTES: sanitizeHtml.IOptions["allowedAttributes"] = {
   a: ["href", "rel", "target"],
   img: ["src", "alt"],
@@ -58,14 +78,16 @@ export function sanitizePostHtml(html: string): string {
     allowedAttributes: ALLOWED_ATTRIBUTES,
     allowedSchemes: ["http", "https", "mailto"],
     transformTags: {
-      a: (tagName, attribs) => ({
-        tagName,
-        attribs: {
-          ...attribs,
-          ...(attribs.href ? { href: upgradeHttp(attribs.href) } : {}),
-          rel: "noopener noreferrer nofollow",
-        },
-      }),
+      a: (tagName, attribs) => {
+        const next = { ...attribs };
+        if (next.href) next.href = upgradeHttp(next.href);
+        if (!isInternalHref(next.href)) {
+          next.rel = "noopener noreferrer nofollow";
+        } else {
+          delete next.rel;
+        }
+        return { tagName, attribs: next };
+      },
     },
   });
 }
@@ -209,8 +231,12 @@ export function sanitizeRichPostHtml(html: string): string {
         const next = { ...attribs };
         if (next.style) next.style = stripRemoteRefs(next.style);
         if (tagName === "a") {
-          next.rel = "noopener noreferrer nofollow";
           if (next.href) next.href = upgradeHttp(next.href);
+          if (!isInternalHref(next.href)) {
+            next.rel = "noopener noreferrer nofollow";
+          } else {
+            delete next.rel;
+          }
         }
         return { tagName, attribs: next };
       },
