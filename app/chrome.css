@@ -262,6 +262,51 @@
 .mc-footer-links a { font-size: 14px; color: var(--mc-text-4); transition: color .25s ease; }
 .mc-footer-links a:hover { color: var(--mc-up); }
 .mc-footer-note { margin: 15px 0 12px; font-size: 14px; line-height: 1.6; color: var(--mc-text-muted); }
+.mc-footer-badges {
+  max-width: var(--mc-maxw);
+  margin: clamp(30px, 5vh, 46px) auto 0;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: center;
+  gap: 16px 24px;
+}
+.mc-footer-badges a { display: inline-flex; opacity: .85; transition: opacity .25s ease; }
+.mc-footer-badges a:hover { opacity: 1; }
+/* Both badges use the stacked "Featured on / Name" layout (Startup Fame's
+   t=medium variant), so pin them to one height and let the width follow. */
+.mc-footer-badges img { display: block; height: 44px; width: auto; max-width: 100%; border-radius: 8px; }
+/* Startup Fame's badge is narrower (171×54) than Nick Launches' (~226×44 visible),
+   and stretching it would distort the lettering. Seat it, undistorted, in a box
+   as wide as the Nick Launches badge with the same light fill; the box draws the
+   outline. */
+.mc-footer-badges .mc-badge-boxed {
+  width: 226px;
+  height: 44px;
+  justify-content: center;
+  align-items: center;
+  background: #f6f6f6;
+  border: 1px solid rgba(0, 0, 0, .22);
+  border-radius: 8px;
+  box-sizing: border-box;
+}
+/* Scaled up so Startup Fame's lettering matches Nick Launches'. That makes the
+   image taller than the 44px box; the box's overflow crops the plain fill (and
+   the image's own border) off the top and bottom. The sides are feathered
+   rather than cut so any tiny difference in fill shade fades into the box. */
+.mc-footer-badges .mc-badge-boxed { overflow: hidden; }
+.mc-footer-badges .mc-badge-boxed img {
+  height: 56px;
+  max-width: none;
+  border-radius: 0;
+  -webkit-mask-image: linear-gradient(to right, transparent, #000 12px, #000 calc(100% - 12px), transparent);
+  mask-image: linear-gradient(to right, transparent, #000 12px, #000 calc(100% - 12px), transparent);
+}
+/* Nick Launches' PNG carries ~20% transparent padding (shadow room), so its
+   visible box is 80% of the image height. 55px puts that box at 44px, level
+   with Startup Fame's; the padding is trimmed with negative margin so the row's
+   height doesn't grow. Its lettering runs a little larger than Startup Fame's. */
+.mc-footer-badges .mc-badge-padded img { height: 55px; margin: -5.5px 0; }
 .mc-footer-bottom {
   max-width: var(--mc-maxw);
   margin: clamp(34px, 6vh, 56px) auto 0;
