@@ -3,6 +3,7 @@
 import { useEffect, useRef } from "react";
 import { WS_LIST } from "./carousel/workspaces";
 import { APP_SIGNUP_URL } from "./app-url";
+import { WORKSPACE_COUNT } from "@/lib/features/features";
 
 // The scroll-driven "workspace tour" marquee from MarketCatalystUI's landing
 // page. Ported as its own client-only leaf component (refs, rAF, DOM
@@ -132,7 +133,7 @@ export function WorkspaceCarousel() {
           >
             <div className="mq-more-inner">
               <h3>And many more</h3>
-              <p>Screener, IPOs, Watchlist, Insider & 13F, Commentary, Macro & VIX — fourteen connected workspaces in all.</p>
+              <p>Screener, IPOs, Watchlist, Insider & 13F, Commentary, Macro & VIX — {WORKSPACE_COUNT} connected workspaces in all.</p>
               <div className="mq-go">See everything →</div>
             </div>
             <div className="mq-more-hint">Keep scrolling ↓</div>

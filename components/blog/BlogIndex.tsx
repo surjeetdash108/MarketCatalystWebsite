@@ -7,6 +7,7 @@ import { PER_PAGE, SECTIONS, postsHref, sectionOfType, type Section } from "@/li
 import { readerId } from "@/lib/blog/reader-id";
 import { useDebounce } from "@/hooks/useDebounce";
 import { buildMatcher, fold, normaliseQuery, testIn } from "@/lib/blog/search-match";
+import { WORKSPACE_COUNT } from "@/lib/features/features";
 import { Marked } from "@/components/chrome/Marked";
 import { SiteNav } from "@/components/chrome/SiteNav";
 import { SiteFooter } from "@/components/chrome/SiteFooter";
@@ -704,7 +705,7 @@ export function BlogIndex({
             <div className="mcb-plug">
               <div className="mcb-plug-h">From the terminal</div>
               <p>
-                Every post here is written over the same record that powers the fourteen research
+                Every post here is written over the same record that powers the {WORKSPACE_COUNT} research
                 workspaces.
               </p>
               <Link href="/#workspaces">See what&rsquo;s inside →</Link>

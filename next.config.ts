@@ -83,6 +83,9 @@ const nextConfig: NextConfig = {
       // note in middleware.ts), and /blog/ used to take two hops to reach /posts.
       { source: "/blog", destination: "/posts", statusCode: 301 as const },
       { source: "/blog/:slug", destination: "/posts/:slug", statusCode: 301 as const },
+      // Themes became a tab of the Screener, so its feature page was folded into
+      // /features/screener (see lib/features/features.ts).
+      { source: "/features/themes", destination: "/features/screener", statusCode: 301 as const },
     ];
   },
 

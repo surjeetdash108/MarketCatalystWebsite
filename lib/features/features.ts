@@ -11,9 +11,11 @@
 // nav's actual source of truth): 18 visible items there, one of which
 // (label "Search", slug "stock") is the same screen as the "AI Stock Read"
 // entry below rather than a workspace of its own — stock.tsx is both the
-// ticker search and the AI-read stock page. That leaves 17 distinct
-// workspaces, grouped exactly as menu-items.ts groups them ("Market
-// Recaps", not "Recaps").
+// ticker search and the AI-read stock page. Themes is likewise not a
+// workspace of its own: it is a tab inside the Screener hub
+// (screener-hub.tsx), so it is described under Screener below. That leaves
+// 16 distinct workspaces, grouped exactly as menu-items.ts groups them
+// ("Market Recaps", not "Recaps").
 //
 // This list is content, not data pulled from the product: keep names aligned
 // with components/home/workspaces.ts and components/marketing/carousel/
@@ -181,29 +183,15 @@ const RAW: Feature[] = [
     slug: "screener",
     group: "Research",
     title: "Screener",
-    blurb: "Twenty presets plus strength, growth and technical filters.",
-    lede: "Find setups fast with ready-made presets or build your own from strength, growth, technical and liquidity filters.",
+    blurb: "Twenty presets, strength, growth and technical filters — plus stocks grouped by market theme.",
+    lede: "Find setups fast with ready-made presets or build your own from strength, growth, technical and liquidity filters — then switch to Themes to see the market organised by narrative and the stocks inside each.",
     points: [
       "Twenty ready-made presets",
-      "Relative strength and growth filters",
-      "Technical rating and liquidity",
+      "Relative strength, growth and technical filters",
+      "Themes: curated groups with leaders and laggards",
       "Save and reuse screens",
     ],
-    ai: "Start from a preset, then narrow to your edge.",
-  },
-  {
-    slug: "themes",
-    group: "Research",
-    title: "Themes",
-    blurb: "Stocks grouped by the market themes driving them.",
-    lede: "The market organised by narrative — see which themes are leading and the stocks inside each.",
-    points: [
-      "Curated market themes",
-      "Theme performance over time",
-      "Constituent stocks for each",
-      "Leaders and laggards per theme",
-    ],
-    ai: "Which stories the market is paying for this week.",
+    ai: "Start from a preset or the theme the market is paying for, then narrow to your edge.",
   },
   {
     slug: "ipos",

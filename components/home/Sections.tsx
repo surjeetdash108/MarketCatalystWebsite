@@ -25,7 +25,7 @@ export function WorkspaceStack() {
           </h2>
           <p className="mc-section-note">
             Eight of the app&apos;s screens below, with their real tabs and columns — plus the live feed, heatmap,
-            themes, ETF Corner, AI Corner, stock search, recaps and watchlist waiting inside. Figures are blurred samples.
+            ETF Corner, AI Corner, stock search, recaps and watchlist waiting inside. Figures are blurred samples.
           </p>
         </div>
         <div className="mc-stack-meta">

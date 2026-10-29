@@ -7,9 +7,9 @@
 // in one file.
 
 // How many workspaces exist, period — the same count /features derives from
-// MarketCatalystUI's menu-items.ts (dashboard excluded). Every "N workspaces"
-// figure on the landing page reads this instead of a hardcoded number, so it
-// cannot drift the way it drifted from 16 to 17.
+// MarketCatalystUI's menu-items.ts (dashboard included, Themes folded into
+// Screener). Every "N workspaces" figure on the site reads this instead of a
+// hardcoded number, so it cannot drift the way it drifted from 14 to 16 to 17.
 import { WORKSPACE_COUNT } from "@/lib/features/features";
 
 export type Tone = "up" | "down" | "amber" | "text" | "muted" | "faint" | "idle" | "line";

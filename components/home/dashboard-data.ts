@@ -14,7 +14,6 @@ export const dashNav: { t: string; active?: boolean }[] = [
   { t: "Market Heatmap" },
   { t: "Analyst Actions" },
   { t: "Screener" },
-  { t: "Themes" },
   { t: "IPO Corner" },
   { t: "Options" },
   { t: "Insider & Institutional" },
