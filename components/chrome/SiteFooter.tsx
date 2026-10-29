@@ -67,6 +67,36 @@ export function SiteFooter() {
         </div>
       </div>
 
+      {/* Directory badges. Plain <img>: they are third-party, fixed-size
+          badges, so next/image's optimizer would add nothing. */}
+      <div className="mc-footer-badges">
+        <a
+          href="https://startupfa.me/s/marketcatalyst?utm_source=marketcatalyst.ai"
+          target="_blank"
+          rel="noopener"
+          className="mc-badge-boxed"
+        >
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          <img
+            src="https://startupfa.me/badge?t=medium&theme=default"
+            alt="MarketCatalyst - Featured on Startup Fame"
+            width={171}
+            height={54}
+            loading="lazy"
+          />
+        </a>
+        <a href="https://nicklaunches.com/" target="_blank" rel="noopener" className="mc-badge-padded">
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          <img
+            src="https://nicklaunches.com/badges/featured.png"
+            alt="Featured on Nick Launches"
+            width={244}
+            height={56}
+            loading="lazy"
+          />
+        </a>
+      </div>
+
       <div className="mc-footer-bottom">
         <span>© {year} MarketCatalyst. All rights reserved.</span>
         <span>Informational purposes only — not investment advice.</span>
