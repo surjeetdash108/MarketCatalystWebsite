@@ -7,6 +7,7 @@ import { APP_SIGNUP_URL } from "@/components/marketing/app-url";
 import { Marked } from "@/components/chrome/Marked";
 import { MarketChart } from "@/components/chrome/MarketChart";
 import { buildMatcher, fold, testIn } from "@/lib/blog/search-match";
+import { WORKSPACE_COUNT } from "@/lib/features/features";
 
 /**
  * The public FAQ board.
@@ -202,7 +203,7 @@ export function FaqBoard({ faqs }: { faqs: Faq[] }) {
                 <span>From the terminal</span>
               </div>
               <p>
-                Fourteen research workspaces over one normalised record — movers, earnings, analyst
+                {WORKSPACE_COUNT} research workspaces over one normalised record — movers, earnings, analyst
                 actions, insider flows and your own book.
               </p>
               <div className="mcp-actions">

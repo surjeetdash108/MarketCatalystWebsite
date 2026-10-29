@@ -1,4 +1,5 @@
 import { APP_SIGNUP_URL } from "./app-url";
+import { WORKSPACE_COUNT } from "@/lib/features/features";
 
 export function Pricing() {
   return (
@@ -15,7 +16,7 @@ export function Pricing() {
           </div>
           <p className="mqp-d">Explore the whole terminal with delayed data.</p>
           <ul className="mqp-feat">
-            <li>All 14 workspaces</li>
+            <li>All {WORKSPACE_COUNT} workspaces</li>
             <li>Delayed market data</li>
             <li>Daily EOD recap</li>
           </ul>
