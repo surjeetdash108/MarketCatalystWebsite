@@ -32,7 +32,7 @@ export function Nav() {
           Features
         </Link>
         <Link className={`hw-ghost${isBlogs ? " active" : ""}`} href="/posts">
-          Research
+          Resources
         </Link>
         <Link className={`hw-ghost${isFaqs ? " active" : ""}`} href="/faqs">
           FAQs
