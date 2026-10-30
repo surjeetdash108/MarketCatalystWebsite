@@ -72,7 +72,7 @@ export function SiteNav({
           Features
         </Link>
         <Link className={cls("blogs")} href="/posts" onClick={close} aria-current={current("blogs")}>
-          Research
+          Resources
         </Link>
         <Link className={cls("faqs")} href="/faqs" onClick={close} aria-current={current("faqs")}>
           FAQs
