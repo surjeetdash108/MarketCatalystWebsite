@@ -1,7 +1,28 @@
 import { APP_SIGNUP_URL } from "@/components/marketing/app-url";
 import type { LiveTape } from "@/lib/market/tape-types";
-import { HeroHud } from "./HeroHud";
+// import { HeroHud } from "./HeroHud";
 
+const MODULES: { name: string; line: string }[] = [
+  {
+    name: "Market Catalyst",
+    line: "Your intelligent market companion, turning moves, news and trends into actionable insights — live feed, movers and heatmaps, earnings hub and calendar, analyst actions, 13F and insider moves, IPOs, ETFs, AI companies, screener and recaps, plus your own portfolio and watchlist.",
+  },
+  {
+    name: "Stock Intelligence",
+    line: "See why any stock moved and why it could move next, scored on business, earnings, valuation, technicals, flows and macro. Build short-, medium- and long-term theses and monitor them live, with invalidations flagged as they happen.",
+  },
+  {
+    name: "Strategy Lab",
+    line: "Start from curated strategies or build and save your own. Backtest and refine them on data-driven insights and market signals, and know the confluences right before you take the trade.",
+  },
+  {
+    name: "Money Flow",
+    line: "Track institutional and market money movement at a glance, spot bullish and bearish opportunities, and confirm them with multiple chart validations specially curated for intraday and swing trades.",
+  },
+];
+
+// `tape` feeds the hidden tape snapshot below; kept so page.tsx is unchanged.
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 export function Hero({ tape }: { tape: LiveTape | null }) {
   return (
     <section className="mc-hero" id="mc-top">
@@ -57,57 +78,56 @@ export function Hero({ tape }: { tape: LiveTape | null }) {
       </div>
       <div className="mc-veil" id="mc-veil" aria-hidden="true" />
 
-      <div className="mc-hero-grid">
-        <div className="mc-hero-left">
-          {/* Two lines, and exactly two: each masked span is its own block, so
-              the break falls at the comma by construction rather than wherever
-              the measure happens to run out. The type is sized in the CSS so
-              the longer of the two never wraps again.
+      <div className="mc-hero-center">
+        {/* Two lines, each its own block so the break falls before "Trade"
+            by construction; on a phone the first line wraps once more. It
+            follows the module cards below: find the edge (Market Catalyst,
+            Stock Intelligence, Money Flow), validate it (backtests, confluence,
+            invalidations), then trade. */}
+        <h1 className="mc-h1">
+          {/* Kicker hidden for now. To bring it back, restore:
+          <span className="mc-h1-kicker">
+            <i aria-hidden="true" />
+            AI Stock Market Research Platform
+          </span> */}
+          <span>Find the edge. Validate it.</span>
+          <span>
+            Trade with <em className="mc-serif">conviction</em>.
+          </span>
+        </h1>
 
-              The small label leads the same heading so the H1 says what the
-              site is, not only the slogan: search engines read it as "AI
-              Stock Market Research Platform - Every market view, revealed
-              inside." */}
-          <h1 className="mc-h1">
-            <span className="mc-h1-kicker">
-              <i aria-hidden="true" />
-              AI Stock Market Research Platform
-            </span>
-            <span>Every market view,</span>
-            <span>
-              revealed <em className="mc-serif">inside</em>.
-            </span>
-          </h1>
+        <p className="mc-lede">
+          We listened to traders and built what they asked for: market research,
+          AI&nbsp;confluence and strategy backtesting before taking any trade&nbsp;&mdash; all
+          in one place.
+        </p>
 
-          <div className="mc-hero-row">
-            <p className="mc-lede" style={{ maxWidth: "1100px" }}>
-              <b>The entire market, narrated.</b> Keep your pulse on the tape with{" "}
-              <em className="mc-serif">Live Heatmaps</em>, breaking news feeds, and real-time sector performance. Plan your week using comprehensive Earnings, Economic, and IPO calendars.
-              <br /><br />
-
-              Cut through the noise with Daily and Weekly recaps, powered by our{" "}
-              <em className="mc-serif">&lsquo;What Matters Now&rsquo; AI synthesis</em>. Dive deeper into any ticker with 13F filings, insider flows, earnings transcripts, and historical reaction overlays.
-              <br /><br />
-
-              Build your edge with advanced screeners, ETF tools, and dynamic watchlists. No scattered sources—everything is seamlessly integrated into one platform.
-              <b> And plenty more waiting <em className="mc-serif">inside.</em></b>
-            </p>
-            <div className="mc-actions">
-              <a className="mc-cta" href={APP_SIGNUP_URL}>
-                Get me inside <i>→</i>
-              </a>
-            </div>
-          </div>
+        <div className="mc-actions">
+          <a className="mc-cta" href={APP_SIGNUP_URL}>
+            Get me inside <i>→</i>
+          </a>
+          <a className="mc-cta-ghost" href="#workspaces">
+            See the workspaces
+          </a>
         </div>
 
+        {/* The app's four modules, named and ordered as in its top switcher
+            (MarketCatalystUI app/iq/module-switcher.tsx). The first is the
+            data-rich default; the other three are the AI/ML engines. */}
+        <ul className="mc-mods" aria-label="Inside MarketCatalyst">
+          {MODULES.map((m) => (
+            <li className={`mc-mod${m.name === "Market Catalyst" ? " is-data" : " is-ai"}`} key={m.name}>
+              <b className="mc-mod-name">{m.name}</b>
+              <p className="mc-mod-line">{m.line}</p>
+            </li>
+          ))}
+        </ul>
+
+        {/* Tape snapshot hidden for now. To bring it back, restore this block
+            and the HeroHud import above:
         <div className="mc-hud-wrap">
           <HeroHud initial={tape} />
-
-          <div className="mc-cue">
-            <i />
-            <span>Scroll to read the market</span>
-          </div>
-        </div>
+        </div> */}
       </div>
     </section>
   );

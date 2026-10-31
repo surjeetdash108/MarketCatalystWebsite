@@ -149,12 +149,11 @@
   min-height: 100svh;
   display: flex;
   flex-direction: column;
-  /* Centred in the viewport. The top pad clears the fixed nav and the bottom
-     one leaves room for the scroll cue, so they are not equal — centring
-     happens inside that padding box, which keeps the block off the nav while
-     still reading as vertically centred. */
-  justify-content: center;
-  padding: clamp(104px, 13vh, 150px) var(--mc-gutter) clamp(56px, 8vh, 96px);
+  /* Top-aligned rather than centred: centring added a tall empty band
+     between the fixed nav (~88px) and the headline on large screens. The top
+     pad clears the nav and leaves a fixed ~40px gap under it. */
+  justify-content: flex-start;
+  padding: 128px var(--mc-gutter) clamp(56px, 8vh, 96px);
   overflow: hidden;
 }
 /* The product shot itself: a 1440x900 mock scaled to fit, revealed under a
@@ -195,53 +194,39 @@
   /* Wider than the stage and carrying five stops, so the wash thins out over
      the whole width instead of landing its last stop at 88% and holding flat
      from there - that step was the other half of the "sudden stop". */
-  background: radial-gradient(ellipse 104% 96% at 14% 42%,
+  background: radial-gradient(ellipse 90% 96% at 50% 46%,
     rgb(var(--mc-bg-rgb) / .94),
     rgb(var(--mc-bg-rgb) / .8) 32%,
     rgb(var(--mc-bg-rgb) / .55) 54%,
     rgb(var(--mc-bg-rgb) / .28) 74%,
     rgb(var(--mc-bg-rgb) / .06) 100%);
 }
-.mc-hero-grid {
+.mc-hero-center {
   position: relative;
-  top: -68px !important;
+  width: 100%;
+  max-width: 1320px;
+  margin: 0 auto;
   display: flex;
-  flex-wrap: wrap;
-  align-items: flex-end;
-  justify-content: space-between;
-  gap: clamp(20px, 4vw, 60px);
-}
-.mc-hero-left {
-  flex: 1 1 420px;
-  min-width: 0;
-  /* The headline is sized against THIS column, not the viewport. The column is
-     not a fixed share of the screen: above 1024px the HUD sits beside it and
-     takes 430px, below that the HUD wraps full-width and the column takes
-     everything. A vw-based size cannot satisfy both — the value that fits the
-     narrow case wastes half the width in the wide one. */
-  container-type: inline-size;
-  container-name: mc-hero-col;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
 }
 .mc-h1 {
-  /* Sized so the LONGER line, "Every market view,", holds on one line — the
-     break belongs at the comma, not wherever the measure runs out.
-
-     Measured: that line renders 8.09x its font-size wide in Space Grotesk at
-     -.05em tracking. Fitting 8.09 * fs into the column gives 12.4cqw as the
-     hard ceiling; 11cqw leaves ~11% for the fallback stack, which sets wider.
-     Both numbers are tied to THIS wording — re-measure if it changes.
-
-     The vw line is the fallback for browsers without container queries: they
-     drop the cqw declaration as invalid and keep this one, which is sized for
-     the narrowest case so it can never overflow. */
-  font-size: min(5.5vw, 118px);
-  font-size: min(11cqw, 118px);
-  line-height: .85;
+  /* Two lines: "Every move. Every catalyst." / "Explained inside." The first
+     renders about 12.4x its font-size wide in Space Grotesk at -.05em
+     tracking, so 7.2vw keeps it inside the gutters at any desktop width. On a
+     phone (below) it is allowed to wrap after "move." instead. */
+  font-size: clamp(44px, 7.2vw, 104px);
+  line-height: .9;
   letter-spacing: -.05em;
   font-weight: 600;
-  /* Each line is its own block below, so this only stops a line breaking
-     inside itself; it cannot run the two lines together. */
   white-space: nowrap;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+@media (max-width: 700px) {
+  .mc-h1 { font-size: clamp(40px, 12vw, 72px); white-space: normal; }
 }
 .mc-h1 > span {
   display: block;
@@ -258,7 +243,7 @@
   gap: 9px;
   overflow: visible;
   padding: 0;
-  margin: 0 0 22px;
+  margin: 0 0 26px;
   font-family: var(--mc-font-mono);
   font-size: 12px;
   font-weight: 500;
@@ -288,29 +273,14 @@
   transition: opacity .8s ease, transform .8s cubic-bezier(.2, .8, .2, 1);
 }
 .mc-fade.is-in { opacity: 1; transform: none; }
-.mc-hero-row {
-  display: flex;
-  flex-direction: column;
-  align-items: flex-start;
-  /* gap: 64px; */
-  margin-top: clamp(24px, 4vh, 44px);
-}
 .mc-lede {
-  flex: 1 1 320px;
-  max-width: 52ch;
-  font-size: clamp(16.5px, 1.35vw, 19.5px);
+  max-width: 64ch;
+  margin-top: clamp(20px, 3vh, 32px);
+  font-size: clamp(17.5px, 1.5vw, 22px);
   line-height: 1.6;
-  color: var(--mc-text-muted);
-  text-wrap: pretty;
-  /* The same smoked-glass card as the tape snapshot beside it, so the two
-     halves of the hero read as a pair and the copy holds up over the lit
-     part of the product shot. */
-  padding: 18px 22px;
-  border: 1px solid var(--mc-line);
-  border-radius: var(--mc-r-md);
-  background: rgb(9 10 12 / .78);
-  backdrop-filter: blur(8px);
-  -webkit-backdrop-filter: blur(8px);
+  /* The app's Money Flow pill yellow (MarketCatalystUI module-switcher.tsx). */
+  color: #e0bb5e;
+  text-wrap: balance;
 }
 .mc-lede em {
   font-family: var(--mc-font-serif);
@@ -321,17 +291,16 @@
    would out-specify the class, so restate it here. */
 .mc-lede em.mc-serif { color: var(--mc-up); }
 .mc-lede b { font-weight: 400; color: var(--mc-text); }
-.mc-actions { display: flex; flex-wrap: wrap; gap: 12px; }
+.mc-actions { display: flex; flex-wrap: wrap; justify-content: center; align-items: center; gap: 12px; margin-top: clamp(22px, 3.4vh, 32px); }
 .mc-cta {
   display: inline-flex;
   align-items: center;
   gap: 10px;
-  margin-top: 20px;
   background: var(--mc-up);
   color: var(--mc-on-accent);
   font-weight: 600;
-  font-size: 15px;
-  padding: 16px 26px;
+  font-size: 17px;
+  padding: 17px 30px;
   border-radius: var(--mc-r-pill);
   transition: background .3s ease, color .3s ease, transform .35s cubic-bezier(.2, .8, .2, 1);
 }
@@ -344,12 +313,167 @@
   gap: 10px;
   border: 1px solid var(--mc-line);
   color: var(--mc-text);
-  font-size: 16px;
+  font-size: 17px;
   padding: 17px 30px;
   border-radius: var(--mc-r-pill);
   transition: border-color .3s ease, color .3s ease, transform .35s cubic-bezier(.2, .8, .2, 1);
 }
 .mc-cta-ghost:hover { border-color: var(--mc-up); color: var(--mc-up); transform: translateY(-2px); }
+
+/* The app's four modules under the hero CTAs: one data-rich default, three
+   AI/ML engines. Four separate frosted-glass panels: a translucent wash of the
+   page colour, a faint sheen from the top and a hairline highlight on the top
+   edge, so the product shot under the spotlight reads through them. */
+.mc-mods {
+  list-style: none;
+  margin: clamp(36px, 6vh, 60px) 0 0;
+  padding: 0;
+  width: 100%;
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 16px;
+  text-align: left;
+}
+.mc-mod {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  padding: 26px 26px 28px;
+  border: 1px solid rgb(255 255 255 / .09);
+  border-radius: var(--mc-r-md);
+  background:
+    linear-gradient(180deg, rgb(255 255 255 / .06), rgb(255 255 255 / .015) 60%),
+    rgb(var(--mc-bg-rgb) / .62);
+  box-shadow:
+    inset 0 1px 0 rgb(255 255 255 / .08),
+    0 18px 40px -24px rgb(0 0 0 / .6);
+  backdrop-filter: blur(20px) saturate(150%);
+  -webkit-backdrop-filter: blur(20px) saturate(150%);
+  transition: border-color .3s ease, background .3s ease, box-shadow .3s ease, transform .35s cubic-bezier(.2, .8, .2, 1);
+}
+/* Glow per module: the data-rich default in the site green, the three AI/ML
+   engines in blue (the same family as the app's Stock Intelligence pill).
+   --mc-glow-rgb drives the border, the inner tint and the halo. */
+.mc-mod.is-data { --mc-glow-rgb: var(--mc-up-rgb); }
+.mc-mod.is-ai { --mc-glow-rgb: 96 165 250; }
+.mc-mod.is-data,
+.mc-mod.is-ai {
+  border-color: rgb(var(--mc-glow-rgb) / .32);
+  background:
+    linear-gradient(180deg, rgb(var(--mc-glow-rgb) / .1), rgb(var(--mc-glow-rgb) / .02) 65%),
+    rgb(var(--mc-bg-rgb) / .62);
+  box-shadow:
+    inset 0 1px 0 rgb(var(--mc-glow-rgb) / .25),
+    0 0 24px -6px rgb(var(--mc-glow-rgb) / .35),
+    0 18px 40px -24px rgb(0 0 0 / .6);
+}
+.mc-mod.is-data:hover,
+.mc-mod.is-ai:hover {
+  transform: translateY(-3px);
+  border-color: rgb(var(--mc-glow-rgb) / .6);
+  background:
+    linear-gradient(180deg, rgb(var(--mc-glow-rgb) / .16), rgb(var(--mc-glow-rgb) / .03) 65%),
+    rgb(var(--mc-bg-rgb) / .66);
+  box-shadow:
+    inset 0 1px 0 rgb(var(--mc-glow-rgb) / .35),
+    0 0 36px -4px rgb(var(--mc-glow-rgb) / .5),
+    0 18px 40px -24px rgb(0 0 0 / .6);
+}
+.mc-mod-name {
+  display: block;
+  margin-top: 0;
+  font-size: 25px;
+  font-weight: 600;
+  letter-spacing: -.015em;
+  color: var(--mc-text);
+}
+.mc-mod-line {
+  margin: 10px 0 0;
+  font-size: 17px;
+  line-height: 1.55;
+  color: var(--mc-text-muted);
+}
+/* Tablet: two-up. Phone: one column, type stepped down a notch so each card
+   stays a quick read rather than a wall of text. */
+@media (max-width: 1024px) {
+  .mc-mods { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px; }
+}
+@media (max-width: 560px) {
+  .mc-mods { grid-template-columns: minmax(0, 1fr); gap: 10px; }
+  .mc-mod { padding: 20px 20px 22px; }
+  .mc-mod-name { font-size: 22px; }
+  .mc-mod-line { font-size: 16px; line-height: 1.5; }
+}
+
+/* Light (white) landing page - see data-theme on .mc-page in app/page.tsx. */
+[data-theme="light"] .mc-dash,
+[data-theme="light"] .mc-veil { display: none; }
+/* Money Flow yellow is unreadable on white; a deeper gold of the same hue. */
+[data-theme="light"] .mc-lede { color: #9a7413; }
+[data-theme="light"] .mc-mod.is-data,
+[data-theme="light"] .mc-mod.is-ai {
+  border-color: rgb(var(--mc-glow-rgb) / .45);
+  background:
+    linear-gradient(180deg, rgb(var(--mc-glow-rgb) / .08), rgb(var(--mc-glow-rgb) / .02) 65%),
+    #fff;
+  box-shadow:
+    0 0 0 1px rgb(var(--mc-glow-rgb) / .06),
+    0 0 22px -8px rgb(var(--mc-glow-rgb) / .45),
+    0 12px 28px -18px rgb(20 30 40 / .25);
+}
+[data-theme="light"] .mc-mod.is-data:hover,
+[data-theme="light"] .mc-mod.is-ai:hover {
+  border-color: rgb(var(--mc-glow-rgb) / .7);
+  box-shadow:
+    0 0 0 1px rgb(var(--mc-glow-rgb) / .1),
+    0 0 30px -6px rgb(var(--mc-glow-rgb) / .55),
+    0 16px 32px -18px rgb(20 30 40 / .3);
+}
+
+/* ---- Back to top (components/home/BackToTop.tsx) ------------------ */
+/* A candlestick with an arrowhead wick. --mc-ttc is set per scroll frame:
+   deep red at the bottom of the page, the site green near the top. */
+.mc-totop {
+  --mc-ttc: var(--mc-up-rgb);
+  position: fixed;
+  right: clamp(16px, 2.4vw, 32px);
+  bottom: clamp(16px, 3vh, 32px);
+  z-index: 900;
+  display: grid;
+  place-items: center;
+  width: 60px;
+  height: 60px;
+  padding: 0;
+  border: 1.5px solid rgb(var(--mc-ttc) / .6);
+  border-radius: 50%;
+  background:
+    linear-gradient(180deg, rgb(var(--mc-ttc) / .14), rgb(var(--mc-ttc) / .04)),
+    rgb(var(--mc-bg-rgb) / .7);
+  box-shadow: 0 0 22px -6px rgb(var(--mc-ttc) / .55), 0 10px 24px -14px rgb(0 0 0 / .6);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  color: rgb(var(--mc-ttc));
+  cursor: pointer;
+  opacity: 0;
+  transform: translateY(14px);
+  pointer-events: none;
+  transition: opacity .3s ease, transform .35s cubic-bezier(.2, .8, .2, 1), border-color .2s linear, box-shadow .2s linear;
+}
+.mc-totop.is-shown { opacity: 1; transform: none; pointer-events: auto; }
+.mc-totop:hover { transform: translateY(-3px); box-shadow: 0 0 30px -4px rgb(var(--mc-ttc) / .7), 0 12px 26px -14px rgb(0 0 0 / .6); }
+.mc-totop:focus-visible { outline: 2px solid rgb(var(--mc-ttc)); outline-offset: 3px; }
+.mc-totop svg { width: 17px; height: 32px; fill: currentColor; }
+@media (max-width: 560px) {
+  .mc-totop { width: 50px; height: 50px; }
+  .mc-totop svg { width: 14px; height: 27px; }
+}
+
+/* Short laptop screens (1366x768 and the like): scale the headline by height
+   too, so the module row still lands inside the first screen. */
+@media (min-width: 861px) and (max-height: 860px) {
+  .mc-h1 { font-size: clamp(44px, min(7.2vw, 11vh), 104px); }
+  .mc-mods { margin-top: clamp(28px, 4vh, 44px); }
+}
 
 /* ---- Hero HUD ---------------------------------------------------- */
 /* --mc-hud-drop: how far the tape snapshot (and the scroll cue under it) sits
@@ -359,11 +483,9 @@
    The hero clips its overflow, so past roughly the hero's bottom padding
    (56-96px) the scroll cue starts to get cut off. */
 .mc-hud-wrap {
-  --mc-hud-drop: -40px !important;
-  flex: 0 1 470px;
-  min-width: 0;
-  position: relative;
-  top: var(--mc-hud-drop);
+  width: 100%;
+  margin-top: clamp(36px, 6vh, 64px);
+  text-align: left;
 }
 .mc-hud {
   border: 1px solid var(--mc-line);
@@ -395,7 +517,7 @@
 .mc-hud-head span:last-child { margin-left: auto; color: var(--mc-text-faint); }
 .mc-hud-grid {
   display: grid;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
+  grid-template-columns: repeat(4, minmax(0, 1fr));
   gap: 1px;
   background: var(--mc-line);
   font-family: var(--mc-font-mono);
@@ -1136,7 +1258,7 @@ svg.mc-spark { width: 100%; height: 100%; box-sizing: border-box; }
   text-transform: uppercase;
   color: var(--mc-up);
 }
-.mc-stat-n { margin-top: 8px; font-size: 14.5px; line-height: 1.55; color: var(--mc-text-muted); }
+.mc-stat-n { margin-top: 8px; font-size: 17px; line-height: 1.55; color: var(--mc-text-muted); }
 
 /* ---- Pricing ----------------------------------------------------- */
 .mc-pricing { position: relative; padding: clamp(70px, 12vh, 150px) var(--mc-gutter); }
@@ -1192,9 +1314,9 @@ svg.mc-spark { width: 100%; height: 100%; box-sizing: border-box; }
   line-height: 1;
 }
 .mc-plan-price span { font-family: var(--mc-font-mono); font-size: 12.5px; color: var(--mc-text-muted); }
-.mc-plan-blurb { font-size: 15.5px; line-height: 1.55; color: var(--mc-text-muted); }
+.mc-plan-blurb { font-size: 17px; line-height: 1.55; color: var(--mc-text-muted); }
 .mc-plan-feats { display: flex; flex-direction: column; gap: 9px; }
-.mc-plan-feat { display: flex; align-items: flex-start; gap: 10px; font-size: 14px; color: var(--mc-text-2); }
+.mc-plan-feat { display: flex; align-items: flex-start; gap: 10px; font-size: 16px; color: var(--mc-text-2); }
 .mc-plan-feat i {
   display: inline-flex;
   align-items: center;
@@ -1274,7 +1396,7 @@ svg.mc-spark { width: 100%; height: 100%; box-sizing: border-box; }
 /* Tablet / small laptop */
 @media (max-width: 1024px) {
   .mc-panel { top: 10vh; }
-  .mc-hud-wrap { flex: 1 1 100%; }
+  .mc-hud-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
   .mc-stack-head { align-items: flex-start; }
   .mc-stack-meta { align-items: flex-start; }
   /* The larger table type above is a desktop-width enhancement — at this
@@ -1305,8 +1427,6 @@ svg.mc-spark { width: 100%; height: 100%; box-sizing: border-box; }
      keeps its shadow, which is what makes the stack read as depth. */
   .mc-panel { margin-bottom: 14px; }
   .mc-hero { min-height: auto; padding-top: 120px; }
-  .mc-hero-grid { align-items: flex-start; }
-  .mc-hero-row { align-items: flex-start; }
   .mc-metrics { grid-template-columns: repeat(auto-fit, minmax(min(100%, 96px), 1fr)); }
   .mc-final h2 { max-width: 14ch; }
   .mc-loader-status { font-size: 10px; }
@@ -1368,4 +1488,4 @@ svg.mc-spark { width: 100%; height: 100%; box-sizing: border-box; }
   text-transform: uppercase;
   color: var(--mc-text-muted);
 }
-.mc-latest-title { font-size: 15.5px; line-height: 1.35; font-weight: 500; }
+.mc-latest-title { font-size: 17px; line-height: 1.35; font-weight: 500; }
