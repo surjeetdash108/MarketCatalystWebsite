@@ -2,6 +2,7 @@ import { sectionOfType } from "@/lib/blog/sections";
 import { getLivePostSummaries } from "@/lib/blog/posts";
 import { FEED_CACHE_CONTROL, postDate, siteUrl, xmlEscape } from "@/lib/seo/feeds";
 import { resolvePostSeoDescription } from "@/lib/seo/jsonld";
+import { postPath } from "@/lib/seo/shortened-posts";
 
 /**
  * RSS 2.0 feed of the latest 50 posts, at /feed.xml.
@@ -31,7 +32,7 @@ export async function GET() {
 
   const items = posts
     .map((post) => {
-      const link = `${base}/posts/${encodeURIComponent(post.slug)}`;
+      const link = `${base}${postPath(post.slug)}`;
       const description = resolvePostSeoDescription(post);
       return [
         "    <item>",

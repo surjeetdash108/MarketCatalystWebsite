@@ -87,6 +87,8 @@ export type IndexPost = Pick<
   /** Pre-computed on the server from the article body. */
   readMin?: number;
   heroPreview?: string;
+  /** The post's page, from lib/seo/shortened-posts.ts (the table stays out of this client bundle). */
+  path?: string;
 };
 
 /** A plain left-click we can handle in place; anything else (new tab, new window, download) is the browser's. */
@@ -313,7 +315,7 @@ export function BlogIndex({
     return base.filter((p) => !rx || testIn(fold(p.title), rx)).slice(0, 4);
   }, [sorted, reads, rx]);
 
-  const href = (p: IndexPost) => `/posts/${encodeURIComponent(p.slug)}`;
+  const href = (p: IndexPost) => p.path ?? `/posts/${encodeURIComponent(p.slug)}`;
 
   /* ── pager and section pills are links ─────────────────────────────────
      They used to be <button>s with no href, so a crawler saw no way past page

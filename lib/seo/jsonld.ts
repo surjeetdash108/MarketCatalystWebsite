@@ -1,6 +1,8 @@
 import type { Post } from "@/lib/blog/posts";
 import type { Faq } from "@/lib/faq/faqs";
 import curatedDescriptionsRaw from "./curated-descriptions.json";
+import { shortenTitle } from "./shorten";
+import { postPath, publicPostSlug, publicPostUrl } from "./shortened-posts";
 
 const curatedDescriptions: Record<string, string> = curatedDescriptionsRaw as Record<string, string>;
 
@@ -177,6 +179,28 @@ export function resolvePostSeoDescription(
   return summarizeForSeo(post.seo?.metaDescription || post.excerpt, maxChars);
 }
 
+/**
+ * The <title> of a post's page: its meta title, or its headline, cut to the 60
+ * characters search results show. The full headline stays in the <h1>, the
+ * link previews and the schema; only the tab/search title is shortened.
+ */
+export function resolvePostSeoTitle(post: { title: string; seo?: { metaTitle?: string | null } }): string {
+  return shortenTitle(post.seo?.metaTitle || post.title);
+}
+
+/** The byline when the console left the author blank, and what the board calls it. */
+const DESK_NAME = "MarketCatalyst Desk";
+
+/**
+ * Who wrote a post. The console records a free-text name ("Desk" or a person's);
+ * a person's name becomes a `Person` in the schema, the desk is the organisation.
+ */
+export function resolvePostAuthor(post: { author?: string | null }): { name: string; isPerson: boolean } {
+  const name = (post.author ?? "").trim();
+  if (!name || /^(the )?desk$/i.test(name)) return { name: DESK_NAME, isPerson: false };
+  return { name, isPerson: !/marketcatalyst/i.test(name) };
+}
+
 /** Zones that are reporting on events rather than teaching or opining. */
 const NEWS_TYPES = new Set(["news", "recap", "earnings"]);
 
@@ -186,11 +210,12 @@ const NEWS_TYPES = new Set(["news", "recap", "earnings"]);
  * own, so no two posts share one picture.
  */
 export function postOgImageUrl(slug: string): string {
-  return `${siteUrl()}/posts/${encodeURIComponent(slug)}/og`;
+  return `${siteUrl()}/posts/${encodeURIComponent(publicPostSlug(slug))}/og`;
 }
 
 export function buildArticleJsonLd(post: Post) {
-  const url = post.seo.canonicalUrl || `${siteUrl()}/posts/${post.slug}`;
+  const url = post.seo.canonicalUrl ? publicPostUrl(post.seo.canonicalUrl) : `${siteUrl()}${postPath(post.slug)}`;
+  const author = resolvePostAuthor(post);
   // Article rich results and Discover need an image on every article. This was
   // `undefined` for any post without a cover, i.e. all 270 of them in the audit.
   const image = post.seo.ogImageUrl || post.coverImageUrl || postOgImageUrl(post.slug);
@@ -214,11 +239,9 @@ export function buildArticleJsonLd(post: Post) {
       "@type": "WebPage",
       "@id": url,
     },
-    author: {
-      "@type": "Organization",
-      name: "MarketCatalyst",
-      url: siteUrl(),
-    },
+    author: author.isPerson
+      ? { "@type": "Person", name: author.name }
+      : { "@type": "Organization", name: "MarketCatalyst", url: siteUrl() },
     publisher: {
       "@type": "Organization",
       "@id": `${siteUrl()}/#organization`,
@@ -273,6 +296,123 @@ export function buildWebSiteJsonLd() {
     name: "MarketCatalyst",
     url,
     publisher: { "@id": `${url}/#organization` },
+  };
+}
+
+/** A page's place in the site, for the breadcrumb trail search results show. Paths are site-relative; the last item is the page itself. */
+export function buildBreadcrumbJsonLd(trail: { name: string; path: string }[]) {
+  return {
+    "@context": "https://schema.org",
+    "@type": "BreadcrumbList",
+    itemListElement: trail.map((item, i) => ({
+      "@type": "ListItem",
+      position: i + 1,
+      name: item.name,
+      item: `${siteUrl()}${item.path}`,
+    })),
+  };
+}
+
+/** /about: the company page, with the organisation it describes. */
+export function buildAboutPageJsonLd(description: string) {
+  const url = siteUrl();
+  return {
+    "@context": "https://schema.org",
+    "@type": "AboutPage",
+    "@id": `${url}/about#webpage`,
+    url: `${url}/about`,
+    name: "About MarketCatalyst",
+    description,
+    isPartOf: { "@id": `${url}/#website` },
+    about: { "@id": `${url}/#organization` },
+  };
+}
+
+/** /posts and its filtered/paged views: a list page whose items are the posts on it. */
+export function buildBlogCollectionJsonLd(opts: {
+  name: string;
+  description: string;
+  path: string;
+  posts: { slug: string; title: string }[];
+}) {
+  const url = siteUrl();
+  return {
+    "@context": "https://schema.org",
+    "@type": "CollectionPage",
+    "@id": `${url}${opts.path}#webpage`,
+    url: `${url}${opts.path}`,
+    name: opts.name,
+    description: opts.description,
+    isPartOf: { "@id": `${url}/#website` },
+    mainEntity: {
+      "@type": "ItemList",
+      itemListElement: opts.posts.map((post, i) => ({
+        "@type": "ListItem",
+        position: i + 1,
+        url: `${url}${postPath(post.slug)}`,
+        name: post.title,
+      })),
+    },
+  };
+}
+
+/**
+ * /features: the page, and the product it describes. The product carries its
+ * real price list as `offers`. It carries no `aggregateRating` or `review`
+ * because the site has none to show: inventing one is a structured-data policy
+ * violation, so add them here once genuine reviews exist.
+ */
+export function buildFeaturesJsonLd(opts: {
+  description: string;
+  plans: { name: string; price: string }[];
+}) {
+  const url = siteUrl();
+  return [
+    {
+      "@context": "https://schema.org",
+      "@type": "WebPage",
+      "@id": `${url}/features#webpage`,
+      url: `${url}/features`,
+      name: "MarketCatalyst features",
+      description: opts.description,
+      isPartOf: { "@id": `${url}/#website` },
+      about: { "@id": `${url}/features#software` },
+    },
+    {
+      "@context": "https://schema.org",
+      "@type": "SoftwareApplication",
+      "@id": `${url}/features#software`,
+      name: "MarketCatalyst",
+      url,
+      applicationCategory: "FinanceApplication",
+      applicationSubCategory: "Investment Research",
+      operatingSystem: "Web",
+      description: opts.description,
+      publisher: { "@id": `${url}/#organization` },
+      offers: opts.plans.map((plan) => ({
+        "@type": "Offer",
+        name: plan.name,
+        price: plan.price.replace(/[^0-9.]/g, "") || "0",
+        priceCurrency: "USD",
+        availability: "https://schema.org/InStock",
+        url: `${url}/#pricing`,
+      })),
+    },
+  ];
+}
+
+/** /features/<slug>: one feature's page. */
+export function buildFeatureDetailJsonLd(opts: { slug: string; title: string; description: string }) {
+  const url = siteUrl();
+  return {
+    "@context": "https://schema.org",
+    "@type": "WebPage",
+    "@id": `${url}/features/${opts.slug}#webpage`,
+    url: `${url}/features/${opts.slug}`,
+    name: `${opts.title} — MarketCatalyst features`,
+    description: opts.description,
+    isPartOf: { "@id": `${url}/#website` },
+    about: { "@id": `${url}/#organization` },
   };
 }
 

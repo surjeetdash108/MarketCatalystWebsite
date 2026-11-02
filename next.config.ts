@@ -1,6 +1,8 @@
 import path from "node:path";
 import type { NextConfig } from "next";
 import { DUPLICATE_POSTS } from "./lib/seo/duplicate-posts";
+import { LEGACY_POST_REDIRECTS } from "./lib/seo/legacy-posts";
+import { publicPostSlug, SHORTENED_POSTS } from "./lib/seo/shortened-posts";
 
 const siteUrl = process.env.NEXT_PUBLIC_SITE_URL;
 const siteHost = siteUrl ? new URL(siteUrl).host : undefined;
@@ -74,7 +76,20 @@ const nextConfig: NextConfig = {
       // why it exists are in lib/seo/duplicate-posts.ts.
       ...DUPLICATE_POSTS.map(([copy, original]) => ({
         source: `/posts/${copy}`,
-        destination: `/posts/${original}`,
+        destination: `/posts/${publicPostSlug(original)}`,
+        statusCode: 301 as const,
+      })),
+      // Posts whose stored slug made an over-long URL are published under a
+      // shorter one; the old address 301s to it. See lib/seo/shortened-posts.ts.
+      ...SHORTENED_POSTS.map(([stored, short]) => ({
+        source: `/posts/${stored}`,
+        destination: `/posts/${short}`,
+        statusCode: 301 as const,
+      })),
+      // Deleted or renamed posts; see lib/seo/legacy-posts.ts.
+      ...LEGACY_POST_REDIRECTS.map(([oldSlug, destination]) => ({
+        source: `/posts/${oldSlug}`,
+        destination,
         statusCode: 301 as const,
       })),
       // The blog moved from /blog to /posts. Done here, in one hop and as a real

@@ -1,6 +1,7 @@
 import type { MetadataRoute } from "next";
 import { getPublishedPosts, type Post } from "@/lib/blog/posts";
 import { FEATURE_VIEWS } from "@/lib/features/features";
+import { postPath } from "@/lib/seo/shortened-posts";
 import { DUPLICATE_POSTS } from "@/lib/seo/duplicate-posts";
 import { jobs } from "@/content/careers";
 
@@ -81,7 +82,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   }));
 
   const postRoutes: MetadataRoute.Sitemap = posts.map((post) => ({
-    url: `${base}/posts/${post.slug}`,
+    url: `${base}${postPath(post.slug)}`,
     lastModified: post.updatedAt,
     changeFrequency: "weekly",
     priority: 0.6,

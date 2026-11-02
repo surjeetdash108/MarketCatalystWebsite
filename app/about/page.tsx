@@ -4,12 +4,15 @@ import { APP_SIGNUP_URL } from "@/components/marketing/app-url";
 import { ReaderShell } from "@/components/chrome/ReaderShell";
 import { MarketChart } from "@/components/chrome/MarketChart";
 import { pageMetadata } from "@/lib/seo/og";
+import { buildAboutPageJsonLd, buildBreadcrumbJsonLd, serializeJsonLd } from "@/lib/seo/jsonld";
 import "../pages.css";
+
+const DESCRIPTION =
+  "MarketCatalyst is a market-intelligence platform: institutional-grade data, attributed to source, with the interpretation delivered alongside it.";
 
 export const metadata: Metadata = pageMetadata({
   title: "About — MarketCatalyst",
-  description:
-    "MarketCatalyst is a market-intelligence platform: institutional-grade data, attributed to source, with the interpretation delivered alongside it.",
+  description: DESCRIPTION,
   path: "/about",
 });
 
@@ -103,6 +106,18 @@ const SCOPE: ReadonlyArray<{ b: string; p: string }> = [
 export default function AboutPage() {
   return (
     <ReaderShell active="about">
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{
+          __html: serializeJsonLd([
+            buildAboutPageJsonLd(DESCRIPTION),
+            buildBreadcrumbJsonLd([
+              { name: "MarketCatalyst", path: "/" },
+              { name: "About", path: "/about" },
+            ]),
+          ]),
+        }}
+      />
       <main>
         {/* ── Positioning ───────────────────────────────────────────── */}
         <section className="mcp-hero">

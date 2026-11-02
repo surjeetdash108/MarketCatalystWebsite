@@ -1,5 +1,7 @@
 import { NextResponse, type NextRequest } from "next/server";
 import { SESSION_COOKIE_NAME } from "@/lib/auth/constants";
+import { resolveLegacyPost } from "@/lib/seo/legacy-posts";
+import { publicPostSlug } from "@/lib/seo/shortened-posts";
 
 // Next.js middleware runs on the Edge runtime, which cannot load the
 // Firebase Admin SDK (it needs Node's net/tls/crypto). So this layer can
@@ -102,10 +104,15 @@ export function middleware(request: NextRequest) {
      `permanentRedirect()` inside a rendered page comes back as 200 with a
      <meta http-equiv="refresh">, which browsers honour but search engines treat
      as a weak signal and which passes no link equity cleanly. Middleware issues
-     a real 308 before anything renders. */
+     a real 308 before anything renders.
+
+     A slug that has since been deleted or renamed (lib/seo/legacy-posts.ts) goes
+     straight to its replacement; sending it to /posts/<slug> first made it a
+     redirect into a 404 or into a second redirect. */
   if (pathname === "/posts/view") {
     const slug = request.nextUrl.searchParams.get("slug");
-    const to = new URL(slug ? `/posts/${encodeURIComponent(slug)}` : "/posts", request.url);
+    const moved = slug ? resolveLegacyPost(slug) : undefined;
+    const to = new URL(moved ?? (slug ? `/posts/${encodeURIComponent(publicPostSlug(slug))}` : "/posts"), request.url);
     return NextResponse.redirect(to, 308);
   }
 
