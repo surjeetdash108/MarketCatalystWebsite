@@ -1,6 +1,6 @@
 import { sectionOfType } from "@/lib/blog/sections";
 import { getLivePostSummaries } from "@/lib/blog/posts";
-import { FEED_CACHE_CONTROL, postDate, siteUrl, xmlEscape } from "@/lib/seo/feeds";
+import { FEED_CACHE_CONTROL, postDate, siteUrl, WEBSUB_HUB_URL, xmlEscape } from "@/lib/seo/feeds";
 import { resolvePostSeoDescription } from "@/lib/seo/jsonld";
 
 /**
@@ -54,6 +54,7 @@ export async function GET() {
     <title>MarketCatalyst</title>
     <link>${xmlEscape(base)}/posts</link>
     <atom:link href="${xmlEscape(base)}/feed.xml" rel="self" type="application/rss+xml" />
+    <atom:link href="${xmlEscape(WEBSUB_HUB_URL)}" rel="hub" />
     <description>Daily recaps, research and guides to how the market actually works.</description>
     <language>en-us</language>
     <lastBuildDate>${newest.toUTCString()}</lastBuildDate>
