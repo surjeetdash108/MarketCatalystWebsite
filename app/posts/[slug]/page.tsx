@@ -16,7 +16,17 @@ import "../../iq.css";
 // The article's own baseline. Every rule is :where()-wrapped, so an uploaded
 // design still wins — this only covers what that design does not mention.
 import "../blog-doc.css";
-import { buildArticleJsonLd, postOgImageUrl, resolvePostSeoDescription } from "@/lib/seo/jsonld";
+import { AuthorBox } from "@/components/blog/AuthorBox";
+import { postsHref, sectionOfType } from "@/lib/blog/sections";
+import {
+  buildArticleJsonLd,
+  buildBreadcrumbJsonLd,
+  postOgImageUrl,
+  resolvePostSeoDescription,
+  resolvePostSeoTitle,
+  serializeJsonLd,
+} from "@/lib/seo/jsonld";
+import { postPath, publicPostSlug, publicPostUrl } from "@/lib/seo/shortened-posts";
 
 /**
  * Statically generated, one page per PUBLISHED post, revalidated on a timer.
@@ -40,7 +50,7 @@ export const dynamic = "force-dynamic";
 export async function generateStaticParams() {
   try {
     const posts = await getPublishedPosts();
-    return posts.map((p) => ({ slug: p.slug }));
+    return posts.map((p) => ({ slug: publicPostSlug(p.slug) }));
   } catch {
     // A build without Firestore credentials must not fail the whole build —
     // dynamicParams renders every post on demand instead.
@@ -57,9 +67,11 @@ export async function generateMetadata({
   const post = await getPublishedPostBySlug(slug);
   if (!post) return {};
 
+  // The headline in full for link previews; the <title> is cut to what search
+  // results show (the audit flagged 296 titles over 60 characters).
   const title = post.seo.metaTitle || post.title;
   const description = resolvePostSeoDescription(post);
-  const canonical = post.seo.canonicalUrl || `/posts/${post.slug}`;
+  const canonical = post.seo.canonicalUrl ? publicPostUrl(post.seo.canonicalUrl) : postPath(post.slug);
   // A post's own image if it has one; otherwise a card generated from its
   // headline, so posts no longer all share /og-image.jpg in link previews.
   const image = post.seo.ogImageUrl || post.coverImageUrl || undefined;
@@ -71,7 +83,7 @@ export async function generateMetadata({
   };
 
   return {
-    title,
+    title: resolvePostSeoTitle(post),
     description,
     alternates: { canonical },
     openGraph: {
@@ -128,7 +140,16 @@ export default async function PostPage({
   const post = await getPublishedPostBySlug(slug);
   if (!post) notFound();
 
-  const jsonLd = buildArticleJsonLd(post);
+  const section = sectionOfType(post.type);
+  const jsonLd = [
+    buildArticleJsonLd(post),
+    buildBreadcrumbJsonLd([
+      { name: "MarketCatalyst", path: "/" },
+      { name: "Blog", path: "/posts" },
+      { name: section, path: postsHref(section, 1) },
+      { name: post.title, path: postPath(post.slug) },
+    ]),
+  ];
   /* The design THIS post publishes with. Not the shared theme any more: that is
      one document the newest upload overwrites, so resolving every article
      through it meant publishing a second post silently restyled the first.
@@ -163,7 +184,7 @@ export default async function PostPage({
       <div className="post-html-doc-page" style={{ background: "#ffffff", minHeight: "100vh", width: "100%" }}>
         <script
           type="application/ld+json"
-          dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+          dangerouslySetInnerHTML={{ __html: serializeJsonLd(jsonLd) }}
         />
         {/* Both strips share .post-doc-back's measure so the link sits at the
             same left edge as the picture under it, rather than each carrying
@@ -193,6 +214,8 @@ export default async function PostPage({
 
         <PostHtmlDoc html={post.content} design={design} keepFirstH1={hasOwnHeadline} />
 
+        <AuthorBox author={post.author} />
+
         {/* Links to neighbouring posts, so no article is a dead end for readers
             or crawlers. Suspense so a cold post-list read never delays the
             article itself. */}
@@ -212,7 +235,7 @@ export default async function PostPage({
     <div className="flex flex-col gap-4" style={{ maxWidth: 1080, margin: "0 auto", padding: "28px 24px 80px" }}>
       <script
         type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+        dangerouslySetInnerHTML={{ __html: serializeJsonLd(jsonLd) }}
       />
 
       <div style={{ marginBottom: "16px" }}>
@@ -292,6 +315,8 @@ export default async function PostPage({
           </div>
         )}
       </article>
+
+      <AuthorBox author={post.author} />
 
       <Suspense fallback={null}>
         <RelatedPosts slug={post.slug} />

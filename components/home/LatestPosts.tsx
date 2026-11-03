@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { sectionOfType } from "@/lib/blog/sections";
 import type { PostSummary } from "@/lib/blog/posts";
+import { postPath } from "@/lib/seo/shortened-posts";
 
 /**
  * "Latest posts" on the landing page: plain server-rendered links to the newest
@@ -30,7 +31,7 @@ export function LatestPosts({ posts }: { posts: PostSummary[] }) {
         <ul className="mc-latest-list">
           {posts.map((p) => (
             <li key={p.id}>
-              <Link className="mc-latest-link" href={`/posts/${encodeURIComponent(p.slug)}`}>
+              <Link className="mc-latest-link" href={postPath(p.slug)}>
                 <span className="mc-latest-kind">
                   {sectionOfType(p.type)}
                   {" · "}

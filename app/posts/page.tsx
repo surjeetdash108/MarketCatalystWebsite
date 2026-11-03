@@ -1,6 +1,8 @@
 import type { Metadata } from "next";
 import { getLivePostSummaries, getPublishedPostListings } from "@/lib/blog/posts";
 import { DUPLICATE_POSTS } from "@/lib/seo/duplicate-posts";
+import { buildBlogCollectionJsonLd, buildBreadcrumbJsonLd, serializeJsonLd } from "@/lib/seo/jsonld";
+import { postPath } from "@/lib/seo/shortened-posts";
 import { BlogIndex, type IndexPost } from "@/components/blog/BlogIndex";
 import { getWeeklyReads } from "@/lib/blog/stats";
 import {
@@ -50,23 +52,28 @@ export async function generateMetadata({ searchParams }: { searchParams: SearchP
   // The canonical needs the real page count, which needs the archive size.
   // Same cached read the sitemap uses, so this does not add a Firestore query.
   let page = requested;
+  let pageCount = 1;
   if (page > 1) {
     try {
       const all = await getLivePostSummaries();
       const total = section === "all" ? all.length : all.filter((p) => sectionOfType(p.type) === section).length;
-      page = Math.min(page, Math.max(1, Math.ceil(total / PER_PAGE)));
+      pageCount = Math.max(1, Math.ceil(total / PER_PAGE));
+      page = Math.min(page, pageCount);
     } catch {
       page = 1;
     }
   }
 
   const label = section === "all" ? "Blog" : `${section} · Blog`;
+  const intro =
+    section === "all"
+      ? "Daily recaps, research and guides to how the market actually works."
+      : `${section} posts from MarketCatalyst: daily recaps, research and guides to how the market actually works.`;
   return pageMetadata({
     title: `${label}${page > 1 ? ` · Page ${page}` : ""} · MarketCatalyst`,
-    description:
-      section === "all"
-        ? "Daily recaps, research and guides to how the market actually works."
-        : `${section} posts from MarketCatalyst: daily recaps, research and guides to how the market actually works.`,
+    // Page 2 onward say which page they are. All 60 pages of the archive shared
+    // one description, which the audit flags as a duplicate on every one of them.
+    description: page > 1 ? `${intro} Page ${page} of ${pageCount}.` : intro,
     path: postsHref(section, page),
   });
 }
@@ -127,6 +134,7 @@ export default async function PostsIndexPage({ searchParams }: { searchParams: S
     return {
       id: p.id,
       slug: p.slug,
+      path: postPath(p.slug),
       title: p.title,
       excerpt: p.excerpt,
       type: p.type,
@@ -146,6 +154,28 @@ export default async function PostsIndexPage({ searchParams }: { searchParams: S
   const inSection = section === "all" ? indexPosts.length : indexPosts.filter((p) => sectionOfType(p.type) === section).length;
   const initialPage = Math.min(requested, Math.max(1, Math.ceil(inSection / PER_PAGE)));
 
-  return <BlogIndex posts={indexPosts} reads={reads} initialSection={section} initialPage={initialPage} />;
+  // The posts this URL lists, newest first, as the page's ItemList.
+  const inView = section === "all" ? indexPosts : indexPosts.filter((p) => sectionOfType(p.type) === section);
+  const onPage = inView.slice((initialPage - 1) * PER_PAGE, initialPage * PER_PAGE);
+  const jsonLd = [
+    buildBlogCollectionJsonLd({
+      name: section === "all" ? "MarketCatalyst blog" : `${section} · MarketCatalyst blog`,
+      description: "Daily recaps, research and guides to how the market actually works.",
+      path: postsHref(section, initialPage),
+      posts: onPage,
+    }),
+    buildBreadcrumbJsonLd([
+      { name: "MarketCatalyst", path: "/" },
+      { name: "Blog", path: "/posts" },
+      ...(section === "all" ? [] : [{ name: section, path: postsHref(section, 1) }]),
+    ]),
+  ];
+
+  return (
+    <>
+      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: serializeJsonLd(jsonLd) }} />
+      <BlogIndex posts={indexPosts} reads={reads} initialSection={section} initialPage={initialPage} />
+    </>
+  );
 }
 

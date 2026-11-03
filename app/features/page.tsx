@@ -3,14 +3,17 @@ import { ReaderShell } from "@/components/chrome/ReaderShell";
 import { MarketChart } from "@/components/chrome/MarketChart";
 import { FeatureBoard } from "@/components/features/FeatureBoard";
 import { AI_FEATURES, WORKSPACE_COUNT, WORKSPACE_FEATURES } from "@/lib/features/features";
+import { plans } from "@/components/home/data";
 import { pageMetadata } from "@/lib/seo/og";
+import { buildBreadcrumbJsonLd, buildFeaturesJsonLd, serializeJsonLd } from "@/lib/seo/jsonld";
 import "../pages.css";
 import "../features.css";
 
+const DESCRIPTION = `${WORKSPACE_COUNT} research workspaces plus the AI layer that reads every one of them — markets, research, recaps and your own portfolio, each explained.`;
+
 export const metadata: Metadata = pageMetadata({
   title: "Features — MarketCatalyst",
-  description:
-    `${WORKSPACE_COUNT} research workspaces plus the AI layer that reads every one of them — markets, research, recaps and your own portfolio, each explained.`,
+  description: DESCRIPTION,
   path: "/features",
 });
 
@@ -19,6 +22,18 @@ export const metadata: Metadata = pageMetadata({
 export default function FeaturesIndexPage() {
   return (
     <ReaderShell active="features">
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{
+          __html: serializeJsonLd([
+            ...buildFeaturesJsonLd({ description: DESCRIPTION, plans }),
+            buildBreadcrumbJsonLd([
+              { name: "MarketCatalyst", path: "/" },
+              { name: "Features", path: "/features" },
+            ]),
+          ]),
+        }}
+      />
       <main>
         {/* ── Masthead ──────────────────────────────────────────────── */}
         <section className="mcp-hero">

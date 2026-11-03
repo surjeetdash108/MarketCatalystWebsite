@@ -1,6 +1,7 @@
 import { ImageResponse } from "next/og";
 import { getCachedPostSummaries, getPublishedPostBySlug } from "@/lib/blog/posts";
 import { sectionOfType } from "@/lib/blog/sections";
+import { storedPostSlug } from "@/lib/seo/shortened-posts";
 
 /**
  * A 1200x630 link-preview card for one post: section, headline, date, brand.
@@ -38,7 +39,8 @@ export async function GET(_req: Request, { params }: { params: Promise<{ slug: s
   // post going out, so fall back to a direct read rather than 404 its preview.
   let post: { title: string; type: string; publishedAt: string | null; createdAt: string } | undefined;
   try {
-    post = (await getCachedPostSummaries()).find((p) => p.slug === slug);
+    const stored = storedPostSlug(slug);
+    post = (await getCachedPostSummaries()).find((p) => p.slug === stored);
     post ??= (await getPublishedPostBySlug(slug)) ?? undefined;
   } catch {
     post = undefined;

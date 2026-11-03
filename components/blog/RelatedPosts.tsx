@@ -2,6 +2,7 @@ import Link from "next/link";
 import { getLivePostSummaries, type PostSummary } from "@/lib/blog/posts";
 import { pickRelatedPosts } from "@/lib/blog/related";
 import { sectionOfType } from "@/lib/blog/sections";
+import { postPath } from "@/lib/seo/shortened-posts";
 
 /**
  * "Keep reading": real links to neighbouring posts at the foot of an article.
@@ -28,7 +29,7 @@ export async function RelatedPosts({ slug }: { slug: string }) {
       <ul className="post-related-list">
         {related.map((p) => (
           <li key={p.id}>
-            <Link className="post-related-link" href={`/posts/${encodeURIComponent(p.slug)}`}>
+            <Link className="post-related-link" href={postPath(p.slug)}>
               <span className="post-related-kind">
                 {sectionOfType(p.type)}
                 {" · "}

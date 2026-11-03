@@ -1359,3 +1359,59 @@
   line-height: 1.35;
   font-weight: 600;
 }
+
+/* "Written by" box under an article (components/blog/AuthorBox.tsx). Same
+   measure and tokens as .post-related, which follows it. */
+.post-author {
+  max-width: 1180px;
+  margin: 40px auto 0;
+  padding: 24px clamp(16px, 4vw, 32px) 0;
+  border-top: 1px solid var(--mc-line, rgba(0, 0, 0, 0.1));
+  display: flex;
+  align-items: flex-start;
+  gap: 16px;
+}
+.post-author + .post-related {
+  margin-top: 24px;
+}
+.post-author-avatar {
+  flex: none;
+  display: grid;
+  place-items: center;
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  border: 1px solid var(--mc-line, rgba(0, 0, 0, 0.1));
+  background: var(--mc-bg-card, transparent);
+  font-family: var(--mc-font-mono, ui-monospace, monospace);
+  font-size: 13px;
+  letter-spacing: 0.04em;
+  color: var(--mc-text, #12151a);
+}
+.post-author-body p {
+  margin: 0;
+}
+.post-author-k {
+  font-family: var(--mc-font-mono, ui-monospace, monospace);
+  font-size: 10.5px;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--mc-text-muted, #5b6470);
+}
+.post-author-name {
+  margin-top: 2px !important;
+  font-size: 16px;
+  font-weight: 600;
+  color: var(--mc-text, #12151a);
+}
+.post-author-bio {
+  margin-top: 6px !important;
+  max-width: 62ch;
+  font-size: 13.5px;
+  line-height: 1.5;
+  color: var(--mc-text-muted, #5b6470);
+}
+.post-author-bio a {
+  color: inherit;
+  text-decoration: underline;
+}

@@ -1,5 +1,6 @@
 import { getLivePostSummaries } from "@/lib/blog/posts";
 import { FEED_CACHE_CONTROL, postDate, siteUrl, xmlEscape } from "@/lib/seo/feeds";
+import { postPath } from "@/lib/seo/shortened-posts";
 
 /**
  * Google News sitemap at /news-sitemap.xml: posts published in the last 48
@@ -30,7 +31,7 @@ export async function GET() {
     .map((post) =>
       [
         "  <url>",
-        `    <loc>${xmlEscape(`${base}/posts/${encodeURIComponent(post.slug)}`)}</loc>`,
+        `    <loc>${xmlEscape(`${base}${postPath(post.slug)}`)}</loc>`,
         "    <news:news>",
         "      <news:publication>",
         "        <news:name>MarketCatalyst</news:name>",

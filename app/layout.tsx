@@ -67,20 +67,10 @@ const schemaOrgJsonLd = {
       },
       "inLanguage": "en-US",
     },
-    {
-      "@type": "SoftwareApplication",
-      "@id": "https://marketcatalyst.ai/#software",
-      "name": "MarketCatalyst",
-      "url": "https://marketcatalyst.ai",
-      "applicationCategory": "FinanceApplication",
-      "applicationSubCategory": "Investment Research",
-      "operatingSystem": "Web",
-      "description":
-        "AI-powered market intelligence platform providing market research, market data, news, earnings analysis, analyst actions, macroeconomic data, screeners, ownership data, ETF research, market recaps, portfolios and watchlists.",
-      "publisher": {
-        "@id": "https://marketcatalyst.ai/#organization",
-      },
-    },
+    // No SoftwareApplication here. It was on every page, and Google requires
+    // `offers` plus `aggregateRating` or `review` on that type, so all 39
+    // audited pages errored. The product is described on /features, with its
+    // price list (buildFeaturesJsonLd in lib/seo/jsonld.ts).
   ],
 };
 

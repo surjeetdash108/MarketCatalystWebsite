@@ -5,6 +5,7 @@ import { ReaderShell } from "@/components/chrome/ReaderShell";
 import { APP_SIGNUP_URL } from "@/components/marketing/app-url";
 import { FEATURE_VIEWS, getFeatureView, prevNextFeature } from "@/lib/features/features";
 import { pageMetadata } from "@/lib/seo/og";
+import { buildBreadcrumbJsonLd, buildFeatureDetailJsonLd, serializeJsonLd } from "@/lib/seo/jsonld";
 import "../../pages.css";
 import "../../features.css";
 
@@ -42,6 +43,19 @@ export default async function FeatureDetailPage({
 
   return (
     <ReaderShell active="features">
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{
+          __html: serializeJsonLd([
+            buildFeatureDetailJsonLd({ slug: f.slug, title: f.title, description: f.blurb }),
+            buildBreadcrumbJsonLd([
+              { name: "MarketCatalyst", path: "/" },
+              { name: "Features", path: "/features" },
+              { name: f.title, path: `/features/${f.slug}` },
+            ]),
+          ]),
+        }}
+      />
       <main className="mc-article">
         <section className="mcf-detail-sec">
           <div className="mcp-inner">

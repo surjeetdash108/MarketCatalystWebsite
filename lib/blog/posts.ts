@@ -3,6 +3,7 @@ import { FieldValue, Timestamp } from "firebase-admin/firestore";
 import { adminFirestore } from "@/lib/firebase/admin";
 import { ensureUniqueSlug, releaseSlug } from "./slug";
 import { DUPLICATE_POSTS } from "@/lib/seo/duplicate-posts";
+import { storedPostSlug } from "@/lib/seo/shortened-posts";
 import type { CreatePostInput, UpdatePostInput } from "@/lib/validation/blog";
 
 export type PostStatus = "draft" | "published";
@@ -272,7 +273,8 @@ export async function getLivePostSummaries(): Promise<PostSummary[]> {
 export async function getPublishedPostBySlug(slug: string): Promise<Post | null> {
   const snap = await adminFirestore
     .collection(POSTS)
-    .where("slug", "==", slug)
+    // The slug in the URL may be a shortened one (lib/seo/shortened-posts.ts).
+    .where("slug", "==", storedPostSlug(slug))
     .where("status", "==", "published")
     .limit(1)
     .get();
