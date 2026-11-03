@@ -25,6 +25,14 @@ export function postDate(post: PostSummary): Date {
 }
 
 /**
+ * The WebSub hub /feed.xml names (`<atom:link rel="hub">`) — the public one
+ * Google runs. The backend's websub-ping job (MarketCatalystBackEnd,
+ * src/sync/websub-ping.job.ts) POSTs to the same hub when a post goes live, so
+ * change them together.
+ */
+export const WEBSUB_HUB_URL = "https://pubsubhubbub.appspot.com/";
+
+/**
  * Headers for a feed response. Public and cacheable at the CDN for five minutes,
  * which is as stale as the post cache behind it already is, with a long
  * stale-while-revalidate so a crawler never waits on a cold instance.

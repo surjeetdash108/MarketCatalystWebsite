@@ -52,30 +52,34 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     console.error("sitemap: failed to load posts, emitting static routes only", err);
   }
 
-  // Authored pages change when the site is deployed (see BUILD_TIME in
-  // next.config.ts); the blog index changes whenever a post does.
-  const deployed = process.env.BUILD_TIME ? new Date(process.env.BUILD_TIME) : undefined;
+  // The blog index changes whenever a post does, so it carries a real date.
+  //
+  // The authored pages (home, about, features, legal...) carry NONE. They used
+  // to share one lastmod, the deploy time, so all of them claimed to change on
+  // every deploy whether or not they had. Google reads lastmod as the date of
+  // the last significant change, and one that moves without a content change
+  // teaches it to ignore the field, which costs the posts, where it does mean
+  // something. Omitting it is the honest answer until a page has a date of its own.
   const newestPost = posts.reduce<Date | undefined>((latest, post) => {
     const at = new Date(post.updatedAt);
     return !latest || at > latest ? at : latest;
   }, undefined);
 
   const staticRoutes: MetadataRoute.Sitemap = [
-    { url: base, lastModified: deployed, changeFrequency: "monthly", priority: 1 },
-    { url: `${base}/posts`, lastModified: newestPost ?? deployed, changeFrequency: "daily", priority: 0.8 },
-    { url: `${base}/features`, lastModified: deployed, changeFrequency: "monthly", priority: 0.7 },
-    { url: `${base}/about`, lastModified: deployed, changeFrequency: "monthly", priority: 0.6 },
-    { url: `${base}/faqs`, lastModified: deployed, changeFrequency: "monthly", priority: 0.5 },
-    { url: `${base}/contact`, lastModified: deployed, changeFrequency: "yearly", priority: 0.3 },
-    { url: `${base}/legal/terms`, lastModified: deployed, changeFrequency: "yearly", priority: 0.2 },
-    { url: `${base}/legal/privacy`, lastModified: deployed, changeFrequency: "yearly", priority: 0.2 },
+    { url: base, changeFrequency: "monthly", priority: 1 },
+    { url: `${base}/posts`, lastModified: newestPost, changeFrequency: "daily", priority: 0.8 },
+    { url: `${base}/features`, changeFrequency: "monthly", priority: 0.7 },
+    { url: `${base}/about`, changeFrequency: "monthly", priority: 0.6 },
+    { url: `${base}/faqs`, changeFrequency: "monthly", priority: 0.5 },
+    { url: `${base}/contact`, changeFrequency: "yearly", priority: 0.3 },
+    { url: `${base}/legal/terms`, changeFrequency: "yearly", priority: 0.2 },
+    { url: `${base}/legal/privacy`, changeFrequency: "yearly", priority: 0.2 },
   ];
 
   // Same list /features/[slug] builds its pages from, so a new feature is
   // listed here as soon as it exists.
   const featureRoutes: MetadataRoute.Sitemap = FEATURE_VIEWS.map((f) => ({
     url: `${base}/features/${f.slug}`,
-    lastModified: deployed,
     changeFrequency: "monthly",
     priority: 0.6,
   }));
