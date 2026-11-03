@@ -138,23 +138,23 @@
   align-items: center;
   gap: 10px;
   color: var(--mc-text);
-  font-size: 17px;
+  font-size: 24px;
   font-weight: 600;
   letter-spacing: -.02em;
   flex-shrink: 0;
 }
 .mc-brand:hover { color: var(--mc-text); }
 .mc-brand, .mc-burger { position: relative; z-index: 2; }
-.mc-brand-logo { display: block; height: 30px; width: auto; }
+.mc-brand-logo { display: block; height: 40px; width: auto; }
 .mc-brand-word-accent { color: var(--mc-up); }
 .mc-nav-links {
   display: flex;
   flex-wrap: wrap;
   align-items: center;
   justify-content: flex-end;
-  gap: clamp(10px, 1.5vw, 22px);
+  gap: clamp(12px, 1.8vw, 28px);
   font-family: var(--mc-font-mono);
-  font-size: 13px;
+  font-size: 16px;
   letter-spacing: .09em;
   text-transform: uppercase;
 }
@@ -164,7 +164,7 @@
 .mc-navlink-ghost {
   color: var(--mc-text);
   border: 1px solid var(--mc-line);
-  padding: 9px 16px;
+  padding: 11px 20px;
   border-radius: var(--mc-r-pill);
   letter-spacing: .06em;
   transition: color .25s ease, border-color .25s ease;
@@ -173,7 +173,7 @@
 .mc-navlink-solid {
   color: var(--mc-on-accent);
   background: var(--mc-up);
-  padding: 10px 18px;
+  padding: 12px 22px;
   border-radius: var(--mc-r-pill);
   font-weight: 600;
   letter-spacing: .06em;
@@ -237,7 +237,7 @@
 .mc-footer-tag {
   margin-top: 14px;
   max-width: 30ch;
-  font-size: 14px;
+  font-size: 18px;
   line-height: 1.6;
   color: var(--mc-text-muted);
 }
@@ -256,9 +256,9 @@
   color: var(--mc-text-faint);
 }
 .mc-footer-links { display: flex; flex-direction: column; gap: 10px; margin-top: 15px; }
-.mc-footer-links a { font-size: 14px; color: var(--mc-text-4); transition: color .25s ease; }
+.mc-footer-links a { font-size: 18px; color: var(--mc-text-4); transition: color .25s ease; }
 .mc-footer-links a:hover { color: var(--mc-up); }
-.mc-footer-note { margin: 15px 0 12px; font-size: 14px; line-height: 1.6; color: var(--mc-text-muted); }
+.mc-footer-note { margin: 15px 0 12px; font-size: 18px; line-height: 1.6; color: var(--mc-text-muted); }
 .mc-footer-badges {
   max-width: var(--mc-maxw);
   margin: clamp(30px, 5vh, 46px) auto 0;
@@ -321,6 +321,14 @@
 /* ============================================================
    RESPONSIVE — the drawer
    ============================================================ */
+
+/* Just above the drawer breakpoint the full-size inline links no longer fit
+   on one line, so step them back down until the burger takes over. */
+@media (min-width: 861px) and (max-width: 959px) {
+  .mc-nav-links { gap: 12px; font-size: 13.5px; }
+  .mc-navlink-ghost { padding: 9px 16px; }
+  .mc-navlink-solid { padding: 10px 18px; }
+}
 
 @media (max-width: 860px) {
   .mc-nav { gap: 12px; }

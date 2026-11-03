@@ -7,6 +7,7 @@ import dynamicImport from "next/dynamic";
 import { Coverage, FinalCta } from "@/components/home/Sections";
 import { Tape } from "@/components/home/Tape";
 import { SiteFooter } from "@/components/chrome/SiteFooter";
+import { BackToTop } from "@/components/home/BackToTop";
 
 const WorkspaceStack = dynamicImport(
   () => import("@/components/home/Sections").then((m) => m.WorkspaceStack),
@@ -81,6 +82,7 @@ export default async function Home() {
       <LatestPosts posts={latest} />
       <FinalCta />
       <SiteFooter />
+      <BackToTop />
     </div>
   );
 }
