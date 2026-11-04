@@ -259,6 +259,20 @@
 .mc-footer-links a { font-size: 14px; color: var(--mc-text-4); transition: color .25s ease; }
 .mc-footer-links a:hover { color: var(--mc-up); }
 .mc-footer-note { margin: 15px 0 12px; font-size: 14px; line-height: 1.6; color: var(--mc-text-muted); }
+/* Same 34px hairline circle as .mc-theme, so the footer and nav icons read as one set. */
+.mc-footer-social { display: flex; gap: 10px; margin-top: 18px; }
+.mc-footer-social a {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 34px;
+  height: 34px;
+  border: 1px solid var(--mc-line);
+  border-radius: var(--mc-r-pill);
+  color: var(--mc-text-muted);
+  transition: color .25s ease, border-color .25s ease;
+}
+.mc-footer-social a:hover { border-color: var(--mc-up); color: var(--mc-up); }
 .mc-footer-badges {
   max-width: var(--mc-maxw);
   margin: clamp(30px, 5vh, 46px) auto 0;
