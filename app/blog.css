@@ -270,6 +270,8 @@ a.mcb-pill { display: inline-block; line-height: normal; text-decoration: none; 
 
 .mcb-tools { display: flex; align-items: center; gap: 6px; font-family: var(--mc-font-mono); font-size: 12px; }
 .mcb-pager { display: flex; align-items: center; gap: 6px; }
+/* The same pager under the list, so the next page is in reach without scrolling back up. */
+.mcb-pager-foot { display: flex; justify-content: center; margin-top: 22px; }
 .mcb-pgbtn {
   display: inline-flex;
   align-items: center;

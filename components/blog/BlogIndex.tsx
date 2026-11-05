@@ -325,12 +325,69 @@ export function BlogIndex({
      with replaceState, and only while there is no search running (the URL
      names a listing view, not a query). It is skipped on the first run so the
      landing URL, with whatever campaign parameters it carried, is left alone. */
-  const goTo = (e: React.MouseEvent, sec: Section | "all", n: number) => {
+  const goTo = (e: React.MouseEvent, sec: Section | "all", n: number, toTop = false) => {
     if (!isPlainClick(e)) return;
     e.preventDefault();
     if (sec !== activeSec) chooseSection(sec);
     setPage(n);
+    // From the pager under the list, the new page starts at the top of the list, not where the reader is.
+    if (toTop) latestRef.current?.scrollIntoView({ behavior: "smooth", block: "start" });
   };
+  const latestRef = useRef<HTMLElement>(null);
+
+  /** The pager, drawn above the list and again under it (bottom), so the next page is in reach either way. */
+  const pager = (bottom: boolean) => (
+    <nav className="mcb-pager" aria-label={bottom ? "Pagination (bottom)" : "Pagination"}>
+      {current <= 1 ? (
+        <span className="mcb-pgbtn" aria-disabled="true" aria-label="Previous page">
+          ‹
+        </span>
+      ) : (
+        <a
+          className="mcb-pgbtn"
+          href={postsHref(activeSec, current - 1)}
+          rel="prev"
+          aria-label="Previous page"
+          onClick={(e) => goTo(e, activeSec, current - 1, bottom)}
+        >
+          ‹
+        </a>
+      )}
+      {pageNumbers(current, pages).map((n, i) =>
+        n === "…" ? (
+          <span className="mcb-gap" key={`gap${i}`}>
+            …
+          </span>
+        ) : (
+          <a
+            key={n}
+            className="mcb-pgbtn"
+            href={postsHref(activeSec, n)}
+            onClick={(e) => goTo(e, activeSec, n, bottom)}
+            aria-current={n === current ? "page" : undefined}
+            aria-label={`Page ${n}`}
+          >
+            {n}
+          </a>
+        ),
+      )}
+      {current >= pages ? (
+        <span className="mcb-pgbtn" aria-disabled="true" aria-label="Next page">
+          ›
+        </span>
+      ) : (
+        <a
+          className="mcb-pgbtn"
+          href={postsHref(activeSec, current + 1)}
+          rel="next"
+          aria-label="Next page"
+          onClick={(e) => goTo(e, activeSec, current + 1, bottom)}
+        >
+          ›
+        </a>
+      )}
+    </nav>
+  );
   const urlSynced = useRef(false);
   useEffect(() => {
     if (!urlSynced.current) {
@@ -493,7 +550,7 @@ export function BlogIndex({
       )}
 
       {/* ── Latest posts + rail ─────────────────────────────────────── */}
-      <section className="mcb-latest">
+      <section className="mcb-latest" ref={latestRef}>
         <div className="mcb-cols">
           <div className="mcb-main">
             <div className="mcb-sec-row">
@@ -502,56 +559,7 @@ export function BlogIndex({
               </h2>
               <span className="mcb-rule" />
               <div className="mcb-tools">
-                <nav className="mcb-pager" aria-label="Pagination">
-                  {current <= 1 ? (
-                    <span className="mcb-pgbtn" aria-disabled="true" aria-label="Previous page">
-                      ‹
-                    </span>
-                  ) : (
-                    <a
-                      className="mcb-pgbtn"
-                      href={postsHref(activeSec, current - 1)}
-                      rel="prev"
-                      aria-label="Previous page"
-                      onClick={(e) => goTo(e, activeSec, current - 1)}
-                    >
-                      ‹
-                    </a>
-                  )}
-                  {pageNumbers(current, pages).map((n, i) =>
-                    n === "…" ? (
-                      <span className="mcb-gap" key={`gap${i}`}>
-                        …
-                      </span>
-                    ) : (
-                      <a
-                        key={n}
-                        className="mcb-pgbtn"
-                        href={postsHref(activeSec, n)}
-                        onClick={(e) => goTo(e, activeSec, n)}
-                        aria-current={n === current ? "page" : undefined}
-                        aria-label={`Page ${n}`}
-                      >
-                        {n}
-                      </a>
-                    ),
-                  )}
-                  {current >= pages ? (
-                    <span className="mcb-pgbtn" aria-disabled="true" aria-label="Next page">
-                      ›
-                    </span>
-                  ) : (
-                    <a
-                      className="mcb-pgbtn"
-                      href={postsHref(activeSec, current + 1)}
-                      rel="next"
-                      aria-label="Next page"
-                      onClick={(e) => goTo(e, activeSec, current + 1)}
-                    >
-                      ›
-                    </a>
-                  )}
-                </nav>
+                {pager(false)}
                 <div className="mcb-views" role="group" aria-label="Layout">
                   <button
                     type="button"
@@ -647,6 +655,11 @@ export function BlogIndex({
                     </a>
                   );
                 })}
+              </div>
+            )}
+            {pages > 1 && (
+              <div className="mcb-pager-foot">
+                {pager(true)}
               </div>
             )}
           </div>

@@ -11,7 +11,7 @@ export type Section = "Recap" | "Analysis" | "Educational" | "News" | "Earnings"
 export const SECTIONS: Section[] = ["Recap", "Analysis", "Educational", "News", "Earnings"];
 
 /** Cards per listing page. */
-export const PER_PAGE = 6;
+export const PER_PAGE = 15;
 
 /** Post.type is the stored zone; the board names them differently. */
 export const SECTION_OF: Record<string, Section> = {
