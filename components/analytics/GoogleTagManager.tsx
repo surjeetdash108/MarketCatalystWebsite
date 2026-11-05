@@ -2,13 +2,11 @@
 
 import Script from "next/script";
 import { usePathname } from "next/navigation";
+import { GTM_VALID_ID as VALID_ID, gtmBootstrap, gtmNoscriptSrc } from "@/lib/analytics/gtm";
 
-// Google Tag Manager container ID (GTM-XXXXXXX), inlined at build time from
-// NEXT_PUBLIC_GTM_ID in apphosting.yaml. GA4 and any other tags are configured
-// inside the container, not here. Unset or malformed -> nothing is loaded, so
-// this ships dark until the ID is provided.
-const GTM_ID = process.env.NEXT_PUBLIC_GTM_ID?.trim();
-const VALID_ID = GTM_ID && /^GTM-[A-Z0-9]+$/.test(GTM_ID) ? GTM_ID : null;
+// The container ID and snippet live in lib/analytics/gtm.ts (shared with the
+// home page, which is a static document). Unset or malformed ID -> nothing is
+// loaded, so this ships dark until NEXT_PUBLIC_GTM_ID is provided.
 
 /**
  * Loads GTM on the public site. The admin console is skipped: staff traffic
@@ -23,11 +21,11 @@ export function GoogleTagManager() {
   return (
     <>
       <Script id="gtm" strategy="afterInteractive">
-        {`(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src='https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);})(window,document,'script','dataLayer','${VALID_ID}');`}
+        {gtmBootstrap(VALID_ID)}
       </Script>
       <noscript>
         <iframe
-          src={`https://www.googletagmanager.com/ns.html?id=${VALID_ID}`}
+          src={gtmNoscriptSrc(VALID_ID)}
           height="0"
           width="0"
           style={{ display: "none", visibility: "hidden" }}

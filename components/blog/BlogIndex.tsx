@@ -723,7 +723,10 @@ export function BlogIndex({
                 Every post here is written over the same record that powers the {WORKSPACE_COUNT} research
                 workspaces.
               </p>
-              <Link href="/#workspaces">See what&rsquo;s inside →</Link>
+              {/* #mc-modules is the product tour on the home page (a static
+                  document, so a plain <a>, not <Link>). */}
+              {/* eslint-disable-next-line @next/next/no-html-link-for-pages */}
+              <a href="/#mc-modules">See what&rsquo;s inside →</a>
             </div>
           </aside>
         </div>
