@@ -44,9 +44,12 @@ export function SiteFooter() {
     <footer className="mc-footer">
       <div className="mc-footer-grid">
         <div>
-          <Link href="/" className="mc-brand">
+          {/* Plain <a> for every link to the home page: it is a static document
+              (app/route.ts), and <Link> would prefetch it as an app-router page. */}
+          {/* eslint-disable-next-line @next/next/no-html-link-for-pages */}
+          <a href="/" className="mc-brand">
             <BrandMark />
-          </Link>
+          </a>
           <p className="mc-footer-tag">Market intelligence, narrated. From ticker to thesis, in one place.</p>
           <div className="mc-footer-social">
             {SOCIAL_LINKS.map(({ name, href, path }) => (
@@ -70,7 +73,8 @@ export function SiteFooter() {
             <a href={APP_LOGIN_URL}>Log in</a>
             {/* Rooted, not a bare #pricing: this footer is also worn by
                 /posts, where that anchor does not exist. */}
-            <Link href="/#pricing">Pricing</Link>
+            {/* eslint-disable-next-line @next/next/no-html-link-for-pages */}
+            <a href="/#pricing">Pricing</a>
           </div>
         </div>
 

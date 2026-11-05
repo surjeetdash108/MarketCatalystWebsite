@@ -60,9 +60,12 @@ export function SiteNav({
 
   return (
     <header className="mc-nav" id="mc-nav">
-      <Link href="/" className="mc-brand" onClick={close}>
+      {/* Plain <a>: the home page is a static document (app/route.ts), which
+          <Link> would prefetch as an app-router page. */}
+      {/* eslint-disable-next-line @next/next/no-html-link-for-pages */}
+      <a href="/" className="mc-brand" onClick={close}>
         <BrandMark />
-      </Link>
+      </a>
 
       <nav className={`mc-nav-links${open ? " is-open" : ""}`} id="mc-nav-links">
         <Link className={cls("about")} href="/about" onClick={close} aria-current={current("about")}>
