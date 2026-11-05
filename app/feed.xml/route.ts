@@ -1,6 +1,6 @@
 import { sectionOfType } from "@/lib/blog/sections";
 import { getLivePostSummaries } from "@/lib/blog/posts";
-import { FEED_CACHE_CONTROL, postDate, siteUrl, WEBSUB_HUB_URL, xmlEscape } from "@/lib/seo/feeds";
+import { FEED_CACHE_CONTROL, postDate, postUpdated, siteUrl, WEBSUB_HUB_URL, xmlEscape } from "@/lib/seo/feeds";
 import { resolvePostSeoDescription } from "@/lib/seo/jsonld";
 import { postPath } from "@/lib/seo/shortened-posts";
 
@@ -28,7 +28,12 @@ export async function GET() {
     return new Response("Feed temporarily unavailable", { status: 503, headers: { "Retry-After": "300" } });
   }
 
-  const newest = posts[0] ? postDate(posts[0]) : new Date();
+  // When the feed last changed: the latest edit among the posts it lists, not the
+  // newest post's publish date, so an edit to an older post moves it too.
+  const newest = posts.reduce<Date | undefined>((latest, post) => {
+    const at = postUpdated(post);
+    return !latest || at > latest ? at : latest;
+  }, undefined) ?? new Date();
 
   const items = posts
     .map((post) => {
@@ -40,6 +45,7 @@ export async function GET() {
         `      <link>${xmlEscape(link)}</link>`,
         `      <guid isPermaLink="true">${xmlEscape(link)}</guid>`,
         `      <pubDate>${postDate(post).toUTCString()}</pubDate>`,
+        `      <atom:updated>${postUpdated(post).toISOString()}</atom:updated>`,
         `      <category>${xmlEscape(sectionOfType(post.type))}</category>`,
         description ? `      <description>${xmlEscape(description)}</description>` : null,
         "    </item>",
@@ -53,7 +59,7 @@ export async function GET() {
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
     <title>MarketCatalyst</title>
-    <link>${xmlEscape(base)}/posts</link>
+    <link>${xmlEscape(base)}</link>
     <atom:link href="${xmlEscape(base)}/feed.xml" rel="self" type="application/rss+xml" />
     <atom:link href="${xmlEscape(WEBSUB_HUB_URL)}" rel="hub" />
     <description>Daily recaps, research and guides to how the market actually works.</description>

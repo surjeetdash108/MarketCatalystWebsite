@@ -25,6 +25,18 @@ export function postDate(post: PostSummary): Date {
 }
 
 /**
+ * The date a post last changed: `updatedAt`, which only an edit or a status
+ * change moves (reader tracking writes elsewhere), and the same value the
+ * sitemap's lastmod and the article's dateModified use. Never earlier than the
+ * go-live date, so a post with no usable `updatedAt` reports that instead of 1970.
+ */
+export function postUpdated(post: PostSummary): Date {
+  const live = postDate(post);
+  const edited = new Date(post.updatedAt);
+  return edited > live ? edited : live;
+}
+
+/**
  * The WebSub hub /feed.xml names (`<atom:link rel="hub">`) — the public one
  * Google runs. The backend's websub-ping job (MarketCatalystBackEnd,
  * src/sync/websub-ping.job.ts) POSTs to the same hub when a post goes live, so
