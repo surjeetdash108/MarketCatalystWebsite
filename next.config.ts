@@ -91,6 +91,10 @@ const nextConfig: NextConfig = {
       // note in middleware.ts), and /blog/ used to take two hops to reach /posts.
       { source: "/blog", destination: "/posts", statusCode: 301 as const },
       { source: "/blog/:slug", destination: "/posts/:slug", statusCode: 301 as const },
+      // The feed lives at /feed.xml; /rss.xml and /rss are the other addresses
+      // readers and tools commonly try, so they 301 to it rather than 404.
+      { source: "/rss.xml", destination: "/feed.xml", statusCode: 301 as const },
+      { source: "/rss", destination: "/feed.xml", statusCode: 301 as const },
       // Themes became a tab of the Screener, so its feature page was folded into
       // /features/screener (see lib/features/features.ts).
       { source: "/features/themes", destination: "/features/screener", statusCode: 301 as const },
