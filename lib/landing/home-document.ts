@@ -1,6 +1,7 @@
 import { readFileSync } from "node:fs";
 import path from "node:path";
 import { GTM_VALID_ID, gtmBootstrap, gtmNoscriptSrc } from "@/lib/analytics/gtm";
+import { GA4_ID, gtagConfig, gtagSrc } from "@/lib/analytics/ga";
 import { DEFAULT_OG_IMAGE } from "@/lib/seo/og";
 import { SCHEMA_ORG_JSON_LD } from "@/lib/seo/schema-org";
 
@@ -65,6 +66,9 @@ function headTags(html: string): string {
     `<meta name="twitter:image:alt" content="${esc(DEFAULT_OG_IMAGE.alt)}">`,
     `<script type="application/ld+json">${jsonLd}</script>`,
     ...(GTM_VALID_ID ? [`<script>${gtmBootstrap(GTM_VALID_ID)}</script>`] : []),
+    // Google tag (gtag.js), as on every React page (components/analytics/GoogleAnalytics.tsx).
+    `<script async src="${gtagSrc(GA4_ID)}"></script>`,
+    `<script>${gtagConfig(GA4_ID)}</script>`,
   ].join("\n");
 }
 

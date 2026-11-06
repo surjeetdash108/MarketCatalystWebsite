@@ -3,6 +3,7 @@ import { fontVariables } from "@/lib/fonts";
 import { DEFAULT_OG_IMAGE } from "@/lib/seo/og";
 import { SCHEMA_ORG_JSON_LD } from "@/lib/seo/schema-org";
 import { GoogleTagManager } from "@/components/analytics/GoogleTagManager";
+import { GoogleAnalytics } from "@/components/analytics/GoogleAnalytics";
 import "./globals.css";
 import "./theme.css";
 import "./chrome.css";
@@ -59,6 +60,7 @@ export default function RootLayout({
       </head>
       <body className="min-h-full flex flex-col">
         <GoogleTagManager />
+        <GoogleAnalytics />
         {children}
       </body>
     </html>
