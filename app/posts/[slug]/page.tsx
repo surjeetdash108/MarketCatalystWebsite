@@ -190,7 +190,7 @@ export default async function PostPage({
             same left edge as the picture under it, rather than each carrying
             its own inline width. */}
         <div className="post-doc-back">
-          <Link href="/posts" className="mc-back">← Back to Research</Link>
+          <Link href="/posts" className="mc-back">← Back to Resources</Link>
         </div>
         {/* The strip exists only to give the hero the same measure as the
             document under it — with no hero it is bare margin, so it goes. */}
@@ -239,7 +239,7 @@ export default async function PostPage({
       />
 
       <div style={{ marginBottom: "16px" }}>
-        <Link href="/posts" className="mc-back">← Back to Research</Link>
+        <Link href="/posts" className="mc-back">← Back to Resources</Link>
       </div>
 
       <article className="article mc-doc">
