@@ -26,7 +26,7 @@ export function SiteNav({
   theme,
   onToggleTheme,
 }: {
-  active?: "about" | "features" | "blogs" | "faqs";
+  active?: "about" | "blogs" | "faqs";
   theme?: Theme;
   onToggleTheme?: () => void;
 }) {
@@ -51,9 +51,9 @@ export function SiteNav({
   }, [open]);
 
   const close = () => setOpen(false);
-  const cls = (id: "about" | "features" | "blogs" | "faqs") =>
+  const cls = (id: "about" | "blogs" | "faqs") =>
     `mc-navlink${active === id ? " is-active" : ""}`;
-  const current = (id: "about" | "features" | "blogs" | "faqs") =>
+  const current = (id: "about" | "blogs" | "faqs") =>
     active === id ? ("page" as const) : undefined;
 
   const toDark = theme === "light";
@@ -68,11 +68,14 @@ export function SiteNav({
       </a>
 
       <nav className={`mc-nav-links${open ? " is-open" : ""}`} id="mc-nav-links">
+        {/* Plain <a>: the home page is a static document (app/route.ts), which
+            <Link> would prefetch as an app-router page. */}
+        {/* eslint-disable-next-line @next/next/no-html-link-for-pages */}
+        <a className="mc-navlink" href="/" onClick={close}>
+          Home
+        </a>
         <Link className={cls("about")} href="/about" onClick={close} aria-current={current("about")}>
           About us
-        </Link>
-        <Link className={cls("features")} href="/features" onClick={close} aria-current={current("features")}>
-          Features
         </Link>
         <Link className={cls("blogs")} href="/posts" onClick={close} aria-current={current("blogs")}>
           Resources
@@ -82,6 +85,10 @@ export function SiteNav({
         </Link>
         <a className="mc-navlink-ghost" href={APP_LOGIN_URL} onClick={close}>
           Log in
+        </a>
+
+        <a className="mc-navlink-solid" href={APP_SIGNUP_URL} onClick={close}>
+          Sign up
         </a>
 
         {onToggleTheme && (
@@ -110,9 +117,6 @@ export function SiteNav({
           </button>
         )}
 
-        <a className="mc-navlink-solid" href={APP_SIGNUP_URL} onClick={close}>
-          Sign up
-        </a>
       </nav>
 
       <button

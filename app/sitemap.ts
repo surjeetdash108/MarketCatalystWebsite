@@ -1,6 +1,5 @@
 import type { MetadataRoute } from "next";
 import { getPublishedPosts, type Post } from "@/lib/blog/posts";
-import { FEATURE_VIEWS } from "@/lib/features/features";
 import { postPath } from "@/lib/seo/shortened-posts";
 import { DUPLICATE_POSTS } from "@/lib/seo/duplicate-posts";
 import { jobs } from "@/content/careers";
@@ -69,21 +68,12 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const staticRoutes: MetadataRoute.Sitemap = [
     { url: base, changeFrequency: "monthly", priority: 1 },
     { url: `${base}/posts`, lastModified: newestPost, changeFrequency: "daily", priority: 0.8 },
-    { url: `${base}/features`, changeFrequency: "monthly", priority: 0.7 },
     { url: `${base}/about`, changeFrequency: "monthly", priority: 0.6 },
     { url: `${base}/faqs`, changeFrequency: "monthly", priority: 0.5 },
     { url: `${base}/contact`, changeFrequency: "yearly", priority: 0.3 },
     { url: `${base}/legal/terms`, changeFrequency: "yearly", priority: 0.2 },
     { url: `${base}/legal/privacy`, changeFrequency: "yearly", priority: 0.2 },
   ];
-
-  // Same list /features/[slug] builds its pages from, so a new feature is
-  // listed here as soon as it exists.
-  const featureRoutes: MetadataRoute.Sitemap = FEATURE_VIEWS.map((f) => ({
-    url: `${base}/features/${f.slug}`,
-    changeFrequency: "monthly",
-    priority: 0.6,
-  }));
 
   const postRoutes: MetadataRoute.Sitemap = posts.map((post) => ({
     url: `${base}${postPath(post.slug)}`,
@@ -108,5 +98,5 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     })),
   ];
 
-  return [...staticRoutes, ...careersRoutes, ...featureRoutes, ...postRoutes];
+  return [...staticRoutes, ...careersRoutes, ...postRoutes];
 }

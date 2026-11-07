@@ -455,8 +455,8 @@ export function BlogIndex({
       <section className="mcb-head">
         <div className="mcb-inner">
           <h1 className="mcb-h1 mc-rev">
-            Daily recaps, research and guides to how the market{" "}
-            <span className="mc-serif">actually works.</span>
+            Recaps, research, and guides on how the market{" "}
+            <span className="mc-serif">works</span>
           </h1>
 
           <div className="mcb-filters mc-rev mc-rev-sm" data-delay="140">
