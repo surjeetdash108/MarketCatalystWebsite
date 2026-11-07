@@ -95,9 +95,10 @@ const nextConfig: NextConfig = {
       // readers and tools commonly try, so they 301 to it rather than 404.
       { source: "/rss.xml", destination: "/feed.xml", statusCode: 301 as const },
       { source: "/rss", destination: "/feed.xml", statusCode: 301 as const },
-      // Themes became a tab of the Screener, so its feature page was folded into
-      // /features/screener (see lib/features/features.ts).
-      { source: "/features/themes", destination: "/features/screener", statusCode: 301 as const },
+      // The Features section (/features and /features/<slug>) was removed. Send
+      // old links and anything indexed to the home page rather than a 404.
+      { source: "/features", destination: "/", statusCode: 301 as const },
+      { source: "/features/:path*", destination: "/", statusCode: 301 as const },
     ];
   },
 
