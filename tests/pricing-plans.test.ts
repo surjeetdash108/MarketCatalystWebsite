@@ -66,3 +66,30 @@ test("catalog loading: live GET /plans when complete, generated copy otherwise",
   assert.equal((await loadCatalog((async () => { throw new Error("down"); }) as unknown as typeof fetch)).source, "fallback");
   assert.equal(isCompleteCatalog(fallbackCatalog()), true);
 });
+
+test("tiles render the same before the backend deploy, after it (catalog not applied) and after the catalog apply", async () => {
+  const ok = (body: unknown) => (async () => new Response(JSON.stringify(body), { status: 200 })) as unknown as typeof fetch;
+  const render = async (body: unknown) => {
+    const { plans, source } = await loadCatalog(ok(body));
+    return { source, tiles: plansSection(homeDocument(plans)) };
+  };
+  // 1. Today's production GET /plans: the v1 plans docs, no `prices` (shape read 2026-11-10).
+  const v1 = { plans: [
+    { id: "free", name: "Free", amount: 0, currency: "USD", billingCycle: "none", active: true, sortOrder: 0, featureFlags: {} },
+    { id: "plus", name: "Plus", amount: 2999, currency: "USD", billingCycle: "monthly", active: true, sortOrder: 1, featureFlags: {} },
+    { id: "pro", name: "Pro", amount: 4999, currency: "USD", billingCycle: "monthly", active: true, sortOrder: 2, featureFlags: {} },
+  ] };
+  // 2./3. The new backend serves catalog v2 — from the registry before the apply,
+  // from the stored docs after it (same prices, extra stored fields).
+  const v2 = (extra: Record<string, unknown>) => ({ paidPlansAvailable: false, plans: fallbackCatalog().map((p, i) => ({ ...p, amount: p.prices.monthly?.amount ?? 0, active: true, sortOrder: i, featureFlags: {}, ...extra })) });
+  const before = await render(v1);
+  const deployed = await render(v2({}));
+  const applied = await render(v2({ catalogVersion: 2, createdAt: "2026-11-10T00:00:00.000Z" }));
+  assert.equal(before.source, "fallback");
+  assert.equal(deployed.source, "live");
+  assert.equal(applied.source, "live");
+  assert.equal(deployed.tiles, before.tiles);
+  assert.equal(applied.tiles, before.tiles);
+  for (const price of ["$39", "$31.20", "$374.40", "$59", "$47.20", "$566.40", "$199", "$149.25", "$1,791"]) assert.ok(before.tiles.includes(price), price);
+  for (const old of ["$29.99", "$49.99"]) assert.ok(!before.tiles.includes(old), old);
+});
