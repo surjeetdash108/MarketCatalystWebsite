@@ -74,11 +74,6 @@ const FAQS: Array<{ question: string; answer: string }> = [
       "Themes are curated baskets of related stocks — for example Magnificent Seven, AI & Semiconductors, Software & Cloud, Fintech, and Deep Value — each with an AI summary highlighting the day's leaders, laggards, and momentum.",
   },
   {
-    question: "Does the Options section show real-time quotes?",
-    answer:
-      "The options chain is an educational tool for exploring calls and puts across strikes and expirations, including open interest, volume, and implied volatility. Some option figures are illustrative/simulated for demonstration; always confirm live pricing with your broker before trading.",
-  },
-  {
     question: "What is the Fear & Greed index and the VIX gauge?",
     answer:
       'Both are sentiment indicators. The Fear & Greed reading summarizes overall market mood on a simple scale, while the VIX gauge reflects expected volatility. The Macro & VIX page adds a daily "market regime" read (for example Risk-On Rally) derived from breadth, yields, and sector rotation.',

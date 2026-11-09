@@ -1,0 +1,60 @@
+{
+  "catalogVersion": 2,
+  "plans": [
+    {
+      "id": "free",
+      "name": "Free",
+      "description": "Core market screens, daily charts and a watchlist.",
+      "currency": "USD",
+      "prices": {}
+    },
+    {
+      "id": "starter",
+      "name": "Starter",
+      "description": "For investors who want the daily picture and research on any stock.",
+      "currency": "USD",
+      "prices": {
+        "monthly": {
+          "amount": 3900,
+          "lookupKey": "starter_monthly"
+        },
+        "annual": {
+          "amount": 37440,
+          "lookupKey": "starter_annual"
+        }
+      }
+    },
+    {
+      "id": "pro",
+      "name": "Pro",
+      "description": "For active traders who want to see where institutions are moving.",
+      "currency": "USD",
+      "prices": {
+        "monthly": {
+          "amount": 5900,
+          "lookupKey": "pro_monthly"
+        },
+        "annual": {
+          "amount": 56640,
+          "lookupKey": "pro_annual"
+        }
+      }
+    },
+    {
+      "id": "elite",
+      "name": "Elite",
+      "description": "For traders who backtest before every trade.",
+      "currency": "USD",
+      "prices": {
+        "monthly": {
+          "amount": 19900,
+          "lookupKey": "elite_monthly"
+        },
+        "annual": {
+          "amount": 179100,
+          "lookupKey": "elite_annual"
+        }
+      }
+    }
+  ]
+}
