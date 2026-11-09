@@ -5,6 +5,14 @@ import { useRouter } from "next/navigation";
 import { setSubmissionStatusAction } from "@/app/admin/(protected)/contact-submissions/actions";
 import type { ContactSubmission } from "@/lib/contact/submissions";
 
+// Fixed locale + UTC so the server render and the browser hydrate to the same
+// text. A missing createdAt maps to the epoch (see mapSubmission), so hide it.
+function receivedAt(iso: string): string | null {
+  const date = new Date(iso);
+  if (Number.isNaN(date.getTime()) || date.getTime() === 0) return null;
+  return `${date.toLocaleString("en-GB", { dateStyle: "medium", timeStyle: "short", timeZone: "UTC" })} UTC`;
+}
+
 export function ContactSubmissionsTable({ submissions }: { submissions: ContactSubmission[] }) {
   const router = useRouter();
   const [pending, startTransition] = useTransition();
@@ -26,6 +34,10 @@ export function ContactSubmissionsTable({ submissions }: { submissions: ContactS
               <span className="a-muted">&lt;{submission.email}&gt;</span>
             </div>
             <span className={`pill ${submission.status === "new" ? "opt" : "flat"}`}>{submission.status}</span>
+          </div>
+          <div className="a-muted" style={{ marginTop: 6, fontSize: 12 }}>
+            <span>Company: {submission.company ?? "—"}</span>
+            {receivedAt(submission.createdAt) && <span> · Received {receivedAt(submission.createdAt)}</span>}
           </div>
           <p className="a-muted" style={{ marginTop: 8, whiteSpace: "pre-wrap", color: "var(--text)" }}>{submission.message}</p>
           <div className="mt-3 flex gap-2">

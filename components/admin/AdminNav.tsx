@@ -36,7 +36,7 @@ const ITEMS: NavItem[] = [
   { href: "/admin/faqs", label: "FAQs", icon: faqs },
   { href: "/admin/media", label: "Media", icon: media },
   { href: "/admin/users", label: "Editors", icon: editors, adminOnly: true },
-  { href: "/admin/contact-submissions", label: "Inquiries", icon: contact },
+  { href: "/admin/contact-submissions", label: "Contact us", icon: contact },
   { href: "/admin/subscribers", label: "Subscribers", icon: subscribers },
 ];
 
