@@ -4,6 +4,7 @@ import { GTM_VALID_ID, gtmBootstrap, gtmNoscriptSrc } from "@/lib/analytics/gtm"
 import { GA4_ID, gtagConfig, gtagSrc } from "@/lib/analytics/ga";
 import { DEFAULT_OG_IMAGE } from "@/lib/seo/og";
 import { SCHEMA_ORG_JSON_LD } from "@/lib/seo/schema-org";
+import { fallbackCatalog, fillPriceTokens, type CatalogPlan } from "@/lib/pricing/catalog";
 
 /**
  * The home page.
@@ -73,8 +74,12 @@ function headTags(html: string): string {
 }
 
 /** The home page document: home.html with the site-wide tags added. */
-export function homeDocument(): string {
-  const html = readFileSync(path.join(process.cwd(), "lib", "landing", "home.html"), "utf8");
+/**
+ * The home page with the pricing tiles filled from the plan catalog
+ * (`plans`: GET /plans, or the generated fallback copy).
+ */
+export function homeDocument(plans: CatalogPlan[] = fallbackCatalog()): string {
+  const html = fillPriceTokens(readFileSync(path.join(process.cwd(), "lib", "landing", "home.html"), "utf8"), plans);
 
   // The first </head> and the first <body> are the page's own; later ones are
   // inside the About page the file carries as inert text.
