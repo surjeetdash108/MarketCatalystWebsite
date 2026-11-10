@@ -96,3 +96,9 @@ test("tiles render the same before the backend deploy, after it (catalog not app
   for (const price of ["$39", "$31.20", "$374.40", "$59", "$47.20", "$566.40", "$199", "$149.25", "$1,791"]) assert.ok(before.tiles.includes(price), price);
   for (const old of ["$29.99", "$49.99"]) assert.ok(!before.tiles.includes(old), old);
 });
+
+test("pricing header is centred and the renewal/refund note wraps instead of overflowing", () => {
+  assert.match(raw, /\.mc-pricing \.mc-head-row>div:first-child\{width:100%;min-width:0;text-align:center\}/);
+  assert.match(raw, /\.mc-pricing \.mc-h2\{text-align:center\}/);
+  assert.match(raw, /\.mc-pricing \.mc-cancel-hl\{white-space:normal;max-width:min\(760px,100%\)/);
+});
