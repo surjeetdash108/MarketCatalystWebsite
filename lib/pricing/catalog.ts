@@ -12,6 +12,8 @@ export interface CatalogPlan {
   id: string;
   name: string;
   prices: Partial<Record<Interval, { amount: number; lookupKey: string }>>;
+  bullets?: string[];
+  groups?: string[];
 }
 
 export const TILE_PLANS = ["starter", "pro", "elite"] as const;
@@ -27,6 +29,10 @@ export function isCompleteCatalog(plans: CatalogPlan[] | undefined): plans is Ca
 
 export function fallbackCatalog(): CatalogPlan[] {
   return (fallback as { plans: CatalogPlan[] }).plans;
+}
+
+export function everyPlanIncludes(): string[] {
+  return (fallback as unknown as { everyPlanIncludes: string[] }).everyPlanIncludes ?? [];
 }
 
 /**
@@ -63,7 +69,7 @@ export function money(amountMinor: number): string {
   return new Intl.NumberFormat("en-US", { style: "currency", currency: "USD", minimumFractionDigits: amountMinor % 100 === 0 ? 0 : 2 }).format(amountMinor / 100);
 }
 
-/** Fills {{PRICE:<plan>:monthly|annual|annual_per_month}} and {{SAVE:<plan>|max}} tokens. */
+/** Fills {{PRICE:<plan>:monthly|annual|annual_per_month}}, {{SAVE:<plan>|max}}, {{BULLETS:<plan>}}, {{EVERY_PLAN_INCLUDES}} and {{REFUND_LINE}} tokens. */
 export function fillPriceTokens(html: string, plans: CatalogPlan[]): string {
   const save = (id: string) => {
     const p = plans.find((x) => x.id === id);
@@ -79,8 +85,19 @@ export function fillPriceTokens(html: string, plans: CatalogPlan[]): string {
       if (kind === "annual") return money(p.prices.annual!.amount);
       return money(Math.round(p.prices.annual!.amount / 12));
     })
-    .replace(/\{\{SAVE:([a-z]+)\}\}/g, (_t, id: string) => String(id === "max" ? Math.max(...TILE_PLANS.map(save)) : save(id)));
+    .replace(/\{\{SAVE:([a-z]+)\}\}/g, (_t, id: string) => String(id === "max" ? Math.max(...TILE_PLANS.map(save)) : save(id)))
+    .replace(/\{\{BULLETS:([a-z]+)\}\}/g, (_t, id: string) => {
+      const p = plans.find((x) => x.id === id);
+      const fallbackPlan = fallbackCatalog().find((x) => x.id === id);
+      const bullets = (p as unknown as { bullets?: string[] })?.bullets ?? fallbackPlan?.bullets;
+      if (!bullets || bullets.length === 0) throw new Error(`pricing tile for unknown plan or missing bullets ${id}`);
+      return bullets.map((b) => `<div class="mc-plan-feat"><i>✓</i><span>${escHtml(b)}</span></div>`).join("");
+    })
+    .replace(/\{\{EVERY_PLAN_INCLUDES\}\}/g, () => {
+      const items = everyPlanIncludes();
+      return items.map((it) => `<li><i aria-hidden="true">✓</i><span>${escHtml(it)}</span></li>`).join("");
+    });
   const filled = out.replace(/\{\{REFUND_LINE\}\}/g, escHtml(refundPolicy().checkoutLine));
-  if (/\{\{(PRICE|SAVE):|\{\{REFUND_LINE\}\}/.test(filled)) throw new Error("unfilled pricing token");
+  if (/\{\{(PRICE|SAVE|BULLETS):|\{\{(REFUND_LINE|EVERY_PLAN_INCLUDES)\}\}/.test(filled)) throw new Error("unfilled pricing token");
   return filled;
 }

@@ -102,3 +102,20 @@ test("pricing header is centred and the renewal/refund note wraps instead of ove
   assert.match(raw, /\.mc-pricing \.mc-h2\{text-align:center\}/);
   assert.match(raw, /\.mc-pricing \.mc-cancel-hl\{white-space:normal;max-width:min\(760px,100%\)/);
 });
+
+test("tile bullets and every plan includes are catalog tokens in raw home.html, not hardcoded", () => {
+  assert.match(raw, /\{\{BULLETS:starter\}\}/);
+  assert.match(raw, /\{\{BULLETS:pro\}\}/);
+  assert.match(raw, /\{\{BULLETS:elite\}\}/);
+  assert.match(raw, /\{\{EVERY_PLAN_INCLUDES\}\}/);
+  assert.doesNotMatch(raw, /Market Desk: all 15 workspaces/);
+});
+
+test("rendered page contains bullets from catalog.json and no 'free' mention in hero CTA", () => {
+  assert.match(html, /Market Desk: all workspaces/);
+  assert.match(html, /Stock Intelligence and AI research/);
+  assert.match(html, /Money Flow by sector/);
+  assert.match(html, /Strategy Lab entry, stop and target levels/);
+  assert.doesNotMatch(html, /Sign up for free/);
+  assert.match(html, /Get started <i>→<\/i>/);
+});
