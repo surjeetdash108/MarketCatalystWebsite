@@ -3,7 +3,7 @@ import assert from "node:assert/strict";
 import fs from "node:fs";
 import path from "node:path";
 import { homeDocument } from "../lib/landing/home-document";
-import { fallbackCatalog, fillPriceTokens, isCompleteCatalog, loadCatalog, type CatalogPlan } from "../lib/pricing/catalog";
+import { fallbackCatalog, fillPriceTokens, isCompleteCatalog, loadCatalog, refundPolicy, type CatalogPlan } from "../lib/pricing/catalog";
 
 const raw = fs.readFileSync(path.join(process.cwd(), "lib/landing/home.html"), "utf8");
 const html = homeDocument(fallbackCatalog());
@@ -40,9 +40,9 @@ test("old plan prices ($49, $79, $249, $29.99, $49.99) are not shown", () => {
   for (const re of [/\$49<\/s>/, /\$79<\/s>/, /\$249<\/s>/, /\$29\.99/, /\$49\.99/]) assert.doesNotMatch(section, re);
 });
 
-test("each tile's CTA opens signup with that plan and interval (annual by default)", () => {
+test("each tile's CTA opens the app's /checkout with that plan and interval (annual by default)", () => {
   for (const plan of ["starter", "pro", "elite"]) {
-    assert.match(html, new RegExp(`data-plan="${plan}" href="https://app\\.marketcatalyst\\.ai/auth/signup\\?plan=${plan}&amp;interval=annual"`));
+    assert.match(html, new RegExp(`data-plan="${plan}" href="https://app\\.marketcatalyst\\.ai/checkout\\?plan=${plan}&amp;interval=annual"`));
   }
 });
 
@@ -52,7 +52,10 @@ test("the Monthly/Annual switch rewrites each CTA's interval", () => {
 });
 
 test("pricing copy: cancel line and no unverified strategy count", () => {
-  assert.match(html, /Cancel anytime\. You keep access until the end of your billing period\./);
+  assert.match(html, /Renews automatically until you cancel\. Cancel anytime and keep access until the end of your billing period\./);
+  // The refund sentence is the generated REFUND_WINDOW_DAYS copy, never typed into the page.
+  assert.ok(html.includes(refundPolicy().checkoutLine.replace(/'/g, "'")), "refund line from catalog.json");
+  assert.doesNotMatch(raw, /Full refund within \d+ day/);
   assert.doesNotMatch(html, /no questions asked/);
   assert.doesNotMatch(html, /56 strategies|Fifty-six/);
 });

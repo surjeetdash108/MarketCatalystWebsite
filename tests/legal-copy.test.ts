@@ -16,11 +16,20 @@ test("Terms §12 describes the real billing behaviour and is flagged for legal r
 });
 
 test("website and app Terms §12 are the same text", () => {
-  const section = (s: string) => s.slice(s.indexOf('<h2 id="subscriptions">'), s.indexOf("</ul>", s.indexOf('<h2 id="subscriptions">'))).replace(/\s+/g, " ");
+  // Both render the same generated refund paragraph (REFUND_WINDOW_DAYS); only the import name differs.
+  const section = (s: string) =>
+    s.slice(s.indexOf('<h2 id="subscriptions">'), s.indexOf("</ul>", s.indexOf('<h2 id="subscriptions">'))).replace(/\s+/g, " ").replace("{refundPolicy().termsParagraph}", "{REFUND_POLICY.termsParagraph}");
   assert.equal(section(terms), section(appTerms));
 });
 
 test("Privacy discloses the retention hash and the email provider", () => {
   assert.match(privacy, /one-way cryptographic hash of your email address/);
-  assert.match(privacy, /\[EMAIL PROVIDER PLACEHOLDER\]/);
+  assert.match(privacy, /through our email provider, Twilio SendGrid,/);
+  assert.doesNotMatch(privacy, /\[EMAIL PROVIDER PLACEHOLDER\]/);
+});
+
+test("refund paragraph comes from the generated policy; Privacy covers the phone and address", () => {
+  assert.match(terms, /<span data-testid="terms-refunds">\{refundPolicy\(\)\.termsParagraph\}<\/span>/);
+  assert.match(privacy, /We do not send marketing text messages unless you opt in/);
+  assert.match(privacy, /We keep only your country, state and ZIP\/postal code/);
 });

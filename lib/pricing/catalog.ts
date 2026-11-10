@@ -29,6 +29,22 @@ export function fallbackCatalog(): CatalogPlan[] {
   return (fallback as { plans: CatalogPlan[] }).plans;
 }
 
+/**
+ * The refund policy copy, generated from the backend's single switch
+ * (REFUND_WINDOW_DAYS → scripts/export-catalog.ts → catalog.json).
+ */
+export interface RefundPolicyCopy {
+  enabled: boolean;
+  windowDays: number;
+  checkoutLine: string;
+  termsParagraph: string;
+}
+export function refundPolicy(): RefundPolicyCopy {
+  return (fallback as unknown as { refundPolicy: RefundPolicyCopy }).refundPolicy;
+}
+
+const escHtml = (v: string) => v.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
+
 export async function loadCatalog(fetchImpl: typeof fetch = fetch): Promise<{ plans: CatalogPlan[]; source: "live" | "fallback" }> {
   try {
     const res = await fetchImpl(CATALOG_URL, { signal: AbortSignal.timeout(3000), next: { revalidate: 3600 } } as RequestInit);
@@ -64,6 +80,7 @@ export function fillPriceTokens(html: string, plans: CatalogPlan[]): string {
       return money(Math.round(p.prices.annual!.amount / 12));
     })
     .replace(/\{\{SAVE:([a-z]+)\}\}/g, (_t, id: string) => String(id === "max" ? Math.max(...TILE_PLANS.map(save)) : save(id)));
-  if (/\{\{(PRICE|SAVE):/.test(out)) throw new Error("unfilled pricing token");
-  return out;
+  const filled = out.replace(/\{\{REFUND_LINE\}\}/g, escHtml(refundPolicy().checkoutLine));
+  if (/\{\{(PRICE|SAVE):|\{\{REFUND_LINE\}\}/.test(filled)) throw new Error("unfilled pricing token");
+  return filled;
 }
