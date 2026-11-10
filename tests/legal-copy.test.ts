@@ -24,7 +24,8 @@ test("website and app Terms §12 are the same text", () => {
 
 test("Privacy discloses the retention hash and the email provider", () => {
   assert.match(privacy, /one-way cryptographic hash of your email address/);
-  assert.match(privacy, /\[EMAIL PROVIDER PLACEHOLDER\]/);
+  assert.match(privacy, /through our email provider, Twilio SendGrid,/);
+  assert.doesNotMatch(privacy, /\[EMAIL PROVIDER PLACEHOLDER\]/);
 });
 
 test("refund paragraph comes from the generated policy; Privacy covers the phone and address", () => {
