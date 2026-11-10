@@ -40,9 +40,9 @@ test("old plan prices ($49, $79, $249, $29.99, $49.99) are not shown", () => {
   for (const re of [/\$49<\/s>/, /\$79<\/s>/, /\$249<\/s>/, /\$29\.99/, /\$49\.99/]) assert.doesNotMatch(section, re);
 });
 
-test("each tile's CTA opens the app's /checkout with that plan and interval (annual by default)", () => {
+test("each tile's CTA opens the app's /manage-plan with that plan and interval (annual by default)", () => {
   for (const plan of ["starter", "pro", "elite"]) {
-    assert.match(html, new RegExp(`data-plan="${plan}" href="https://app\\.marketcatalyst\\.ai/checkout\\?plan=${plan}&amp;interval=annual"`));
+    assert.match(html, new RegExp(`data-plan="${plan}" href="https://app\\.marketcatalyst\\.ai/manage-plan\\?plan=${plan}&amp;interval=annual"`));
   }
 });
 
