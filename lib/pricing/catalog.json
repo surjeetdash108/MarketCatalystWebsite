@@ -1,17 +1,10 @@
 {
-  "catalogVersion": 2,
+  "catalogVersion": 3,
   "plans": [
-    {
-      "id": "free",
-      "name": "Free",
-      "description": "Core market screens, daily charts and a watchlist.",
-      "currency": "USD",
-      "prices": {}
-    },
     {
       "id": "starter",
       "name": "Starter",
-      "description": "For investors who want the daily picture and research on any stock.",
+      "description": "Market Desk and Stock Intelligence.",
       "currency": "USD",
       "prices": {
         "monthly": {
@@ -22,12 +15,21 @@
           "amount": 37440,
           "lookupKey": "starter_annual"
         }
-      }
+      },
+      "groups": [
+        "marketDesk",
+        "stockIntelligence"
+      ],
+      "bullets": [
+        "Market Desk: all workspaces",
+        "Stock Intelligence and AI research",
+        "Trade Builder and Trade Tracker"
+      ]
     },
     {
       "id": "pro",
       "name": "Pro",
-      "description": "For active traders who want to see where institutions are moving.",
+      "description": "Everything in Starter, plus Money Flow.",
       "currency": "USD",
       "prices": {
         "monthly": {
@@ -38,12 +40,22 @@
           "amount": 56640,
           "lookupKey": "pro_annual"
         }
-      }
+      },
+      "groups": [
+        "marketDesk",
+        "stockIntelligence",
+        "moneyFlow"
+      ],
+      "bullets": [
+        "Everything in Starter",
+        "Money Flow by sector",
+        "Biggest institutional gainers and losers"
+      ]
     },
     {
       "id": "elite",
       "name": "Elite",
-      "description": "For traders who backtest before every trade.",
+      "description": "Everything in Pro, plus Strategy Lab.",
       "currency": "USD",
       "prices": {
         "monthly": {
@@ -54,7 +66,32 @@
           "amount": 179100,
           "lookupKey": "elite_annual"
         }
-      }
+      },
+      "groups": [
+        "marketDesk",
+        "stockIntelligence",
+        "moneyFlow",
+        "strategyLab"
+      ],
+      "bullets": [
+        "Everything in Pro",
+        "Strategy Lab",
+        "Backtest any strategy",
+        "Strategy Lab entry, stop and target levels"
+      ]
     }
-  ]
+  ],
+  "everyPlanIncludes": [
+    "Market Desk — every workspace: dashboard, live feed, movers, heatmap, calendar, IPOs, screener, recaps, Earnings Hub, analyst actions, 13F & insider, ETF Corner and AI Companies",
+    "Stock Intelligence — any stock's financials, ratings, peers, dividends, earnings detail and transcripts, AI research, and intraday and five-year charts with indicators",
+    "Portfolio — track holdings with live prices and profit/loss",
+    "Watchlist — unlimited tickers"
+  ],
+  "refundPolicy": {
+    "enabled": true,
+    "windowDays": 14,
+    "checkoutLine": "Full refund within 14 days of your first payment (once per person) or of an annual renewal. Monthly renewals aren't refundable.",
+    "termsParagraph": "You can ask for a full refund within 14 days of your first subscription payment; this is available once per person (per email address). Annual renewal charges can also be refunded in full within 14 days of the renewal. Monthly renewal charges are not refundable. A refund ends your subscription immediately; to keep using MarketCatalyst you choose a plan again. Otherwise we do not refund partial billing periods, except where the law requires it. When you move to a lower plan, the unused part of your current plan is credited to your account and used automatically on your next invoices; credits are not paid out to your card.",
+    "managePlanLine": "Within 14 days of your first payment, or of an annual renewal, you can get a full refund. Your plan ends right away."
+  }
 }

@@ -3,7 +3,7 @@ import assert from "node:assert/strict";
 import fs from "node:fs";
 import path from "node:path";
 import { homeDocument } from "../lib/landing/home-document";
-import { fallbackCatalog, fillPriceTokens, isCompleteCatalog, loadCatalog, type CatalogPlan } from "../lib/pricing/catalog";
+import { fallbackCatalog, fillPriceTokens, isCompleteCatalog, loadCatalog, refundPolicy, type CatalogPlan } from "../lib/pricing/catalog";
 
 const raw = fs.readFileSync(path.join(process.cwd(), "lib/landing/home.html"), "utf8");
 const html = homeDocument(fallbackCatalog());
@@ -40,9 +40,9 @@ test("old plan prices ($49, $79, $249, $29.99, $49.99) are not shown", () => {
   for (const re of [/\$49<\/s>/, /\$79<\/s>/, /\$249<\/s>/, /\$29\.99/, /\$49\.99/]) assert.doesNotMatch(section, re);
 });
 
-test("each tile's CTA opens signup with that plan and interval (annual by default)", () => {
+test("each tile's CTA opens the app's /manage-plan with that plan and interval (annual by default)", () => {
   for (const plan of ["starter", "pro", "elite"]) {
-    assert.match(html, new RegExp(`data-plan="${plan}" href="https://app\\.marketcatalyst\\.ai/auth/signup\\?plan=${plan}&amp;interval=annual"`));
+    assert.match(html, new RegExp(`data-plan="${plan}" href="https://app\\.marketcatalyst\\.ai/manage-plan\\?plan=${plan}&amp;interval=annual"`));
   }
 });
 
@@ -52,7 +52,10 @@ test("the Monthly/Annual switch rewrites each CTA's interval", () => {
 });
 
 test("pricing copy: cancel line and no unverified strategy count", () => {
-  assert.match(html, /Cancel anytime\. You keep access until the end of your billing period\./);
+  assert.match(html, /Renews automatically until you cancel\. Cancel anytime and keep access until the end of your billing period\./);
+  // The refund sentence is the generated REFUND_WINDOW_DAYS copy, never typed into the page.
+  assert.ok(html.includes(refundPolicy().checkoutLine.replace(/'/g, "'")), "refund line from catalog.json");
+  assert.doesNotMatch(raw, /Full refund within \d+ day/);
   assert.doesNotMatch(html, /no questions asked/);
   assert.doesNotMatch(html, /56 strategies|Fifty-six/);
 });
@@ -92,4 +95,27 @@ test("tiles render the same before the backend deploy, after it (catalog not app
   assert.equal(applied.tiles, before.tiles);
   for (const price of ["$39", "$31.20", "$374.40", "$59", "$47.20", "$566.40", "$199", "$149.25", "$1,791"]) assert.ok(before.tiles.includes(price), price);
   for (const old of ["$29.99", "$49.99"]) assert.ok(!before.tiles.includes(old), old);
+});
+
+test("pricing header is centred and the renewal/refund note wraps instead of overflowing", () => {
+  assert.match(raw, /\.mc-pricing \.mc-head-row>div:first-child\{width:100%;min-width:0;text-align:center\}/);
+  assert.match(raw, /\.mc-pricing \.mc-h2\{text-align:center\}/);
+  assert.match(raw, /\.mc-pricing \.mc-cancel-hl\{white-space:normal;max-width:min\(760px,100%\)/);
+});
+
+test("tile bullets and every plan includes are catalog tokens in raw home.html, not hardcoded", () => {
+  assert.match(raw, /\{\{BULLETS:starter\}\}/);
+  assert.match(raw, /\{\{BULLETS:pro\}\}/);
+  assert.match(raw, /\{\{BULLETS:elite\}\}/);
+  assert.match(raw, /\{\{EVERY_PLAN_INCLUDES\}\}/);
+  assert.doesNotMatch(raw, /Market Desk: all 15 workspaces/);
+});
+
+test("rendered page contains bullets from catalog.json and no 'free' mention in hero CTA", () => {
+  assert.match(html, /Market Desk: all workspaces/);
+  assert.match(html, /Stock Intelligence and AI research/);
+  assert.match(html, /Money Flow by sector/);
+  assert.match(html, /Strategy Lab entry, stop and target levels/);
+  assert.doesNotMatch(html, /Sign up for free/);
+  assert.match(html, /Get started <i>→<\/i>/);
 });

@@ -88,9 +88,13 @@ export function PrivacyPolicy() {
                     <li>
                       <strong>Payment and subscription information:</strong> your plan, billing history, and billing contact details. Payments are processed by our third-party payment processor, Stripe, Inc. (&quot;Stripe&quot;), whose use of your information is governed by <a href="https://stripe.com/privacy" target="_blank" rel="noopener noreferrer">Stripe&apos;s privacy policy</a>. We do not store your full payment card number. We keep a record of your plan, invoices, discounts and plan changes to run your subscription and for accounting. If you accept a retention offer when cancelling, we keep a one-way cryptographic hash of your email address (not the address itself) so the offer is not shown again; this hash is kept after you close your account. [LEGAL REVIEW PLACEHOLDER]</li>
                       <li>
-                      <strong>Transactional email:</strong> we send billing emails (receipts, renewal reminders, payment problems, plan changes and cancellation confirmations) through our email provider [EMAIL PROVIDER PLACEHOLDER], which processes your email address on our behalf.</li>
+                      <strong>Transactional email:</strong> we send billing emails (receipts, renewal reminders, payment problems, plan changes and cancellation confirmations) through our email provider, Twilio SendGrid,, which processes your email address on our behalf.</li>
                       <li>
                         <strong>Marketing preferences:</strong> whether you have opted in to or out of marketing emails.</li>
+                      <li>
+                        <strong>Phone number:</strong> the mobile number you give at checkout. We use it for account and billing contact and share it with our payment processor as your billing phone. We do not send marketing text messages unless you opt in (&quot;Text me product updates&quot;); we record that choice and when you made it, and you can change it in the app. [LEGAL REVIEW PLACEHOLDER]</li>
+                      <li>
+                        <strong>Billing address:</strong> entered at checkout and kept by our payment processor. We keep only your country, state and ZIP/postal code, to calculate tax. We do not collect government ID numbers or your date of birth.</li>
                       </ul>
                       <p>
                         <strong>Information collected automatically</strong>
@@ -171,11 +175,6 @@ export function PrivacyPolicy() {
                                                 <td>Payment processing</td>
                                                 <td>Stripe, Inc.</td>
                                                 <td>Billing and subscriptions</td>
-                                              </tr>
-                                              <tr>
-                                                <td>Transactional email</td>
-                                                <td>[EMAIL PROVIDER PLACEHOLDER]</td>
-                                                <td>Billing and account emails</td>
                                               </tr>
                                               <tr>
                                                 <td>Email delivery</td>
