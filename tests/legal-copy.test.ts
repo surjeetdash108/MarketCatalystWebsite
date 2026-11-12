@@ -9,14 +9,16 @@ const privacy = read("components/marketing/PrivacyPolicy.tsx");
 const appTerms = read("../MarketCatalystUI/app/auth/legal/terms-content.tsx");
 
 test("Terms §12 describes the real billing behaviour and is flagged for legal review", () => {
-  for (const phrase of ["Manage Plan page", "you keep access to your paid plan until that date", "prorated amount", "end of the current billing period", "following 7 days", "once per person", "at least 30 days"]) {
+  for (const phrase of ["Manage Plan page", "you keep access to your paid plan until that date", "prorated amount", "end of your current billing period", "Every plan change is made on the checkout page", "7-day free trial, once per person", "following 7 days", "once per person", "at least 30 days"]) {
     assert.ok(terms.includes(phrase), phrase);
   }
   assert.match(terms, /\[LEGAL REVIEW PLACEHOLDER/);
+  // No refunds, no downgrade credit, trials exist.
+  for (const gone of ["credited to your account balance", "We do not currently offer free trials", "take effect immediately. Upgrades"]) assert.ok(!terms.includes(gone), gone);
 });
 
 test("website and app Terms §12 are the same text", () => {
-  // Both render the same generated refund paragraph (REFUND_WINDOW_DAYS); only the import name differs.
+  // Both render the same generated no-refunds paragraph; only the import name differs.
   const section = (s: string) =>
     s.slice(s.indexOf('<h2 id="subscriptions">'), s.indexOf("</ul>", s.indexOf('<h2 id="subscriptions">'))).replace(/\s+/g, " ").replace("{refundPolicy().termsParagraph}", "{REFUND_POLICY.termsParagraph}");
   assert.equal(section(terms), section(appTerms));
