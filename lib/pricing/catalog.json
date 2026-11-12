@@ -4,7 +4,7 @@
     {
       "id": "starter",
       "name": "Starter",
-      "description": "Market Desk and Stock Intelligence.",
+      "description": "Market Catalyst and Stock Intelligence.",
       "currency": "USD",
       "prices": {
         "monthly": {
@@ -21,7 +21,7 @@
         "stockIntelligence"
       ],
       "bullets": [
-        "Market Desk: all workspaces",
+        "Market Catalyst: all workspaces",
         "Stock Intelligence and AI research",
         "Trade Builder and Trade Tracker"
       ]
@@ -82,7 +82,7 @@
     }
   ],
   "everyPlanIncludes": [
-    "Market Desk — every workspace: dashboard, live feed, movers, heatmap, calendar, IPOs, screener, recaps, Earnings Hub, analyst actions, 13F & insider, ETF Corner and AI Companies",
+    "Market Catalyst — every workspace: dashboard, live feed, movers, heatmap, calendar, IPOs, screener, recaps, Earnings Hub, analyst actions, 13F & insider, ETF Corner and AI Companies",
     "Stock Intelligence — any stock's financials, ratings, peers, dividends, earnings detail and transcripts, AI research, and intraday and five-year charts with indicators",
     "Portfolio — track holdings with live prices and profit/loss",
     "Watchlist — unlimited tickers"

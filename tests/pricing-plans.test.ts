@@ -108,11 +108,11 @@ test("tile bullets and every plan includes are catalog tokens in raw home.html, 
   assert.match(raw, /\{\{BULLETS:pro\}\}/);
   assert.match(raw, /\{\{BULLETS:elite\}\}/);
   assert.match(raw, /\{\{EVERY_PLAN_INCLUDES\}\}/);
-  assert.doesNotMatch(raw, /Market Desk: all 15 workspaces/);
+  assert.doesNotMatch(raw, /Market Catalyst: all 15 workspaces/);
 });
 
 test("rendered page contains bullets from catalog.json and no 'free' mention in hero CTA", () => {
-  assert.match(html, /Market Desk: all workspaces/);
+  assert.match(html, /Market Catalyst: all workspaces/);
   assert.match(html, /Stock Intelligence and AI research/);
   assert.match(html, /Money Flow by sector/);
   assert.match(html, /Strategy Lab entry, stop and target levels/);
