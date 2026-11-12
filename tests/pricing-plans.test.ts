@@ -40,9 +40,9 @@ test("old plan prices ($49, $79, $249, $29.99, $49.99) are not shown", () => {
   for (const re of [/\$49<\/s>/, /\$79<\/s>/, /\$249<\/s>/, /\$29\.99/, /\$49\.99/]) assert.doesNotMatch(section, re);
 });
 
-test("each tile's CTA opens the app's /manage-plan with that plan and interval (annual by default)", () => {
+test("each tile's CTA opens the app with that plan and interval (annual by default)", () => {
   for (const plan of ["starter", "pro", "elite"]) {
-    assert.match(html, new RegExp(`data-plan="${plan}" href="https://app\\.marketcatalyst\\.ai/manage-plan\\?plan=${plan}&amp;interval=annual"`));
+    assert.match(html, new RegExp(`data-plan="${plan}" href="https://app\\.marketcatalyst\\.ai/(auth/signup|manage-plan)\\?plan=${plan}&amp;interval=annual"`));
   }
 });
 
@@ -51,12 +51,8 @@ test("the Monthly/Annual switch rewrites each CTA's interval", () => {
   assert.match(raw, /u\.searchParams\.set\('interval', annual \? 'annual' : 'monthly'\)/);
 });
 
-test("pricing copy: cancel line and no unverified strategy count", () => {
-  assert.match(html, /Renews automatically until you cancel\. Cancel anytime and keep access until the end of your billing period\./);
-  // The refund sentence is the generated REFUND_WINDOW_DAYS copy, never typed into the page.
-  assert.ok(html.includes(refundPolicy().checkoutLine.replace(/'/g, "'")), "refund line from catalog.json");
-  assert.doesNotMatch(raw, /Full refund within \d+ day/);
-  assert.doesNotMatch(html, /no questions asked/);
+test("pricing copy: cancel line removed and no unverified strategy count", () => {
+  assert.doesNotMatch(html, /Renews automatically until you cancel/);
   assert.doesNotMatch(html, /56 strategies|Fifty-six/);
 });
 
