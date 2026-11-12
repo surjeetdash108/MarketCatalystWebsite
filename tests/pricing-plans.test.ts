@@ -3,7 +3,7 @@ import assert from "node:assert/strict";
 import fs from "node:fs";
 import path from "node:path";
 import { homeDocument } from "../lib/landing/home-document";
-import { fallbackCatalog, fillPriceTokens, isCompleteCatalog, loadCatalog, refundPolicy, type CatalogPlan } from "../lib/pricing/catalog";
+import { fallbackCatalog, fillPriceTokens, isCompleteCatalog, loadCatalog, type CatalogPlan } from "../lib/pricing/catalog";
 
 const raw = fs.readFileSync(path.join(process.cwd(), "lib/landing/home.html"), "utf8");
 const html = homeDocument(fallbackCatalog());
@@ -51,10 +51,10 @@ test("the Monthly/Annual switch rewrites each CTA's interval", () => {
   assert.match(raw, /u\.searchParams\.set\('interval', annual \? 'annual' : 'monthly'\)/);
 });
 
-test("pricing copy: cancel line and no unverified strategy count", () => {
-  assert.match(html, /Renews automatically until you cancel\. Cancel anytime and keep access until the end of your billing period\./);
-  // The refund sentence is the generated REFUND_WINDOW_DAYS copy, never typed into the page.
-  assert.ok(html.includes(refundPolicy().checkoutLine.replace(/'/g, "'")), "refund line from catalog.json");
+test("pricing copy: no renewal/refund note under the heading, and no unverified strategy count", () => {
+  // The green renewal/refund note under "One platform. Simple plans." was removed on purpose.
+  assert.doesNotMatch(html, /Renews automatically until you cancel/);
+  assert.doesNotMatch(raw, /\{\{REFUND_LINE\}\}/);
   assert.doesNotMatch(raw, /Full refund within \d+ day/);
   assert.doesNotMatch(html, /no questions asked/);
   assert.doesNotMatch(html, /56 strategies|Fifty-six/);
