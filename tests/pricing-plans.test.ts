@@ -112,7 +112,7 @@ test("tile bullets and every plan includes are catalog tokens in raw home.html, 
 });
 
 test("rendered page contains bullets from catalog.json and no 'free' mention in hero CTA", () => {
-  assert.match(html, /Market Desk: all workspaces/);
+  assert.match(html, /Market Catalyst: all workspaces/);
   assert.match(html, /Stock Intelligence and AI research/);
   assert.match(html, /Money Flow by sector/);
   assert.match(html, /Strategy Lab entry, stop and target levels/);
