@@ -115,7 +115,8 @@ test("rendered page contains bullets from catalog.json and no 'free' mention in 
   assert.match(html, /Market Catalyst: all workspaces/);
   assert.match(html, /Stock Intelligence and AI research/);
   assert.match(html, /Money Flow by sector/);
-  assert.match(html, /Strategy Lab entry, stop and target levels/);
+  assert.match(html, /See where money is rotating today: the top 15 movers each way and the price levels to watch/);
+  assert.doesNotMatch(html, /Strategy Lab entry, stop and target levels|Biggest institutional gainers and losers/);
   assert.doesNotMatch(html, /Sign up for free/);
   assert.match(html, /Get started <i>→<\/i>/);
 });
