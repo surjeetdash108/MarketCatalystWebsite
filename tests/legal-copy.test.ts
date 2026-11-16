@@ -9,7 +9,7 @@ const privacy = read("components/marketing/PrivacyPolicy.tsx");
 const appTerms = read("../MarketCatalystUI/app/auth/legal/terms-content.tsx");
 
 test("Terms §12 describes the real billing behaviour and is flagged for legal review", () => {
-  for (const phrase of ["Manage Plan page", "you keep access to your paid plan until that date", "prorated amount", "end of your current billing period", "Every plan change is made on the checkout page", "7-day free trial, once per person", "following 7 days", "once per person", "at least 30 days"]) {
+  for (const phrase of ["Manage Plan page", "you keep access to your paid plan until that date", "prorated amount", "end of your current billing period", "Before you confirm a switch, we show you when the new plan starts and what you pay", "the difference is kept as Market Catalyst credits", "your next charge is for the new plan", "7-day free trial, once per person", "following 7 days", "once per person", "at least 30 days"]) {
     assert.ok(terms.includes(phrase), phrase);
   }
   assert.match(terms, /\[LEGAL REVIEW PLACEHOLDER/);
