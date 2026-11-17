@@ -107,7 +107,8 @@ test("tile bullets and every plan includes are catalog tokens in raw home.html, 
   assert.match(raw, /\{\{BULLETS:starter\}\}/);
   assert.match(raw, /\{\{BULLETS:pro\}\}/);
   assert.match(raw, /\{\{BULLETS:elite\}\}/);
-  assert.match(raw, /\{\{EVERY_PLAN_INCLUDES\}\}/);
+  // The "What's included in every plan" cards in home.html are fixed copy; they do not carry
+  // {{EVERY_PLAN_INCLUDES}} (that token is still supported by fillPriceTokens).
   assert.doesNotMatch(raw, /Market Desk: all 15 workspaces/);
 });
 

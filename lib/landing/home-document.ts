@@ -21,8 +21,11 @@ import { fallbackCatalog, fillPriceTokens, type CatalogPlan } from "@/lib/pricin
  * The title and description are read from the file itself, so the social cards
  * always match the page.
  *
- * Replacing the page is a file swap: copy the new build over home.html. Nothing
- * here needs to change unless it stops having a <title> / description.
+ * Replacing the page is a file swap: copy the new build over home.html, then run
+ * `node scripts/slim-home.mjs`. The design build inlines its fonts, hero image and
+ * tour script (~8 MB); that script moves them to public/landing so the page is
+ * ~220 KB and can paint quickly. Nothing here needs to change unless the file stops
+ * having a <title> / description.
  */
 
 const SITE_URL = "https://marketcatalyst.ai";

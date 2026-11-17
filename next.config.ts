@@ -114,6 +114,12 @@ const nextConfig: NextConfig = {
           { key: "Strict-Transport-Security", value: "max-age=63072000; includeSubDomains; preload" },
         ],
       },
+      {
+        // Home-page fonts, image and tour script (scripts/slim-home.mjs). Every
+        // file name carries a hash of its content, so they can be cached for good.
+        source: "/landing/:path*",
+        headers: [{ key: "Cache-Control", value: "public, max-age=31536000, immutable" }],
+      },
     ];
   },
 };
