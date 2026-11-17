@@ -12,8 +12,9 @@ import { loadCatalog } from "@/lib/pricing/catalog";
 // the layout uses, and so there is no second public URL for the same page.
 //
 // Anything that links to "/" must use a plain <a>, not <Link>: Next would
-// prefetch a <Link> target as an app-router page, and here that is an 8 MB
-// document on every page that shows the nav.
+// prefetch a <Link> target as an app-router page and pull the whole document
+// (about 220 KB since scripts/slim-home.mjs moved the fonts, hero image and tour
+// script out to /landing; it was 8 MB before) on every page that shows the nav.
 //
 // Pricing tiles are filled from the backend plan catalog (GET /plans), so the
 // page is regenerated hourly instead of once per build: a price change in the
