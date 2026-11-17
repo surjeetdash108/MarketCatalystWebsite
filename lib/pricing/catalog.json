@@ -71,12 +71,14 @@
         "marketDesk",
         "stockIntelligence",
         "moneyFlow",
-        "strategyLab"
+        "strategyLab",
+        "alphaSignals"
       ],
       "bullets": [
         "Everything in Pro",
         "Strategy Lab",
-        "Backtest any strategy"
+        "Backtest any strategy",
+        "Alpha Signals: intraday and swing setups (opens after the free trial)"
       ]
     }
   ],
