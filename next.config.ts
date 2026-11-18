@@ -11,6 +11,18 @@ const nextConfig: NextConfig = {
   // Don't advertise the framework in responses.
   poweredByHeader: false,
 
+  // Crawlers that must get <title>/<meta> inside <head> in the first response.
+  // Next streams a dynamic page's metadata AFTER the shell, as a hidden <div> at
+  // the end of <body> that a script later moves into <head>, for any user agent it
+  // does not recognise as a search bot. A crawler that reads the raw HTML (e.g.
+  // Screaming Frog) then reports "Page Title Outside <head>" on every /posts URL
+  // (the 144-URL audit). A bot on this list gets a blocking render instead.
+  // Setting this REPLACES Next's built-in list, so that list is repeated first
+  // (next/dist/shared/lib/router/utils/html-bots.js), then the SEO auditors and
+  // any other user agent that calls itself a bot, crawler or spider.
+  htmlLimitedBots:
+    /[\w-]+-Google|Google-[\w-]+|Chrome-Lighthouse|Slurp|DuckDuckBot|baiduspider|yandex|sogou|bitlybot|tumblr|vkShare|quora link preview|redditbot|ia_archiver|Bingbot|BingPreview|applebot|facebookexternalhit|facebookcatalog|Twitterbot|LinkedInBot|Slackbot|Discordbot|WhatsApp|SkypeUriPreview|Yeti|googleweblight|Screaming Frog|Sitebulb|Lumar|DeepCrawl|Botify|OnCrawl|AhrefsBot|SemrushBot|bot\b|crawl|spider/i,
+
   // firebase-admin pulls in jose (ESM-only) via jwks-rsa, which breaks when
   // bundled for the server by Turbopack/webpack (`ERR_REQUIRE_ESM`). Keeping
   // it as a real external `require()` at runtime — rather than bundled —
