@@ -83,6 +83,7 @@ export function SiteFooter() {
             <Link href="/about">About us</Link>
             <Link href="/contact">Contact us</Link>
             <Link href="/posts">Resources</Link>
+            <Link href="/faqs">FAQs</Link>
             <Link href="/careers">Careers</Link>
           </div>
         </div>
@@ -90,7 +91,6 @@ export function SiteFooter() {
         <div>
           <div className="mc-footer-h">Legal</div>
           <div className="mc-footer-links">
-            <Link href="/faqs">FAQs</Link>
             <Link href="/legal/terms">Terms of service</Link>
             <Link href="/legal/privacy">Privacy policy</Link>
           </div>
