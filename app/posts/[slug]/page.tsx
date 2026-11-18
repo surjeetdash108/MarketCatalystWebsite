@@ -196,7 +196,7 @@ export default async function PostPage({
             document under it — with no hero it is bare margin, so it goes. */}
         {heroSrc && (
           <div className="post-doc-back post-doc-hero">
-            <ArticleHero src={heroSrc} />
+            <ArticleHero src={heroSrc} alt={post.title} />
           </div>
         )}
         {/* The site normally stays out of an html post's way — the document
@@ -243,7 +243,7 @@ export default async function PostPage({
       </div>
 
       <article className="article mc-doc">
-        {heroSrc && <ArticleHero src={heroSrc} />}
+        {heroSrc && <ArticleHero src={heroSrc} alt={post.title} />}
         {/* A source document opens with its own masthead, headline and date —
             so printing ours above it stated the same thing twice, in the
             importer's mangled words. The title still names the post everywhere
