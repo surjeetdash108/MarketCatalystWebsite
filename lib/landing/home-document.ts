@@ -5,6 +5,7 @@ import { GA4_ID, gtagConfig, gtagSrc } from "@/lib/analytics/ga";
 import { DEFAULT_OG_IMAGE } from "@/lib/seo/og";
 import { SCHEMA_ORG_JSON_LD } from "@/lib/seo/schema-org";
 import { fallbackCatalog, fillPriceTokens, type CatalogPlan } from "@/lib/pricing/catalog";
+import { postPath } from "@/lib/seo/shortened-posts";
 
 /**
  * The home page.
@@ -76,13 +77,70 @@ function headTags(html: string): string {
   ].join("\n");
 }
 
+
+/** The newest posts shown on the home page: enough of a post to link to it. */
+export type HomePost = { title: string; slug: string; publishedAt: string | null };
+
+const LATEST_POSTS_SLOT = "<!--MC_LATEST_POSTS-->";
+
+const LATEST_POSTS_CSS = `.mc-latest{padding:clamp(56px,9vh,110px) var(--mc-gutter);position:relative}
+.mc-latest-inner{max-width:var(--mc-maxw);margin:0 auto}
+.mc-latest-k{font-family:var(--mc-font-mono);font-size:11px;letter-spacing:.16em;text-transform:uppercase;color:var(--mc-up)}
+.mc-latest-h{margin:14px 0 32px;font-size:clamp(26px,3.4vw,44px);font-weight:600;letter-spacing:-.04em;line-height:1}
+.mc-latest-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:18px;list-style:none;margin:0;padding:0}
+.mc-latest-card{display:flex;flex-direction:column;gap:12px;height:100%;box-sizing:border-box;background:var(--mc-bg-card);border:1px solid var(--mc-line);border-radius:12px;padding:22px;color:var(--mc-text);text-decoration:none;transition:background .2s,border-color .2s}
+.mc-latest-card:hover{background:var(--mc-bg-hover);border-color:var(--mc-line-strong)}
+.mc-latest-card time{font-family:var(--mc-font-mono);font-size:11px;letter-spacing:.12em;text-transform:uppercase;color:var(--mc-text-faint)}
+.mc-latest-card span{font-size:17px;font-weight:600;line-height:1.3}
+.mc-latest-all{display:inline-block;margin-top:26px;color:var(--mc-up);text-decoration:none;font-size:15px}
+.mc-latest-all:hover{text-decoration:underline}
+@media (max-width:860px){.mc-latest-grid{grid-template-columns:1fr}}`;
+
+/** "Nov 18, 2026", in UTC so the build machine's time zone cannot move the date. */
+function postDate(iso: string): { text: string; attr: string } | null {
+  const d = new Date(iso);
+  if (Number.isNaN(d.getTime())) return null;
+  return {
+    text: d.toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric", timeZone: "UTC" }),
+    attr: d.toISOString().slice(0, 10),
+  };
+}
+
+/**
+ * A "Latest market recaps" section linking the newest posts: fresh internal links
+ * for crawlers and a visible sign that the product is active. Empty when there are
+ * no posts, so a failed read never leaves a blank section on the page.
+ */
+export function latestPostsBlock(posts: HomePost[]): string {
+  if (posts.length === 0) return "";
+  const items = posts
+    .map((p) => {
+      const date = p.publishedAt ? postDate(p.publishedAt) : null;
+      const time = date ? `<time datetime="${date.attr}">${esc(date.text)}</time>` : "";
+      return `<li><a class="mc-latest-card" href="${esc(postPath(p.slug))}">${time}<span>${esc(p.title)}</span></a></li>`;
+    })
+    .join("");
+  return (
+    `<section class="mc-latest" id="latest" aria-labelledby="mc-latest-h">` +
+    `<style>${LATEST_POSTS_CSS}</style>` +
+    `<div class="mc-latest-inner"><div class="mc-latest-k">Daily market recaps</div>` +
+    `<h2 class="mc-latest-h" id="mc-latest-h">Latest market recaps</h2>` +
+    `<ul class="mc-latest-grid">${items}</ul>` +
+    `<a class="mc-latest-all" href="/posts?section=recap">All market recaps &rarr;</a></div></section>`
+  );
+}
+
 /** The home page document: home.html with the site-wide tags added. */
 /**
  * The home page with the pricing tiles filled from the plan catalog
- * (`plans`: GET /plans, or the generated fallback copy).
+ * (`plans`: GET /plans, or the generated fallback copy) and the newest posts
+ * linked in the "Latest market recaps" section (`posts`, newest first).
  */
-export function homeDocument(plans: CatalogPlan[] = fallbackCatalog()): string {
-  const html = fillPriceTokens(readFileSync(path.join(process.cwd(), "lib", "landing", "home.html"), "utf8"), plans);
+export function homeDocument(plans: CatalogPlan[] = fallbackCatalog(), posts: HomePost[] = []): string {
+  const html = fillPriceTokens(readFileSync(path.join(process.cwd(), "lib", "landing", "home.html"), "utf8"), plans).replace(
+    LATEST_POSTS_SLOT,
+    latestPostsBlock(posts),
+  );
 
   // The first </head> and the first <body> are the page's own; later ones are
   // inside the About page the file carries as inert text.

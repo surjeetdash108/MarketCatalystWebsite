@@ -1,5 +1,6 @@
 import { gzipSync } from "node:zlib";
-import { homeDocument } from "@/lib/landing/home-document";
+import { getLivePostSummaries } from "@/lib/blog/posts";
+import { homeDocument, type HomePost } from "@/lib/landing/home-document";
 import { loadCatalog } from "@/lib/pricing/catalog";
 
 // The home page: the self-contained landing document in lib/landing/home.html
@@ -18,7 +19,8 @@ import { loadCatalog } from "@/lib/pricing/catalog";
 //
 // Pricing tiles are filled from the backend plan catalog (GET /plans), so the
 // page is regenerated hourly instead of once per build: a price change in the
-// catalog reaches the website without a website deploy.
+// catalog reaches the website without a website deploy. The same hourly pass
+// refreshes the "Latest market recaps" links.
 export const revalidate = 3600;
 
 // Compressed here, once at build, and sent as gzip to everyone. Next compresses
@@ -26,9 +28,22 @@ export const revalidate = 3600;
 // without this the 8 MB document went out as 8 MB on every visit (about 2.6 MB
 // gzipped). Every browser and crawler accepts gzip; only a bare `curl` without
 // --compressed would see the encoded bytes.
+/** The three newest daily recaps for the "Latest market recaps" section; none if the read fails. */
+async function latestRecaps(): Promise<HomePost[]> {
+  try {
+    const posts = await getLivePostSummaries();
+    return posts
+      .filter((p) => p.type === "recap")
+      .slice(0, 3)
+      .map((p) => ({ title: p.title, slug: p.slug, publishedAt: p.publishedAt }));
+  } catch {
+    return [];
+  }
+}
+
 export async function GET() {
-  const { plans } = await loadCatalog();
-  const body = gzipSync(homeDocument(plans), { level: 9 });
+  const [{ plans }, recaps] = await Promise.all([loadCatalog(), latestRecaps()]);
+  const body = gzipSync(homeDocument(plans, recaps), { level: 9 });
   return new Response(new Uint8Array(body), {
     headers: { "Content-Type": "text/html; charset=utf-8", "Content-Encoding": "gzip" },
   });
