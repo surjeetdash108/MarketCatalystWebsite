@@ -10,6 +10,7 @@ import { PostHtmlDoc } from "@/components/blog/PostHtmlDoc";
 import { ArticleHero } from "@/components/blog/ArticleHero";
 import { RelatedPosts } from "@/components/blog/RelatedPosts";
 import { resolvePostDesign } from "@/lib/blog/post-design";
+import { formatPublished } from "@/lib/blog/published-time";
 // blog-doc.css reads tokens from the older iq-* design system, so articles
 // load it alongside; public pages no longer get it from the root layout.
 import "../../iq.css";
@@ -170,6 +171,22 @@ export default async function PostPage({
   const hasOwnHeadline = /<h1[\s>]/i.test(post.content);
   const heroSrc = isValidHeroSrc(post?.coverImageUrl) ? post?.coverImageUrl?.trim() : null;
 
+  /* A post that prints its own header (a designed HTML page, a source document)
+     shows its date inside that design, where a crawler cannot tell it is a
+     date. This <time> carries the same instant in machine-readable form. It is
+     visually hidden so the design stays as authored; the article's JSON-LD
+     datePublished is the same value. */
+  const publishedLabel = formatPublished(post.publishedAt);
+  const publishedDateline =
+    post.publishedAt && publishedLabel ? (
+      <time
+        dateTime={post.publishedAt}
+        style={{ position: "absolute", width: 1, height: 1, margin: -1, padding: 0, overflow: "hidden", clip: "rect(0 0 0 0)", whiteSpace: "nowrap", border: 0 }}
+      >
+        {publishedLabel}
+      </time>
+    ) : null;
+
   /* An authored-HTML post is a complete designed page, so it is given the page:
      full width, a white ground, and none of the site's own article furniture.
      Everything below this branch is the site DRAWING an article — card,
@@ -212,6 +229,8 @@ export default async function PostPage({
           </div>
         )}
 
+        {publishedDateline}
+
         <PostHtmlDoc html={post.content} design={design} keepFirstH1={hasOwnHeadline} />
 
         <AuthorBox author={post.author} />
@@ -244,6 +263,7 @@ export default async function PostPage({
 
       <article className="article mc-doc">
         {heroSrc && <ArticleHero src={heroSrc} alt={post.title} />}
+        {(isDoc || hasOwnHeadline) && publishedDateline}
         {/* A source document opens with its own masthead, headline and date —
             so printing ours above it stated the same thing twice, in the
             importer's mangled words. The title still names the post everywhere
@@ -260,22 +280,9 @@ export default async function PostPage({
             {post.excerpt && <p className="article-sub">{post.excerpt}</p>}
             {post.publishedAt && (
               <div className="article-meta">
-                {/* Fixed to New York rather than the reader's zone: this page is
-                    server-rendered and hydrated, and a zone-dependent string
-                    differs between the two. The posts are about the US session,
-                    so the closing bell is the useful reference either way. */}
-                <time dateTime={post.publishedAt}>
-                  {new Date(post.publishedAt).toLocaleDateString("en-US", {
-                    year: "numeric", month: "long", day: "numeric",
-                    timeZone: "America/New_York",
-                  })}
-                  {" · "}
-                  {new Date(post.publishedAt).toLocaleTimeString("en-GB", {
-                    hour: "2-digit", minute: "2-digit", hour12: false,
-                    timeZone: "America/New_York",
-                  })}
-                  {" ET"}
-                </time>
+                {/* Wording and zone live in formatPublished, shared with the
+                    hidden dateline on posts that print their own header. */}
+                <time dateTime={post.publishedAt}>{formatPublished(post.publishedAt)}</time>
               </div>
             )}
             <hr className="article-rule" />

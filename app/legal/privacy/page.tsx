@@ -5,7 +5,7 @@ import { pageMetadata } from "@/lib/seo/og";
 export const metadata: Metadata = pageMetadata({
   title: "Privacy Policy | MarketCatalyst",
   description:
-    "Privacy Policy for MarketCatalyst.",
+    "How MarketCatalyst collects, uses and shares your personal data, how long we keep it, and the privacy rights you have under US state law.",
   path: "/legal/privacy",
 });
 

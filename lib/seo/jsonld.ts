@@ -77,7 +77,11 @@ function cleanSentence(s: string): string {
  * 4. If a sentence exceeds maxChars, breaks at natural clause boundaries (, as, , while, etc.)
  *    ensuring complete thoughts and grammatical integrity without trailing ellipsis.
  */
-export function summarizeForSeo(text: string | null | undefined, maxChars = 119): string | undefined {
+export function summarizeForSeo(
+  text: string | null | undefined,
+  maxChars = 119,
+  minChars = 0
+): string | undefined {
   if (!text) return undefined;
 
   // Clean HTML tags, markdown syntax, and normalize spaces
@@ -100,7 +104,7 @@ export function summarizeForSeo(text: string | null | undefined, maxChars = 119)
   // If first sentence fits cleanly and has substance
   if (sentences.length > 0) {
     const s0 = sentences[0];
-    if (s0.length >= 45 && s0.length <= maxChars) {
+    if (s0.length >= Math.max(45, minChars) && s0.length <= maxChars) {
       return s0;
     }
     // Try combining sentences if multiple fit under limit
@@ -109,6 +113,8 @@ export function summarizeForSeo(text: string | null | undefined, maxChars = 119)
       const candidate = `${combined} ${sentences[i]}`;
       if (candidate.length <= maxChars) {
         combined = candidate;
+        // With a floor, stop once the description is long enough to be useful.
+        if (minChars > 0 && combined.length >= minChars) break;
       } else {
         break;
       }
@@ -171,12 +177,13 @@ export function summarizeForSeo(text: string | null | undefined, maxChars = 119)
  */
 export function resolvePostSeoDescription(
   post: { slug?: string; seo?: { metaDescription?: string | null }; excerpt?: string | null },
-  maxChars = 160
+  maxChars = 155
 ): string | undefined {
   if (post.slug && curatedDescriptions[post.slug]) {
     return curatedDescriptions[post.slug];
   }
-  return summarizeForSeo(post.seo?.metaDescription || post.excerpt, maxChars);
+  // 120 to 155: shorter reads as thin in search results, longer is cut off.
+  return summarizeForSeo(post.seo?.metaDescription || post.excerpt, maxChars, 120);
 }
 
 /**

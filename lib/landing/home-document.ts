@@ -56,7 +56,7 @@ function headTags(html: string): string {
     `<link rel="apple-touch-icon" href="/apple-icon.png">`,
     `<link rel="alternate" type="application/rss+xml" title="MarketCatalyst" href="/feed.xml">`,
     `<meta property="og:type" content="website">`,
-    `<meta property="og:url" content="${SITE_URL}">`,
+    `<meta property="og:url" content="${SITE_URL}/">`,
     `<meta property="og:site_name" content="MarketCatalyst">`,
     `<meta property="og:title" content="${title}">`,
     `<meta property="og:description" content="${description}">`,
