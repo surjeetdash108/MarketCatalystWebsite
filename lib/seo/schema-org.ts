@@ -16,6 +16,13 @@ export const SCHEMA_ORG_JSON_LD = {
         "@id": "https://marketcatalyst.ai/#logo",
         "url": "https://marketcatalyst.ai/logo.png",
       },
+      // The same four profiles the footer links to.
+      "sameAs": [
+        "https://www.linkedin.com/company/marketcatalystai/",
+        "https://x.com/marketcatalyst_",
+        "https://www.facebook.com/people/MarketCatalyst/61596395783095/",
+        "https://marketcatalyst.substack.com/",
+      ],
     },
     {
       "@type": "WebSite",

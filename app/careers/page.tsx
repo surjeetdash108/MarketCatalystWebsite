@@ -5,7 +5,7 @@ import { pageMetadata } from "@/lib/seo/og";
 export const metadata: Metadata = pageMetadata({
   title: "Careers | MarketCatalyst",
   description:
-    "Open engineering, data and equity research roles at MarketCatalyst Analytics LLC. Remote roles for Texas residents.",
+    "Join the team building an AI stock research terminal. Open engineering, data and equity research roles at MarketCatalyst Analytics LLC.",
   path: "/careers",
 });
 

@@ -9,7 +9,7 @@ import "../pages.css";
 export const metadata: Metadata = pageMetadata({
   title: "Contact — MarketCatalyst",
   description:
-    "Get in touch with the MarketCatalyst team — product questions, partnerships, press and support.",
+    "Get in touch with the MarketCatalyst team — product questions, partnerships, press and support for our AI stock research terminal.",
   path: "/contact",
 });
 
