@@ -11,17 +11,18 @@ const nextConfig: NextConfig = {
   // Don't advertise the framework in responses.
   poweredByHeader: false,
 
-  // Crawlers that must get <title>/<meta> inside <head> in the first response.
-  // Next streams a dynamic page's metadata AFTER the shell, as a hidden <div> at
-  // the end of <body> that a script later moves into <head>, for any user agent it
-  // does not recognise as a search bot. A crawler that reads the raw HTML (e.g.
-  // Screaming Frog) then reports "Page Title Outside <head>" on every /posts URL
-  // (the 144-URL audit). A bot on this list gets a blocking render instead.
-  // Setting this REPLACES Next's built-in list, so that list is repeated first
-  // (next/dist/shared/lib/router/utils/html-bots.js), then the SEO auditors and
-  // any other user agent that calls itself a bot, crawler or spider.
-  htmlLimitedBots:
-    /[\w-]+-Google|Google-[\w-]+|Chrome-Lighthouse|Slurp|DuckDuckBot|baiduspider|yandex|sogou|bitlybot|tumblr|vkShare|quora link preview|redditbot|ia_archiver|Bingbot|BingPreview|applebot|facebookexternalhit|facebookcatalog|Twitterbot|LinkedInBot|Slackbot|Discordbot|WhatsApp|SkypeUriPreview|Yeti|googleweblight|Screaming Frog|Sitebulb|Lumar|DeepCrawl|Botify|OnCrawl|AhrefsBot|SemrushBot|bot\b|crawl|spider/i,
+  // Every request gets <title>, <meta> and the canonical inside <head>.
+  // Next streams a page's metadata AFTER the shell (a hidden <div> at the end of
+  // <body>, moved into <head> by a script) for any user agent not on this list.
+  // /posts/[slug] is static and revalidated on a timer; the refresh is rendered
+  // with the user agent of whoever triggered it, so a browser visit can leave the
+  // streamed variant as the cached page that crawlers are then served. In the
+  // 20 Nov audit 69 of 143 posts had the canonical outside <head>, a different
+  // set on each request, with the same user agent: naming crawlers (the previous
+  // setting) cannot fix that. A pattern that matches every user agent makes the
+  // render blocking whoever triggers it. Setting this REPLACES Next's built-in
+  // list, so /.*/ makes any list unnecessary.
+  htmlLimitedBots: /.*/,
 
   // firebase-admin pulls in jose (ESM-only) via jwks-rsa, which breaks when
   // bundled for the server by Turbopack/webpack (`ERR_REQUIRE_ESM`). Keeping
