@@ -5,6 +5,7 @@ import { GA4_ID, gtagConfig, gtagSrc } from "@/lib/analytics/ga";
 import { DEFAULT_OG_IMAGE } from "@/lib/seo/og";
 import { SCHEMA_ORG_JSON_LD } from "@/lib/seo/schema-org";
 import { fallbackCatalog, fillPriceTokens, type CatalogPlan } from "@/lib/pricing/catalog";
+import { WORKSPACE_COUNT } from "@/lib/features/features";
 import { postPath } from "@/lib/seo/shortened-posts";
 
 /**
@@ -82,6 +83,8 @@ function headTags(html: string): string {
 export type HomePost = { title: string; slug: string; publishedAt: string | null };
 
 const LATEST_POSTS_SLOT = "<!--MC_LATEST_POSTS-->";
+/** The workspace count on the Market Desk tile, filled from WORKSPACE_COUNT so it matches every other page. */
+const WORKSPACE_COUNT_SLOT = "__MC_WORKSPACE_COUNT__";
 
 const LATEST_POSTS_CSS = `.mc-latest{padding:clamp(56px,9vh,110px) var(--mc-gutter);position:relative}
 .mc-latest-inner{max-width:var(--mc-maxw);margin:0 auto}
@@ -137,10 +140,9 @@ export function latestPostsBlock(posts: HomePost[]): string {
  * linked in the "Latest market recaps" section (`posts`, newest first).
  */
 export function homeDocument(plans: CatalogPlan[] = fallbackCatalog(), posts: HomePost[] = []): string {
-  const html = fillPriceTokens(readFileSync(path.join(process.cwd(), "lib", "landing", "home.html"), "utf8"), plans).replace(
-    LATEST_POSTS_SLOT,
-    latestPostsBlock(posts),
-  );
+  const html = fillPriceTokens(readFileSync(path.join(process.cwd(), "lib", "landing", "home.html"), "utf8"), plans)
+    .replace(LATEST_POSTS_SLOT, latestPostsBlock(posts))
+    .replace(WORKSPACE_COUNT_SLOT, String(WORKSPACE_COUNT));
 
   // The first </head> and the first <body> are the page's own; later ones are
   // inside the About page the file carries as inert text.
