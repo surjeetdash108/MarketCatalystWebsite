@@ -3,6 +3,7 @@ import type { NextConfig } from "next";
 import { DUPLICATE_POSTS } from "./lib/seo/duplicate-posts";
 import { LEGACY_POST_REDIRECTS } from "./lib/seo/legacy-posts";
 import { publicPostSlug, SHORTENED_POSTS } from "./lib/seo/shortened-posts";
+import { APP_URL } from "./components/marketing/app-url";
 
 const siteUrl = process.env.NEXT_PUBLIC_SITE_URL;
 const siteHost = siteUrl ? new URL(siteUrl).host : undefined;
@@ -112,6 +113,12 @@ const nextConfig: NextConfig = {
       // old links and anything indexed to the home page rather than a 404.
       { source: "/features", destination: "/", statusCode: 301 as const },
       { source: "/features/:path*", destination: "/", statusCode: 301 as const },
+      // Common addresses people type (W-16, 24 Nov 2026 audit): pricing is a
+      // section of the home page; sign-in and sign-up live in the app.
+      { source: "/pricing", destination: "/#pricing", statusCode: 301 as const },
+      { source: "/login", destination: `${APP_URL}/auth/login`, statusCode: 301 as const },
+      { source: "/signup", destination: `${APP_URL}/auth/signup`, statusCode: 301 as const },
+      { source: "/sitemap", destination: "/sitemap.xml", statusCode: 301 as const },
     ];
   },
 
