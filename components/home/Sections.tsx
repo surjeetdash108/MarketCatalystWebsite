@@ -58,7 +58,7 @@ export function Coverage() {
               Why it moved, earnings, analysts — <span className="mc-serif">all in one place</span>
             </h2>
           </div>
-          <div className="mc-head-note">One normalised record · every view attributed</div>
+          <div className="mc-head-note">One normalized record · every view attributed</div>
         </div>
 
         <div className="mc-stats">

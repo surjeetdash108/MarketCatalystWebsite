@@ -19,3 +19,11 @@ test("W-13: the illustrative chart is labelled Illustrative, never LIVE", () => 
   assert.doesNotMatch(chart, />LIVE</);
   assert.match(chart, />Illustrative</);
 });
+
+test("W-14: US spelling in marketing copy", () => {
+  for (const f of ["app/about/page.tsx", "components/home/Sections.tsx", "components/faq/FaqBoard.tsx", "lib/features/features.ts"]) {
+    // Visible strings only: comments may use any spelling.
+    const copy = read(f).split("\n").filter((l) => !/^\s*(\/\/|\*|\/\*)/.test(l)).join("\n");
+    assert.doesNotMatch(copy, /\b(normalised|judgement|summarised|coloured|organised)\b/, f);
+  }
+});

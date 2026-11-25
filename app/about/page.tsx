@@ -50,7 +50,7 @@ const PIPELINE: ReadonlyArray<{ n: string; h: string; p: string }> = [
   {
     n: "03",
     h: "Derivation",
-    p: "Surprise and revision history, relative strength, breadth, regime and clustered analyst conviction are computed in-house from the normalised record — never inherited from a vendor's own scoring.",
+    p: "Surprise and revision history, relative strength, breadth, regime and clustered analyst conviction are computed in-house from the normalized record — never inherited from a vendor's own scoring.",
   },
   {
     n: "04",
@@ -96,7 +96,7 @@ const SCOPE: ReadonlyArray<{ b: string; p: string }> = [
     p: "The platform explains what the market and the filings say. It does not tell you what to own, and it is not a stock-picking or alert service.",
   },
   {
-    b: "The judgement stays with you.",
+    b: "The judgment stays with you.",
     p: "Trading equities and options carries risk. Consult your own financial adviser before acting on anything you read here.",
   },
 ];
@@ -211,7 +211,7 @@ export default function AboutPage() {
                 <p>
                   <b>We treat that gap as the product.</b> The platform is built so that the reasoning
                   travels with the data: the same system that ingests the number is the one that
-                  explains it, against the same normalised record, with the source attached.
+                  explains it, against the same normalized record, with the source attached.
                 </p>
               </div>
             </div>
