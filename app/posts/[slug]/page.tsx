@@ -146,7 +146,7 @@ export default async function PostPage({
     buildArticleJsonLd(post),
     buildBreadcrumbJsonLd([
       { name: "MarketCatalyst", path: "/" },
-      { name: "Blog", path: "/posts" },
+      { name: "Resources", path: "/posts" },
       { name: section, path: postsHref(section, 1) },
       { name: post.title, path: postPath(post.slug) },
     ]),
