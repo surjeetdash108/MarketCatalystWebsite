@@ -4,7 +4,8 @@
   "private": true,
   "scripts": {
     "dev": "next dev",
-    "prebuild": "node scripts/copy-pdf-worker.mjs",
+    "prebuild": "node scripts/no-placeholders.mjs && node scripts/copy-pdf-worker.mjs",
+    "check:placeholders": "node scripts/no-placeholders.mjs",
     "build": "next build",
     "start": "next start",
     "lint": "eslint",
