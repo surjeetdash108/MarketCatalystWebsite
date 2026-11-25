@@ -52,7 +52,7 @@ const EXPECT: ReadonlyArray<{ h: string; p: string }> = [
   },
   {
     h: "Nothing resold",
-    p: "What you send is used to answer you. Your details are never passed to a third party or added to a marketing list you did not ask for.",
+    p: "We use what you send only to answer you, and we never sell it or add you to a marketing list you did not ask for. Our email provider processes messages on our behalf; see our Privacy Policy.",
   },
 ];
 

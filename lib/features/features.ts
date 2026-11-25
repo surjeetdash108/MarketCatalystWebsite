@@ -71,7 +71,7 @@ const RAW: Feature[] = [
     slug: "ai-read",
     group: "AI",
     title: "AI Stock Read",
-    blurb: "Every stock page summarised — trend, levels, strength and risk.",
+    blurb: "Every stock page summarized — trend, levels, strength and risk.",
     lede: "Open any ticker and the AI has already done the homework — charts, levels and analyst views turned into one clear story.",
     points: [
       "Trend vs. 50- and 200-day averages",
@@ -142,9 +142,9 @@ const RAW: Feature[] = [
     group: "Markets",
     title: "Heatmap",
     blurb: "Live sector and stock performance at a glance.",
-    lede: "The market as a map — every sector and stock sized by market cap and coloured by today's move.",
+    lede: "The market as a map — every sector and stock sized by market cap and colored by today's move.",
     points: [
-      "Sized by market cap, coloured by move",
+      "Sized by market cap, colored by move",
       "Drill from sector to stock",
       "Index and timeframe switches",
       "Hover for why it moved",
@@ -184,7 +184,7 @@ const RAW: Feature[] = [
     group: "Research",
     title: "Screener",
     blurb: "Twenty presets, strength, growth and technical filters — plus stocks grouped by market theme.",
-    lede: "Find setups fast with ready-made presets or build your own from strength, growth, technical and liquidity filters — then switch to Themes to see the market organised by narrative and the stocks inside each.",
+    lede: "Find setups fast with ready-made presets or build your own from strength, growth, technical and liquidity filters — then switch to Themes to see the market organized by narrative and the stocks inside each.",
     points: [
       "Twenty ready-made presets",
       "Relative strength, growth and technical filters",
@@ -253,7 +253,7 @@ const RAW: Feature[] = [
     slug: "daily-recaps",
     group: "Market Recaps",
     title: "Daily Recaps",
-    blurb: "The session summarised by What Matters Now.",
+    blurb: "The session summarized by What Matters Now.",
     lede: "An end-of-day recap of the session — indexes, movers, earnings and the headlines that mattered.",
     points: [
       "Index and sector wrap-up",

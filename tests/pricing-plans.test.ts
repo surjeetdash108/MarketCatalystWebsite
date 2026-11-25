@@ -121,3 +121,15 @@ test("rendered page contains bullets from catalog.json and no 'free' mention in 
   assert.doesNotMatch(html, /Sign up for free/);
   assert.match(html, /Get started <i>→<\/i>/);
 });
+
+test("W-03: the pricing section states the purchase terms, from the catalog", async () => {
+  const { purchaseTermsLine } = await import("../lib/pricing/catalog");
+  const raw = fs.readFileSync(path.join(process.cwd(), "lib/landing/home.html"), "utf8");
+  assert.match(raw, /<p class="mc-plan-terms" data-testid="purchase-terms">\{\{PURCHASE_TERMS\}\}<\/p>/);
+  const filled = fillPriceTokens(raw, fallbackCatalog());
+  assert.doesNotMatch(filled, /\{\{PURCHASE_TERMS\}\}/);
+  const line = purchaseTermsLine();
+  assert.match(line, /\d+-day free trial from sign-up; a plan you buy during it starts when the trial ends/);
+  assert.match(line, /Plans renew automatically until you cancel/);
+  assert.match(line, /No refunds/);
+});

@@ -31,6 +31,24 @@ export function fallbackCatalog(): CatalogPlan[] {
   return (fallback as { plans: CatalogPlan[] }).plans;
 }
 
+/** Free days for a new account, counted from sign-up (backend TRIAL_DAYS, exported into catalog.json). */
+export function trialDays(): number {
+  return (fallback as unknown as { trialDays?: number }).trialDays ?? 0;
+}
+
+/**
+ * The purchase terms under the pricing toggle (W-03): the trial (counted from
+ * sign-up, so a plan bought during it starts when it ends), automatic renewal,
+ * cancellation, and the refund rule, all from the generated catalog.
+ */
+export function purchaseTermsLine(): string {
+  const days = trialDays();
+  const trial = days > 0
+    ? `Every new account gets a ${days}-day free trial from sign-up; a plan you buy during it starts when the trial ends. `
+    : "";
+  return `${trial}Plans renew automatically until you cancel. ${refundPolicy().checkoutLine}`;
+}
+
 export function everyPlanIncludes(): string[] {
   return (fallback as unknown as { everyPlanIncludes: string[] }).everyPlanIncludes ?? [];
 }
@@ -69,7 +87,7 @@ export function money(amountMinor: number): string {
   return new Intl.NumberFormat("en-US", { style: "currency", currency: "USD", minimumFractionDigits: amountMinor % 100 === 0 ? 0 : 2 }).format(amountMinor / 100);
 }
 
-/** Fills {{PRICE:<plan>:monthly|annual|annual_per_month}}, {{SAVE:<plan>|max}}, {{BULLETS:<plan>}}, {{EVERY_PLAN_INCLUDES}} and {{REFUND_LINE}} tokens. */
+/** Fills {{PRICE:<plan>:monthly|annual|annual_per_month}}, {{SAVE:<plan>|max}}, {{BULLETS:<plan>}}, {{EVERY_PLAN_INCLUDES}}, {{REFUND_LINE}} and {{PURCHASE_TERMS}} tokens. */
 export function fillPriceTokens(html: string, plans: CatalogPlan[]): string {
   const save = (id: string) => {
     const p = plans.find((x) => x.id === id);
@@ -97,7 +115,9 @@ export function fillPriceTokens(html: string, plans: CatalogPlan[]): string {
       const items = everyPlanIncludes();
       return items.map((it) => `<li><i aria-hidden="true">✓</i><span>${escHtml(it)}</span></li>`).join("");
     });
-  const filled = out.replace(/\{\{REFUND_LINE\}\}/g, escHtml(refundPolicy().checkoutLine));
-  if (/\{\{(PRICE|SAVE|BULLETS):|\{\{(REFUND_LINE|EVERY_PLAN_INCLUDES)\}\}/.test(filled)) throw new Error("unfilled pricing token");
+  const filled = out
+    .replace(/\{\{REFUND_LINE\}\}/g, escHtml(refundPolicy().checkoutLine))
+    .replace(/\{\{PURCHASE_TERMS\}\}/g, escHtml(purchaseTermsLine()));
+  if (/\{\{(PRICE|SAVE|BULLETS):|\{\{(REFUND_LINE|EVERY_PLAN_INCLUDES|PURCHASE_TERMS)\}\}/.test(filled)) throw new Error("unfilled pricing token");
   return filled;
 }

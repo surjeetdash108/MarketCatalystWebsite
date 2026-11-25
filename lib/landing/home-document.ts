@@ -83,7 +83,7 @@ function headTags(html: string): string {
 export type HomePost = { title: string; slug: string; publishedAt: string | null };
 
 const LATEST_POSTS_SLOT = "<!--MC_LATEST_POSTS-->";
-/** The workspace count on the Market Desk tile, filled from WORKSPACE_COUNT so it matches every other page. */
+/** The workspace count on the Market Catalyst tile, filled from WORKSPACE_COUNT so it matches every other page. */
 const WORKSPACE_COUNT_SLOT = "__MC_WORKSPACE_COUNT__";
 
 const LATEST_POSTS_CSS = `.mc-latest{padding:clamp(56px,9vh,110px) var(--mc-gutter);position:relative}

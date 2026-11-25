@@ -203,7 +203,7 @@ export function FaqBoard({ faqs }: { faqs: Faq[] }) {
                 <span>From the terminal</span>
               </div>
               <p>
-                {WORKSPACE_COUNT} research workspaces over one normalised record — movers, earnings, analyst
+                {WORKSPACE_COUNT} research workspaces over one normalized record — movers, earnings, analyst
                 actions, insider flows and your own book.
               </p>
               <div className="mcp-actions">
