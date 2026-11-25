@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { notFound } from "next/navigation";
 import { getLivePostSummaries, getPublishedPostListings } from "@/lib/blog/posts";
 import { DUPLICATE_POSTS } from "@/lib/seo/duplicate-posts";
 import { buildBlogCollectionJsonLd, buildBreadcrumbJsonLd, serializeJsonLd } from "@/lib/seo/jsonld";
@@ -64,7 +65,8 @@ export async function generateMetadata({ searchParams }: { searchParams: SearchP
     }
   }
 
-  const label = section === "all" ? "Blog" : `${section} · Blog`;
+  // One label everywhere (W-18): the nav and back-links say "Resources".
+  const label = section === "all" ? "Resources" : `${section} · Resources`;
   const intro =
     section === "all"
       ? "Daily recaps, research and guides to how the market actually works."
@@ -152,21 +154,25 @@ export default async function PostsIndexPage({ searchParams }: { searchParams: S
   // Clamp here as well as in generateMetadata, so the first paint and the
   // canonical agree about which page this URL is.
   const inSection = section === "all" ? indexPosts.length : indexPosts.filter((p) => sectionOfType(p.type) === section).length;
-  const initialPage = Math.min(requested, Math.max(1, Math.ceil(inSection / PER_PAGE)));
+  const lastPage = Math.max(1, Math.ceil(inSection / PER_PAGE));
+  // A page past the end is not a page (W-17): ?page=92 used to show page 91's
+  // cards with a 200, and ?page=999 too.
+  if (requested > lastPage) notFound();
+  const initialPage = requested;
 
   // The posts this URL lists, newest first, as the page's ItemList.
   const inView = section === "all" ? indexPosts : indexPosts.filter((p) => sectionOfType(p.type) === section);
   const onPage = inView.slice((initialPage - 1) * PER_PAGE, initialPage * PER_PAGE);
   const jsonLd = [
     buildBlogCollectionJsonLd({
-      name: section === "all" ? "MarketCatalyst blog" : `${section} · MarketCatalyst blog`,
+      name: section === "all" ? "MarketCatalyst Resources" : `${section} · MarketCatalyst Resources`,
       description: "Daily recaps, research and guides to how the market actually works.",
       path: postsHref(section, initialPage),
       posts: onPage,
     }),
     buildBreadcrumbJsonLd([
       { name: "MarketCatalyst", path: "/" },
-      { name: "Blog", path: "/posts" },
+      { name: "Resources", path: "/posts" },
       ...(section === "all" ? [] : [{ name: section, path: postsHref(section, 1) }]),
     ]),
   ];
