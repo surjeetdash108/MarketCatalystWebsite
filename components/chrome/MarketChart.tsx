@@ -101,7 +101,8 @@ export function MarketChart({
           <i />
         </span>
         <span>{label}</span>
-        <span className="mcp-chart-live">LIVE</span>
+        {/* A drawn example, not market data (W-13): never labelled "LIVE". */}
+        <span className="mcp-chart-live">Illustrative</span>
       </div>
 
       <svg
