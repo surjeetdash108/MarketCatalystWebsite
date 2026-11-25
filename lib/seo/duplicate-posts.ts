@@ -12,4 +12,9 @@
 export const DUPLICATE_POSTS: [copy: string, original: string][] = [
   ["inside-the-hack-where-openai-s-own-ai-agents-went-rogue-2", "inside-the-hack-where-openai-s-own-ai-agents-went-rogue"],
   ["inside-the-hack-where-openai-s-own-ai-agents-went-rogue-3", "inside-the-hack-where-openai-s-own-ai-agents-went-rogue"],
+  // 24 Nov 2026 audit (B-06): the same quarter written up twice. Duke's copy was
+  // written for DUKB, a Duke note, not the common stock.
+  ["duke-energy-corporation-5-625-beats-q3-2026-estimates-as-revenue-rises-6-6-to-9", "duke-energy-beats-q3-2026-estimates-as-revenue-rises-5-0-to-9-10b"],
+  ["northwest-natural-beats-q3-2026-estimates-as-revenue-rises-8-0-to-178-0m-2", "northwest-natural-beats-q3-2026-estimates-as-revenue-rises-8-0-to-178-0m"],
+  ["northwestern-energy-q3-2026-revenue-tops-estimates-at-423-8m-but-eps-misses-at-0-2", "northwestern-energy-q3-2026-revenue-tops-estimates-at-423-8m-but-eps-misses-at-0"],
 ];
