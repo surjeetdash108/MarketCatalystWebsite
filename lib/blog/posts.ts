@@ -4,6 +4,7 @@ import { adminFirestore } from "@/lib/firebase/admin";
 import { ensureUniqueSlug, releaseSlug } from "./slug";
 import { DUPLICATE_POSTS } from "@/lib/seo/duplicate-posts";
 import { storedPostSlug } from "@/lib/seo/shortened-posts";
+import { movedSlugCandidates } from "@/lib/blog/moved-slugs";
 import type { CreatePostInput, UpdatePostInput } from "@/lib/validation/blog";
 
 export type PostStatus = "draft" | "published";
@@ -270,16 +271,38 @@ export async function getLivePostSummaries(): Promise<PostSummary[]> {
   return (await getCachedPostSummaries()).filter((p) => !duplicateSlugs.has(p.slug));
 }
 
-export async function getPublishedPostBySlug(slug: string): Promise<Post | null> {
+async function publishedByStoredSlug(stored: string): Promise<Post | null> {
   const snap = await adminFirestore
     .collection(POSTS)
-    // The slug in the URL may be a shortened one (lib/seo/shortened-posts.ts).
-    .where("slug", "==", storedPostSlug(slug))
+    .where("slug", "==", stored)
     .where("status", "==", "published")
     .limit(1)
     .get();
   if (snap.empty) return null;
   return mapPost(snap.docs[0]!.id, snap.docs[0]!.data());
+}
+
+export async function getPublishedPostBySlug(slug: string): Promise<Post | null> {
+  // A post's own stored slug wins over a shortened alias of another post's
+  // (B-02: the Oct 29 editions' aliases were the stored slugs of the Nov 4
+  // editions, which then opened the Oct 29 page). Then the alias
+  // (lib/seo/shortened-posts.ts).
+  const own = await publishedByStoredSlug(slug);
+  if (own) return own;
+  const stored = storedPostSlug(slug);
+  return stored === slug ? null : publishedByStoredSlug(stored);
+}
+
+/**
+ * For a slug that matches no post: the slug of the published post a link built
+ * from its full title meant (B-01), or null. The page 301s there.
+ */
+export async function findMovedPostSlug(slug: string): Promise<string | null> {
+  for (const c of movedSlugCandidates(slug)) {
+    const post = await getPublishedPostBySlug(c);
+    if (post) return post.slug;
+  }
+  return null;
 }
 
 /** Admin panel only — queries every post regardless of status. */

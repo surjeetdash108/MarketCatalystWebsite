@@ -1,8 +1,8 @@
 import type { Metadata } from "next";
 import Link from "next/link";
-import { notFound } from "next/navigation";
+import { notFound, permanentRedirect } from "next/navigation";
 import { Suspense } from "react";
-import { getPublishedPostBySlug, getPublishedPosts } from "@/lib/blog/posts";
+import { findMovedPostSlug, getPublishedPostBySlug, getPublishedPosts } from "@/lib/blog/posts";
 import { PostBody } from "@/components/blog/PostBody";
 import { PostPdf } from "@/components/blog/PostPdf";
 import { PostDocx } from "@/components/blog/PostDocx";
@@ -10,7 +10,7 @@ import { PostHtmlDoc } from "@/components/blog/PostHtmlDoc";
 import { ArticleHero } from "@/components/blog/ArticleHero";
 import { RelatedPosts } from "@/components/blog/RelatedPosts";
 import { resolvePostDesign } from "@/lib/blog/post-design";
-import { formatPublished } from "@/lib/blog/published-time";
+import { applyDateline, formatPublished, publishedLine, readMinutes } from "@/lib/blog/published-time";
 // blog-doc.css reads tokens from the older iq-* design system, so articles
 // load it alongside; public pages no longer get it from the root layout.
 import "../../iq.css";
@@ -139,7 +139,12 @@ export default async function PostPage({
 }) {
   const { slug } = await params;
   const post = await getPublishedPostBySlug(slug);
-  if (!post) notFound();
+  if (!post) {
+    // A link built from the full title (B-01): 301 to the article it meant.
+    const moved = await findMovedPostSlug(slug);
+    if (moved) permanentRedirect(postPath(moved));
+    notFound();
+  }
 
   const section = sectionOfType(post.type);
   const jsonLd = [
@@ -177,14 +182,25 @@ export default async function PostPage({
      visually hidden so the design stays as authored; the article's JSON-LD
      datePublished is the same value. */
   const publishedLabel = formatPublished(post.publishedAt);
+  /* One date line from one field (B-07 / B-08 / B-09 / B-24): the post's own
+     date line is rewritten from publishedAt and the shared read time; a post
+     that prints none gets ours, visible. */
+  const line = publishedLine(post.publishedAt, readMinutes(post.content));
+  const dated = line ? applyDateline(post.content, line) : { html: post.content, found: false };
   const publishedDateline =
     post.publishedAt && publishedLabel ? (
-      <time
-        dateTime={post.publishedAt}
-        style={{ position: "absolute", width: 1, height: 1, margin: -1, padding: 0, overflow: "hidden", clip: "rect(0 0 0 0)", whiteSpace: "nowrap", border: 0 }}
-      >
-        {publishedLabel}
-      </time>
+      dated.found ? (
+        <time
+          dateTime={post.publishedAt}
+          style={{ position: "absolute", width: 1, height: 1, margin: -1, padding: 0, overflow: "hidden", clip: "rect(0 0 0 0)", whiteSpace: "nowrap", border: 0 }}
+        >
+          {publishedLabel}
+        </time>
+      ) : (
+        <div className="post-doc-back article-meta">
+          <time dateTime={post.publishedAt}>{line}</time>
+        </div>
+      )
     ) : null;
 
   /* An authored-HTML post is a complete designed page, so it is given the page:
@@ -231,7 +247,7 @@ export default async function PostPage({
 
         {publishedDateline}
 
-        <PostHtmlDoc html={post.content} design={design} keepFirstH1={hasOwnHeadline} />
+        <PostHtmlDoc html={dated.html} design={design} keepFirstH1={hasOwnHeadline} />
 
         <AuthorBox author={post.author} />
 
@@ -282,7 +298,7 @@ export default async function PostPage({
               <div className="article-meta">
                 {/* Wording and zone live in formatPublished, shared with the
                     hidden dateline on posts that print their own header. */}
-                <time dateTime={post.publishedAt}>{formatPublished(post.publishedAt)}</time>
+                <time dateTime={post.publishedAt}>{line}</time>
               </div>
             )}
             <hr className="article-rule" />

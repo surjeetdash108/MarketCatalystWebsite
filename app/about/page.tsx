@@ -44,7 +44,7 @@ const PIPELINE: ReadonlyArray<{ n: string; h: string; p: string }> = [
   },
   {
     n: "02",
-    h: "Normalisation",
+    h: "Normalization",
     p: "Vendor payloads are reconciled onto a single company record with one identifier, one calendar and one set of units, so figures from different providers can be compared without silently disagreeing.",
   },
   {
@@ -67,7 +67,7 @@ const STANDARDS: ReadonlyArray<{ h: string; p: string }> = [
   },
   {
     h: "Regulatory filings at source",
-    p: "Ownership, insider activity and material events are read from EDGAR directly rather than from a summariser's paraphrase of it.",
+    p: "Ownership, insider activity and material events are read from EDGAR directly rather than from a summarizer's paraphrase of it.",
   },
   {
     h: "Governed retention",
@@ -84,8 +84,8 @@ const STANDARDS: ReadonlyArray<{ h: string; p: string }> = [
  *  not a disclaimer to bury. */
 const SCOPE: ReadonlyArray<{ b: string; p: string }> = [
   {
-    b: "We are not a registered investment adviser.",
-    p: "We do not manage client assets and we provide no personalised recommendations. Nothing in the platform is investment advice.",
+    b: "We are not a registered investment advisor.",
+    p: "We do not manage client assets and we provide no personalized recommendations. Nothing in the platform is investment advice.",
   },
   {
     b: "We do not execute.",
@@ -97,7 +97,7 @@ const SCOPE: ReadonlyArray<{ b: string; p: string }> = [
   },
   {
     b: "The judgment stays with you.",
-    p: "Trading equities and options carries risk. Consult your own financial adviser before acting on anything you read here.",
+    p: "Trading equities and options carries risk. Consult your own financial advisor before acting on anything you read here.",
   },
 ];
 

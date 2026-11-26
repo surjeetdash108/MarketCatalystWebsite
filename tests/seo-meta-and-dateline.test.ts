@@ -5,7 +5,7 @@ import assert from "node:assert/strict";
 import fs from "node:fs";
 import path from "node:path";
 import { homeDocument } from "../lib/landing/home-document";
-import { formatPublished } from "../lib/blog/published-time";
+import { applyDateline, formatPublished, publishedLine, readMinutes } from "../lib/blog/published-time";
 import { resolvePostSeoDescription } from "../lib/seo/jsonld";
 
 const read = (p: string) => fs.readFileSync(path.join(process.cwd(), p), "utf8");
@@ -45,21 +45,53 @@ test("homepage og:url is the canonical, trailing slash included", () => {
   assert.ok(og.endsWith("/"));
 });
 
-test("formatPublished gives one New York wording for a publish instant", () => {
-  assert.equal(formatPublished("2026-11-14T15:30:00.000Z"), "November 14, 2026 · 10:30 ET");
+test("formatPublished gives one New York wording for a publish instant (B-24)", () => {
+  assert.equal(formatPublished("2026-11-14T15:30:00.000Z"), "Nov 14, 2026 · 10:30 AM ET");
   // late evening UTC is still the same New York day
-  assert.equal(formatPublished("2026-11-15T02:05:00.000Z"), "November 14, 2026 · 21:05 ET");
+  assert.equal(formatPublished("2026-11-15T02:05:00.000Z"), "Nov 14, 2026 · 9:05 PM ET");
   assert.equal(formatPublished(null), null);
   assert.equal(formatPublished("not a date"), null);
 });
 
+test("a post's own date line is rewritten from publishedAt, in every wording seen live (B-07, B-08, B-24)", () => {
+  const line = publishedLine("2026-11-23T15:24:44.000Z", 3)!;
+  assert.equal(line, "Published Nov 23, 2026 · 10:24 AM ET · 3 min read");
+  for (const own of [
+    "Published Nov 23, 2026 · 10:30 AM ET",
+    "Published Nov. 17, 2026 · 2:30 p.m. ET · 2 min read",
+    "18 Nov 2026 · 10:15 ET",
+    "Published Wednesday, November 25, 2026 · 11:30 AM ET · 3 min read",
+    "Nov 11, 2026 · 9:44 PM ET",
+    "4 min read",
+  ]) {
+    const r = applyDateline(`<style>x</style><div class="meta"><span>${own}</span></div><h2>Body</h2><p>Nov 1, 2026 · 9:00 AM ET</p>`, line);
+    assert.ok(r.found, own);
+    assert.equal(r.html, `<style>x</style><div class="meta"><span>${line}</span></div><h2>Body</h2><p>Nov 1, 2026 · 9:00 AM ET</p>`);
+  }
+  assert.equal(applyDateline("<h1>T</h1><p>No date here.</p>", line).found, false);
+});
+
+test("listing and page count read time the same way, without markup (B-09)", () => {
+  const html = `<style>.a{b:c}</style><p>${"word ".repeat(600)}</p>`;
+  assert.equal(readMinutes(html), 3);
+  assert.match(read("app/posts/page.tsx"), /readMin: readMinutes\(p\.content\)/);
+  assert.match(read("app/posts/[slug]/page.tsx"), /publishedLine\(post\.publishedAt, readMinutes\(post\.content\)\)/);
+});
+
 test("every post layout emits a <time datetime> from publishedAt", () => {
   const page = read("app/posts/[slug]/page.tsx");
-  // the visible byline and the hidden dateline both use the shared formatter
-  assert.equal((page.match(/<time\s/g) ?? []).length, 2);
-  assert.equal((page.match(/dateTime=\{post\.publishedAt\}/g) ?? []).length, 2);
+  // the dateline (hidden when the post prints its own line, visible when not) and the prose byline
+  assert.equal((page.match(/<time\s/g) ?? []).length, 3);
+  assert.equal((page.match(/dateTime=\{post\.publishedAt\}/g) ?? []).length, 3);
   assert.match(page, /formatPublished\(post\.publishedAt\)/);
   // the designed-HTML layout and the doc/own-headline layout both render it
   assert.match(page, /\{publishedDateline\}/);
   assert.match(page, /\(isDoc \|\| hasOwnHeadline\) && publishedDateline/);
+});
+
+test("listing cards show the post's own label beside its section (B-10)", () => {
+  const page = read("app/posts/page.tsx");
+  assert.match(page, /topic: topicLabel\(p\.categories, sectionOfType\(p\.type\)\)/);
+  const board = read("components/blog/BlogIndex.tsx");
+  assert.equal((board.match(/<TopicTag topic=/g) ?? []).length, 2);
 });

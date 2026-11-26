@@ -42,11 +42,26 @@ export function trialDays(): number {
  * cancellation, and the refund rule, all from the generated catalog.
  */
 export function purchaseTermsLine(): string {
-  const days = trialDays();
-  const trial = days > 0
-    ? `Every new account gets a ${days}-day free trial from sign-up; a plan you buy during it starts when the trial ends. `
-    : "";
-  return `${trial}Plans renew automatically until you cancel. ${refundPolicy().checkoutLine}`;
+  return subscriptionTerms().purchaseLine;
+}
+
+/** The shared subscription terms (backend src/billing/refund/subscription-terms.ts, exported into catalog.json). */
+export interface SubscriptionTermsCopy {
+  trialLine: string;
+  renewalLine: string;
+  purchaseLine: string;
+  termsParagraphs: string[];
+}
+
+export function subscriptionTerms(): SubscriptionTermsCopy {
+  const t = (fallback as unknown as { subscriptionTerms?: SubscriptionTermsCopy }).subscriptionTerms;
+  if (!t) throw new Error("catalog.json has no subscriptionTerms: re-run the backend's scripts/export-catalog.ts");
+  return t;
+}
+
+/** Terms §12, one string per paragraph: the same text Home and checkout state (W-26). */
+export function subscriptionTermsParagraphs(): string[] {
+  return subscriptionTerms().termsParagraphs;
 }
 
 export function everyPlanIncludes(): string[] {
