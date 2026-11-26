@@ -3,6 +3,7 @@ import assert from "node:assert/strict";
 import fs from "node:fs";
 import path from "node:path";
 import { LEGAL_ENTITY, LEGAL_UPDATED } from "../lib/legal/entity";
+import { fallbackCatalog, fillPriceTokens, purchaseTermsLine, subscriptionTerms } from "../lib/pricing/catalog";
 
 const read = (p: string) => fs.readFileSync(path.join(process.cwd(), p), "utf8");
 const terms = read("components/marketing/TermsOfService.tsx");
@@ -26,15 +27,30 @@ test("no draft markers, placeholders or example addresses on any legal page", ()
   }
 });
 
-test("§12 is the neutral pre-launch paragraph until counsel approves the full text", () => {
-  const neutral = "Paid plans are launching soon. Subscription terms will be published here before any charge.";
-  assert.ok(terms.includes(neutral));
-  if (HAS_APP) assert.ok(appTerms.includes(neutral));
-  // The full draft stays in the repo, not on the page.
-  assert.ok(fs.existsSync(path.join(process.cwd(), "docs/legal/terms-section-12-subscriptions-DRAFT.txt")));
-  for (const gone of ["7-day free trial", "non-refundable", "Retention offer"]) {
-    assert.ok(!terms.includes(gone), gone);
-    if (HAS_APP) assert.ok(!appTerms.includes(gone), gone);
+// W-26 (26 Nov 2026 audit): Home sold a 7-day trial, renewal and "No refunds"
+// while §12 said "launching soon". All of them now print the backend's one
+// subscription-terms text (src/billing/refund/subscription-terms.ts).
+test("Home, Terms §12 and checkout state the same trial, renewal and refund terms", () => {
+  const t = subscriptionTerms();
+  assert.match(t.purchaseLine, /7-day free trial from sign-up/);
+  assert.match(t.purchaseLine, /No refunds/);
+  // Home: the line under the plan toggle is the shared purchase line.
+  assert.equal(purchaseTermsLine(), t.purchaseLine);
+  const home = fillPriceTokens("{{PURCHASE_TERMS}}", fallbackCatalog());
+  for (const part of [t.trialLine, t.renewalLine, "No refunds."]) assert.ok(home.includes(part.replace(/'/g, "")) || home.includes(part), part);
+  // Terms §12 prints the shared paragraphs, and they carry every term Home states.
+  assert.match(terms, /subscriptionTermsParagraphs\(\)\.map/);
+  const s12 = t.termsParagraphs.join(" ");
+  for (const phrase of ["7-day free trial", "renews automatically", "non-refundable", "cancel at any time in Manage Plan"]) assert.ok(s12.includes(phrase), phrase);
+  assert.ok(!terms.includes("launching soon"));
+  if (HAS_APP) {
+    // The app's Terms and checkout read the same generated text.
+    const generated = readApp("app/iq/billing/refund-policy.generated.ts");
+    assert.ok(generated.includes(JSON.stringify(t.purchaseLine)), "app has the same purchase line");
+    for (const p of t.termsParagraphs) assert.ok(generated.includes(JSON.stringify(p)), "app has the same §12 paragraph");
+    assert.match(appTerms, /SUBSCRIPTION_TERMS\.termsParagraphs\.map/);
+    assert.ok(!appTerms.includes("launching soon"));
+    assert.match(readApp("app/iq/billing/checkout/summary-card.tsx"), /REFUND_POLICY\.checkoutLine/);
   }
 });
 
