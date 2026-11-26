@@ -207,6 +207,8 @@ a.mcb-pill { display: inline-block; line-height: normal; text-decoration: none; 
 .mcb-tag-earnings { --mcb-tag: #C084FC; --mcb-tag-rgb: 192, 132, 252; }
 /* Editor's choice, beside the section tag on the featured post's feed card. */
 .mcb-tag-ec { --mcb-tag: var(--mc-amber); --mcb-tag-rgb: var(--mc-amber-rgb); margin-left: 6px; }
+/* The post's own label (B-10), beside the section tag: neutral, so the section keeps the colour. */
+.mcb-tag-topic { --mcb-tag: var(--mc-text-muted); --mcb-tag-rgb: 148, 163, 184; margin-left: 6px; }
 /* The pick's tag is the solid variant — it is the one card that shouts. */
 .mcb-tag-solid {
   font-size: 10px;

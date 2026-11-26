@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { readMinutes } from "@/lib/blog/published-time";
 import { notFound } from "next/navigation";
 import { getLivePostSummaries, getPublishedPostListings } from "@/lib/blog/posts";
 import { DUPLICATE_POSTS } from "@/lib/seo/duplicate-posts";
@@ -102,9 +103,11 @@ function toPlainBody(html: string): string {
     .trim();
 }
 
-function computeReadMins(content: string): number {
-  const words = content.trim() ? content.trim().split(/\s+/).length : 0;
-  return Math.max(1, Math.round(words / 200));
+
+/** The post's own label (its first category) when it is not just the section's name (B-10). */
+function topicLabel(categories: string[] | undefined, section: string): string | undefined {
+  const c = (categories?.[0] ?? "").trim();
+  return c && c.toLowerCase() !== section.toLowerCase() ? c : undefined;
 }
 
 function computePreview(excerpt: string, plainBody: string, min: number, max: number): string {
@@ -138,6 +141,7 @@ export default async function PostsIndexPage({ searchParams }: { searchParams: S
       slug: p.slug,
       path: postPath(p.slug),
       title: p.title,
+      topic: topicLabel(p.categories, sectionOfType(p.type)),
       excerpt: p.excerpt,
       type: p.type,
       author: p.author,
@@ -145,7 +149,7 @@ export default async function PostsIndexPage({ searchParams }: { searchParams: S
       publishedAt: p.publishedAt,
       createdAt: p.createdAt,
       /** Pre-computed reading time. */
-      readMin: computeReadMins(p.content),
+      readMin: readMinutes(p.content),
       /** Pre-computed card blurb for the highlight hero. */
       heroPreview: computePreview(p.excerpt, plainBody, 150, 260),
     };

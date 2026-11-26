@@ -1,5 +1,6 @@
 "use client";
 
+import { formatPublishedClock, formatPublishedDay } from "@/lib/blog/published-time";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import Link from "next/link";
 import type { Post } from "@/lib/blog/posts";
@@ -37,6 +38,15 @@ function sectionOf(p: Pick<Post, "type">): Section {
   return sectionOfType(p.type);
 }
 
+/**
+ * Card label = the section, plus the post's own label when it has a
+ * different one: the page shows "AI Safety", the card "News · AI Safety"
+ * (B-10). The section still decides the filter and the colour.
+ */
+function TopicTag({ topic }: { topic?: string }) {
+  return topic ? <span className="mcb-tag mcb-tag-topic">{topic}</span> : null;
+}
+
 function initials(name: string): string {
   return name
     .split(" ")
@@ -58,15 +68,10 @@ function initials(name: string): string {
  */
 const ET = "America/New_York";
 
-const fmtLong = (iso: string) =>
-  new Date(iso).toLocaleDateString("en-GB", {
-    day: "numeric", month: "short", year: "numeric", timeZone: ET,
-  });
+// One wording with the post page (B-24): "Nov 24, 2026" and "4:31 PM ET".
+const fmtLong = (iso: string) => formatPublishedDay(iso) ?? "";
 
-const fmtTime = (iso: string) =>
-  new Date(iso).toLocaleTimeString("en-GB", {
-    hour: "2-digit", minute: "2-digit", hour12: false, timeZone: ET,
-  }) + " ET";
+const fmtTime = (iso: string) => formatPublishedClock(iso) ?? "";
 
 /** Sort key: published where it exists, created otherwise — a published post
  *  with no publishedAt must not fall to the bottom of the list. */
@@ -87,6 +92,8 @@ export type IndexPost = Pick<
   /** Pre-computed on the server from the article body. */
   readMin?: number;
   heroPreview?: string;
+  /** The label the post's own page shows (its first category), when it differs from the section (B-10). */
+  topic?: string;
   /** The post's page, from lib/seo/shortened-posts.ts (the table stays out of this client bundle). */
   path?: string;
 };
@@ -529,6 +536,7 @@ export function BlogIndex({
               <span className={`mcb-tag mcb-tag-solid ${TAG_CLASS[sectionOf(pick)]}`}>
                 {sectionOf(pick)}
               </span>
+              <TopicTag topic={pick.topic} />
               <h3 className="mcb-pick-h">
                 <Marked text={pick.title} rx={rx} />
               </h3>
@@ -619,6 +627,7 @@ export function BlogIndex({
                     >
                       <div className="mcb-post-body">
                         <span className={`mcb-tag ${TAG_CLASS[sectionOf(p)]}`}>{sectionOf(p)}</span>
+                        <TopicTag topic={p.topic} />
                         {p === choice && <span className="mcb-tag mcb-tag-ec">★ Editor&rsquo;s choice</span>}
                         <h3 className="mcb-post-h">
                           <Marked text={p.title} rx={rx} />
