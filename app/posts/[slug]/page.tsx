@@ -1,8 +1,8 @@
 import type { Metadata } from "next";
 import Link from "next/link";
-import { notFound } from "next/navigation";
+import { notFound, permanentRedirect } from "next/navigation";
 import { Suspense } from "react";
-import { getPublishedPostBySlug, getPublishedPosts } from "@/lib/blog/posts";
+import { findMovedPostSlug, getPublishedPostBySlug, getPublishedPosts } from "@/lib/blog/posts";
 import { PostBody } from "@/components/blog/PostBody";
 import { PostPdf } from "@/components/blog/PostPdf";
 import { PostDocx } from "@/components/blog/PostDocx";
@@ -139,7 +139,12 @@ export default async function PostPage({
 }) {
   const { slug } = await params;
   const post = await getPublishedPostBySlug(slug);
-  if (!post) notFound();
+  if (!post) {
+    // A link built from the full title (B-01): 301 to the article it meant.
+    const moved = await findMovedPostSlug(slug);
+    if (moved) permanentRedirect(postPath(moved));
+    notFound();
+  }
 
   const section = sectionOfType(post.type);
   const jsonLd = [
